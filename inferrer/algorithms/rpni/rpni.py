@@ -1,6 +1,5 @@
-import automaton
-import utils
 import functools
+from inferrer import utils, automaton
 
 
 class RPNI:
@@ -111,3 +110,22 @@ def _cmp(a: str, b: str):
     else:
         return -1
 
+
+if __name__ == '__main__':
+    s_plus = {'aaa', 'aaba', 'bba', 'bbaba'}
+    s_minus = {'a', 'bb', 'aab', 'aba'}
+    rpi = RPNI(s_plus, s_minus)
+    zzz = rpi.learn()
+
+    # print('-' * 1000)
+    # print(zzz.minimize())
+
+    # print('--- report ---')
+    # print('States = {}'.format(a.states))
+    # print('Accept states = {}'.format(a.accept_states))
+    # print('Reject states = {}'.format(a.reject_states))
+    # print(a)
+
+    # ss = {'a', 'b', 'da', 'abbbb', 'ccc'}
+    # print(choose(ss))
+    # print(type(choose(ss)))

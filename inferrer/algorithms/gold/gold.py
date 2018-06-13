@@ -1,5 +1,4 @@
-import utils
-import automaton
+from inferrer import utils, automaton
 
 
 class Gold:
@@ -141,3 +140,19 @@ class Gold:
                         return False
         return True
 
+
+if __name__ == '__main__':
+    s_plus = {'bb', 'abb', 'bba', 'bbb'}
+    s_minus = {'a', 'b', 'aa', 'bab'}
+    gold = Gold(s_plus, s_minus)
+    gold.learn()
+
+    # s_plus = {'aa', 'aba', 'bba'}
+    # s_minus = {'ab', 'abab'}
+    # gold = Gold(s_plus, s_minus)
+    # gold.learn()
+
+    # s_plus = {'a', 'aa', 'aaa'}
+    # s_minus = set()
+    # gold = Gold(s_plus, s_minus)
+    # gold.learn()

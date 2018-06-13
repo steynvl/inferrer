@@ -1,5 +1,5 @@
-import utils
 import copy
+from inferrer import utils
 from collections import defaultdict, OrderedDict
 
 
@@ -39,15 +39,6 @@ class Automaton:
                     return qf, letter
         return None, None
 
-    def parse_string(self, s: str):
-        q = self._start_state
-        for letter in s:
-            if not self.transition_exists(q, letter):
-                return q, False
-            q = self.perform_transition(q, letter)
-
-        return q, q in self.accept_states
-
     def minimize(self):
         _states = set()
         for state in self.states:
@@ -72,6 +63,9 @@ class Automaton:
 
         return cp
 
+    def __deepcopy__(self, memodict={}):
+        return self.copy()
+
     def __str__(self):
         rep = [
             'q     = {}'.format(self._start_state),
@@ -91,8 +85,17 @@ class Automaton:
 
         return '\n'.join(rep)
 
+    def parse_string(self, s: str) -> (str, bool):
+        q = self._start_state
+        for letter in s:
+            if not self.transition_exists(q, letter):
+                return q, False
+            q = self.perform_transition(q, letter)
 
-def build_pta(s_plus: set, s_minus: set=set()):
+        return q, q in self.accept_states
+
+
+def build_pta(s_plus: set, s_minus: set=set()) -> Automaton:
     samples = s_plus.union(s_minus)
 
     alphabet = utils.determine_alphabet(samples)
