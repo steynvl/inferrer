@@ -96,7 +96,7 @@ class LSTAR:
         for p in prefix_set:
 
             if p not in self._red:
-                ot.add_row(p, exp)
+                ot.add_row(p)
                 self._red.add(p)
                 self._blue.discard(p)
 
@@ -104,7 +104,7 @@ class LSTAR:
                 pa = p + a
                 if pa not in prefix_set:
                     if pa not in self._blue:
-                        ot.add_row(pa, exp)
+                        ot.add_row(pa)
                         self._blue.add(pa)
                         self._red.discard(pa)
 

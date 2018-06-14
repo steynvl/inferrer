@@ -107,11 +107,18 @@ class ObservationTable:
         """
         return r in self.ot
 
-    def obviously_different_row(self, max_len):
-        for u in self._blue:
+    def obviously_different_row(self) -> (bool, str):
+        """
+        Determines if there is an obviously different
+        row in the table.
 
-            for v in self.__ot.keys():
-                if u == v or len(u) == max_len or len(v) == max_len:
+        :return: whether or not there is one along with
+                 the row.
+        :rtype: tuple(bool, str)
+        """
+        for u in self._blue:
+            for v in self.ot.keys():
+                if u == v:
                     continue
                 for e in self.exp:
                     if self.entry_exists(u, e) and self.entry_exists(v, e):
@@ -124,19 +131,42 @@ class ObservationTable:
         return False, None
 
     def is_closed_and_consistent(self) -> (bool, bool):
+        """
+        Determines whether the observation table is closed
+        and consistent.
+
+        :return: tuple, where the first element is a boolean
+        :rtype: tuple(bool, bool)
+        """
         return self.is_closed()[0], self.is_consistent()
 
-    def is_closed(self):
+    def is_closed(self) -> (bool, str):
+        """
+        Determines whether the observation table is closed.
+
+        :return: Boolean whether the table of the instance
+                 is closed and if it not it also returns
+                 the row that causes the table to not be
+                 closed.
+        :rtype: tuple(bool, str)
+        """
         for u in self._blue:
             if not any([self.__ot[u] == self.__ot[s] for s in self._red]):
                 return False, u
 
         return True, None
 
-    def is_consistent(self):
+    def is_consistent(self) -> bool:
+        """
+        Determines whether the observation table is consistent.
+
+        :return: Boolean indicating whether the table is
+        consistent.
+        :rtype: bool
+        """
         for s1 in self._red:
             for s2 in self._red:
-                if s1 == s2 or self.__ot[s1] != self.__ot[s2]:
+                if s1 == s2 or self.ot[s1] != self.ot[s2]:
                     continue
 
                 if not all([self.get_row(s1 + a) == self.get_row(s2 + a) for a in self._alphabet]):
@@ -144,32 +174,62 @@ class ObservationTable:
 
         return True
 
-    def find_compatible_row(self, p, exp):
+    def find_compatible_row(self, p: str):
+        """
+        Finds a compatible row in the observation table indexed
+        by p.
+
+        :param p: row indexed by p
+        :type p: str
+        :return: The row compatible with p, or None if no
+                 row exists.
+        """
         for r in self._red:
 
             if p not in self.__ot or r not in self.__ot:
                 continue
 
-            p1 = self.__ot[p]
-            r1 = self.__ot[r]
+            p1 = self.ot[p]
+            r1 = self.ot[r]
 
-            if not any([
-                (e in p1 and e in r1) and ((p1[e] == 0 and r1[e] == 1)
-                    or (p1[e] == 1 and r1[e] == 0)) for e in exp
-            ]):
+            if not any([(e in p1 and e in r1) and ((p1[e] == 0 and r1[e] == 1)
+                    or (p1[e] == 1 and r1[e] == 0)) for e in self.exp]):
                 return r
 
         return None
 
-    def add_row(self, r: str, exp: set):
-        if r not in self.__ot.keys():
-            self.__ot[r] = {i: None for i in exp}
+    def add_row(self, r: str):
+        """
+        Adds a new row to the observation table with the
+        label r.
 
-    def add_column_to_table(self, c):
+        :param r: label of row to add
+        :type r: str
+        """
+        if r not in self.__ot.keys():
+            self.__ot[r] = {i: None for i in self.exp}
+
+    def add_column_to_table(self, c: str):
+        """
+        Adds a new column to the observation table with the
+        label c and initialises all of the entries to None.
+
+        :param c: label of the column to add
+        :type c: str
+        """
         for row in self.ot.keys():
             self.ot[row][c] = None
 
-    def find_holes(self):
+    def find_holes(self) -> (str, str):
+        """
+        Finds all the entries in the observation table that is
+        a hole.
+
+        :return: Generator with the row and column values
+                 for which the entry in the observation table
+                 is a hole.
+        :rtype: generator(tuple(str, str))
+        """
         for u, col in self.__ot.items():
             for e, val in col.items():
                 if val is None:

@@ -13,6 +13,7 @@ def inferrer_logger(target_class):
         return
 
     target_class._logger = logging.getLogger(target_class.__name__)
+    # handler = logging.FileHandler('/path/to/log_file')
     handler = logging.StreamHandler()
     handler.setLevel(logging.DEBUG)
     fmt = '%(relativeCreated)d: [%(levelname)s] %(module)s:%(funcName)s: %(message)s'

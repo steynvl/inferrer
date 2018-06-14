@@ -24,22 +24,22 @@ class Gold:
 
     def learn(self) -> automaton.Automaton:
         """
-        # TODO
+        Learns the grammar from the sets of positive and negative
+        example strings. This method returns the minimal DFA
+        consistent with the sample.
 
         :return: The minimum DFA consistent with the sample
         :rtype: Automaton
         """
         ot = self._build_table()
 
-        max_len = len(max(self._samples, key=len))
-
-        od_row, x = ot.obviously_different_row(max_len)
+        od_row, x = ot.obviously_different_row()
         while od_row:
-            self._red.add(x)
-
             xa = [x + a for a in self._alphabet]
-            self._blue.update(xa)
             ot.sta.update(xa)
+
+            self._blue.update(xa)
+            self._blue.discard(x)
 
             for u in ot.sta:
                 for e in ot.exp:
@@ -51,9 +51,9 @@ class Gold:
                     else:
                         ot.put(u, e, None)
 
-            od_row, x = ot.obviously_different_row(max_len)
+            od_row, x = ot.obviously_different_row()
 
-        sta, exp, ot, failed = self._fill_holes(sta, exp, ot)
+        ot, failed = self._fill_holes(ot)
 
         if failed:
             return automaton.build_pta(self._pos_examples, self._neg_examples)
@@ -61,10 +61,8 @@ class Gold:
             a = self._build_automaton(ot)
 
             if self._is_consistent(a, ot):
-                print('1')
                 return a
             else:
-                print('2')
                 return automaton.build_pta(self._pos_examples, self._neg_examples)
 
     def _build_table(self) -> utils.ObservationTable:
@@ -100,65 +98,91 @@ class Gold:
 
         return ot
 
-    def _fill_holes(self, sta, exp, ot: utils.ObservationTable):
+    def _fill_holes(self, ot: utils.ObservationTable) -> (utils.ObservationTable, bool):
+        """
+        Tries to make the table complete by filling in all the entries that
+        are None.
+
+        :param ot: the updated observation table
+        :return: updated ObservationTable and whether the method was successful.
+        :rtype: tuple(ObservationTable, bool)
+        """
         for p in self._blue:
-            r = ot.find_compatible_row(p, exp)
+            r = ot.find_compatible_row(p)
             if r is not None:
-                for e in exp:
+                for e in ot.exp:
                     if ot.entry_exists(p, e) and ot.get(p, e) is not None:
                         ot.put(r, e, ot.get(p, e))
             else:
-                return sta, exp, ot, True
+                return ot, True
 
         for r in self._red:
-            for e in exp:
+            for e in ot.exp:
                 if ot.entry_exists(r, e) and ot.get(r, e) is None:
                     ot.put(r, e, 1)
 
         for p in self._blue:
-            r = ot.find_compatible_row(p, exp)
+            r = ot.find_compatible_row(p)
             if r is not None:
-                for e in exp:
+                for e in ot.exp:
                     if ot.entry_exists(p, e) and ot.get(p, e) is None:
                         if ot.entry_exists(r, e):
                             ot.put(p, e, ot.get(r, e))
             else:
-                return sta, exp, ot, True
+                return ot, True
 
-        return sta, exp, ot, False
+        return ot, False
 
-    def _build_automaton(self, ot):
+    def _build_automaton(self, ot) -> automaton.Automaton:
+        """
+        Builds an automaton from the observation table.
+
+        :type ot: ObservationTable
+        :return: Automaton built from the observation table
+        :rtype: Automaton
+        """
         dfa = automaton.Automaton(self._alphabet)
 
-        states = self._red.copy()
+        states = {
+            automaton.State(i) for i in self._red
+        }
 
         we = utils.break_strings_in_two(self._red)
         for w, e in we:
             if ot.entry_exists(w, e):
                 val = ot.get(w, e)
-                we = w + e
+                state = automaton.State(w + e)
                 if val == 1:
-                    dfa.accept_states.add(we)
-                    states.add(we)
+                    dfa.accept_states.add(state)
+                    states.add(state)
                 elif val == 0:
-                    dfa.reject_states.add(we)
-                    states.add(we)
+                    dfa.reject_states.add(state)
+                    states.add(state)
 
         for w in states:
             for a in self._alphabet:
                 for u in self._red:
-                    wa = w + a
+                    wa = w.name + a
                     if ot.row_exists(u) and ot.row_exists(wa) and \
                             ot.get_row(u) == ot.get_row(wa):
-                        dfa.add_transition(w, u, a)
+                        dfa.add_transition(w, automaton.State(u), a)
 
         return dfa
 
     @staticmethod
-    def _is_consistent(dfa, ot):
-        for u, col in ot.get_observation_table().items():
+    def _is_consistent(dfa: automaton.Automaton, ot: utils.ObservationTable) -> bool:
+        """
+        Determines whether the automaton is consistent with the
+        observation table ot.
+
+        :type dfa: Automaton
+        :type ot: ObservationTable
+        :return: Whether the automaton and observation table are consistent.
+        :rtype: bool
+        """
+        for u, col in ot.ot.items():
             for e, val in col.items():
-                ue = u + e
+                ue = automaton.State(u + e)
                 if val == 1:
                     if ue not in dfa.accept_states:
                         return False
@@ -169,17 +193,17 @@ class Gold:
 
 
 if __name__ == '__main__':
-    # s_plus = {'bb', 'abb', 'bba', 'bbb'}
-    # s_minus = {'a', 'b', 'aa', 'bab'}
-    # gold = Gold(s_plus, s_minus)
-    # gold.learn()
+    s_plus = {'bb', 'abb', 'bba', 'bbb'}
+    s_minus = {'a', 'b', 'aa', 'bab'}
+    gold = Gold(s_plus, s_minus)
+    gold.learn()
 
     # s_plus = {'aa', 'aba', 'bba'}
     # s_minus = {'ab', 'abab'}
     # gold = Gold(s_plus, s_minus)
     # gold.learn()
 
-    s_plus = {'a', 'aa', 'aaa'}
-    s_minus = set()
-    gold = Gold(s_plus, s_minus)
-    gold.learn()
+    # s_plus = {'a', 'aa', 'aaa'}
+    # s_minus = set()
+    # gold = Gold(s_plus, s_minus)
+    # gold.learn()
