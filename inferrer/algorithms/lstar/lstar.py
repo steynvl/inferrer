@@ -44,9 +44,9 @@ class LSTAR:
 
         ot = utils.ObservationTable(self._blue, self._red, self._alphabet)
 
-        ot.update('', '', self._oracle.membership_query(''))
+        ot.put('', '', self._oracle.membership_query(''))
         for a in self._alphabet:
-            ot.update(a, '', self._oracle.membership_query(a))
+            ot.put(a, '', self._oracle.membership_query(a))
 
         return sta, exp, ot
 
@@ -64,7 +64,7 @@ class LSTAR:
             ot.add_column_to_table(s)
 
             for u, e in ot.find_holes():
-                ot.update(u, e, self._oracle.membership_query(u + e))
+                ot.put(u, e, self._oracle.membership_query(u + e))
 
         return ot
 
@@ -75,7 +75,7 @@ class LSTAR:
         ot.add_column_to_table(a + e)
 
         for u, e in ot.find_holes():
-            ot.update(u, e, self._oracle.membership_query(u + e))
+            ot.put(u, e, self._oracle.membership_query(u + e))
 
         return ot
 
@@ -109,7 +109,7 @@ class LSTAR:
                         self._red.discard(pa)
 
         for u, e in ot.find_holes():
-            ot.update(u, e, self._oracle.membership_query(u + e))
+            ot.put(u, e, self._oracle.membership_query(u + e))
 
         return ot
 
@@ -125,7 +125,7 @@ class LSTAR:
                     dfa.states.add(u)
 
         for u in dfa.states:
-            if ot.exists(u, ''):
+            if ot.entry_exists(u, ''):
                 if ot.get(u, '') == 1:
                     dfa.accept_states.add(u)
                 elif ot.get(u, '') == 0:

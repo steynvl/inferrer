@@ -3,98 +3,125 @@ from inferrer import utils, automaton
 
 class Gold:
 
-    def __init__(self, positive_examples: set, negative_examples: set):
-        self._red = {''}
-        self._positive_examples = positive_examples
-        self._negative_examples = negative_examples
-        self._samples = positive_examples.union(negative_examples)
+    def __init__(self, pos_examples: set, neg_examples: set):
+        """
+        An implementation of E. Mark GOLD's algorithm, which tries
+        to find the minimum DFA consistent with the sample.
 
-    def learn(self):
-        sta, exp, ot = self._build_table()
+        :param pos_examples: Set of positive example strings
+                             from the target language
+        :param neg_examples: Set of negative example strings,
+                             i.e strings that do not belong in
+                             the target language.
+        """
+        self._pos_examples = pos_examples
+        self._neg_examples = neg_examples
+        self._samples = pos_examples.union(neg_examples)
+        self._alphabet = utils.determine_alphabet(self._samples)
+
+        self._red = {''}
+        self._blue = set()
+
+    def learn(self) -> automaton.Automaton:
+        """
+        # TODO
+
+        :return: The minimum DFA consistent with the sample
+        :rtype: Automaton
+        """
+        ot = self._build_table()
 
         max_len = len(max(self._samples, key=len))
 
-        od_row, x = ot.obviously_different_row(exp, max_len)
+        od_row, x = ot.obviously_different_row(max_len)
         while od_row:
             self._red.add(x)
 
-            xa = set([x + a for a in self._alphabet])
-            sta.update(xa)
+            xa = [x + a for a in self._alphabet]
             self._blue.update(xa)
-            self._blue.remove(x)
+            ot.sta.update(xa)
 
-            for u in sta:
-                for e in exp:
+            for u in ot.sta:
+                for e in ot.exp:
                     ue = u + e
-                    if ue in self._positive_examples:
-                        ot.update(u, e, 1)
-                    elif ue in self._negative_examples:
-                        ot.update(u, e, 0)
+                    if ue in self._pos_examples:
+                        ot.put(u, e, 1)
+                    elif ue in self._neg_examples:
+                        ot.put(u, e, 0)
                     else:
-                        ot.update(u, e, None)
+                        ot.put(u, e, None)
 
-            od_row, x = ot.obviously_different_row(exp, max_len)
+            od_row, x = ot.obviously_different_row(max_len)
 
         sta, exp, ot, failed = self._fill_holes(sta, exp, ot)
 
         if failed:
-            return automaton.build_pta(self._positive_examples, self._negative_examples)
+            return automaton.build_pta(self._pos_examples, self._neg_examples)
         else:
             a = self._build_automaton(ot)
 
             if self._is_consistent(a, ot):
+                print('1')
                 return a
             else:
-                return automaton.build_pta(self._positive_examples, self._negative_examples)
+                print('2')
+                return automaton.build_pta(self._pos_examples, self._neg_examples)
 
-    def _build_table(self):
+    def _build_table(self) -> utils.ObservationTable:
+        """
+        Obtains a table from the sample.
+
+        :return: Initial observation table
+        :rtype: ObservationTable
+        """
         sta = {''}
 
-        self._alphabet = utils.determine_alphabet(self._samples)
         self._blue = self._alphabet.copy()
 
         exp = set(utils.suffix_set(self._samples, self._alphabet))
-        exp.add('')
 
-        ot = utils.ObservationTable(self._blue, self._red)
+        ot = utils.ObservationTable(self._blue, self._red, self._alphabet)
 
         for p in self._red.union(self._blue):
             for e in exp:
                 pe = p + e
-                if pe in self._positive_examples:
-                    ot.update(p, e, 1)
+                if pe in self._pos_examples:
+                    ot.put(p, e, 1)
                 else:
-                    if pe in self._negative_examples:
-                        ot.update(p, e, 0)
+                    if pe in self._neg_examples:
+                        ot.put(p, e, 0)
                     else:
-                        ot.update(p, e, None)
+                        ot.put(p, e, None)
 
             sta.add(p)
 
-        return sta, exp, ot
+        ot.sta = sta
+        ot.exp = exp
+
+        return ot
 
     def _fill_holes(self, sta, exp, ot: utils.ObservationTable):
         for p in self._blue:
             r = ot.find_compatible_row(p, exp)
             if r is not None:
                 for e in exp:
-                    if ot.exists(p, e) and ot.get(p, e) is not None:
-                        ot.update(r, e, ot.get(p, e))
+                    if ot.entry_exists(p, e) and ot.get(p, e) is not None:
+                        ot.put(r, e, ot.get(p, e))
             else:
                 return sta, exp, ot, True
 
         for r in self._red:
             for e in exp:
-                if ot.exists(r, e) and ot.get(r, e) is None:
-                    ot.update(r, e, 1)
+                if ot.entry_exists(r, e) and ot.get(r, e) is None:
+                    ot.put(r, e, 1)
 
         for p in self._blue:
             r = ot.find_compatible_row(p, exp)
             if r is not None:
                 for e in exp:
-                    if ot.exists(p, e) and ot.get(p, e) is None:
-                        if ot.exists(r, e):
-                            ot.update(p, e, ot.get(r, e))
+                    if ot.entry_exists(p, e) and ot.get(p, e) is None:
+                        if ot.entry_exists(r, e):
+                            ot.put(p, e, ot.get(r, e))
             else:
                 return sta, exp, ot, True
 
@@ -107,7 +134,7 @@ class Gold:
 
         we = utils.break_strings_in_two(self._red)
         for w, e in we:
-            if ot.exists(w, e):
+            if ot.entry_exists(w, e):
                 val = ot.get(w, e)
                 we = w + e
                 if val == 1:
@@ -142,17 +169,17 @@ class Gold:
 
 
 if __name__ == '__main__':
-    s_plus = {'bb', 'abb', 'bba', 'bbb'}
-    s_minus = {'a', 'b', 'aa', 'bab'}
-    gold = Gold(s_plus, s_minus)
-    gold.learn()
+    # s_plus = {'bb', 'abb', 'bba', 'bbb'}
+    # s_minus = {'a', 'b', 'aa', 'bab'}
+    # gold = Gold(s_plus, s_minus)
+    # gold.learn()
 
     # s_plus = {'aa', 'aba', 'bba'}
     # s_minus = {'ab', 'abab'}
     # gold = Gold(s_plus, s_minus)
     # gold.learn()
 
-    # s_plus = {'a', 'aa', 'aaa'}
-    # s_minus = set()
-    # gold = Gold(s_plus, s_minus)
-    # gold.learn()
+    s_plus = {'a', 'aa', 'aaa'}
+    s_minus = set()
+    gold = Gold(s_plus, s_minus)
+    gold.learn()

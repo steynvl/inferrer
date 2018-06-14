@@ -32,10 +32,10 @@ class RPNI:
                     for q in self._red:
                         for a in self._alphabet:
                             if dfa.transition_exists(q, a) and \
-                                    dfa.perform_transition(q, a) not in self._red:
-                                new_blue.add(dfa.perform_transition(q, a))
+                                    dfa.transition(q, a) not in self._red:
+                                new_blue.add(dfa.transition(q, a))
 
-                    self._blue.update(new_blue)
+                    self._blue.put(new_blue)
                     found = True
 
             if not found:
@@ -52,7 +52,7 @@ class RPNI:
         self._red.add(qu)
 
         self._blue.update({
-            dfa.perform_transition(qu, a) for a in self._alphabet if dfa.transition_exists(qu, a)
+            dfa.transition(qu, a) for a in self._alphabet if dfa.transition_exists(qu, a)
         })
 
         return dfa
@@ -84,10 +84,10 @@ class RPNI:
         for a in self._alphabet:
             if dfa.transition_exists(q_prime, a):
                 if dfa.transition_exists(q, a):
-                    dfa = self._fold(dfa, dfa.perform_transition(q, a),
-                                     dfa.perform_transition(q_prime, a))
+                    dfa = self._fold(dfa, dfa.transition(q, a),
+                                     dfa.transition(q_prime, a))
                 else:
-                    dfa.add_transition(q, dfa.perform_transition(q_prime, a), a)
+                    dfa.add_transition(q, dfa.transition(q_prime, a), a)
 
         return dfa
 

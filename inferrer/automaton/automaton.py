@@ -219,3 +219,8 @@ def build_pta(s_plus: set, s_minus: set=set()) -> Automaton:
     pta.states = states
 
     return pta
+
+
+if __name__ == '__main__':
+    a = Automaton({'a', 'b'})
+    print(a)
