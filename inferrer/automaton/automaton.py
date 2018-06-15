@@ -2,11 +2,12 @@ import copy
 from inferrer import utils
 from inferrer.automaton.state import State
 from collections import defaultdict, OrderedDict
+from typing import Set
 
 
 class Automaton:
 
-    def __init__(self, alphabet: set, start_state: State=State('')):
+    def __init__(self, alphabet: Set[str], start_state: State=State('')):
         """
         Initiates a deterministic finite automaton
 
@@ -20,7 +21,7 @@ class Automaton:
 
         self._alphabet = alphabet
 
-        self.states = set()
+        self.states = {self._start_state}
 
         self.accept_states = set()
 
@@ -40,6 +41,11 @@ class Automaton:
         :param a: letter in alphabet
         :type a: str
         """
+        if a not in self._alphabet:
+            raise ValueError('\'{}\' is not in the alphabet of the automaton!'.format(a))
+
+        self.states.add(q1)
+        self.states.add(q2)
         self._transitions[q1][a] = q2
 
     def transition_exists(self, q1: State, a: str) -> bool:
@@ -56,7 +62,7 @@ class Automaton:
         """
         return q1 in self._transitions and \
                a in self._transitions[q1] and \
-               self._transitions[q1][a] in self._transitions
+               self._transitions[q1][a] in self.states
 
     def transition(self, q1: State, a: str) -> bool:
         """
@@ -71,9 +77,7 @@ class Automaton:
         :return: to state
         :rtype: automaton.State
         """
-        if q1 in self._transitions and \
-                a in self._transitions[q1]:
-            return self._transitions[q1][a]
+        return self._transitions[q1][a]
 
     def parse_string(self, s: str) -> (State, bool):
         """
@@ -175,7 +179,7 @@ class Automaton:
         return '\n'.join(rep)
 
 
-def build_pta(s_plus: set, s_minus: set=set()) -> Automaton:
+def build_pta(s_plus: Set[str], s_minus: Set[str]=set()) -> Automaton:
     """
     Function that builds a prefix tree acceptor from the example strings
     S = S+ union S-
@@ -193,7 +197,7 @@ def build_pta(s_plus: set, s_minus: set=set()) -> Automaton:
     pta = Automaton(alphabet)
 
     for letter in alphabet:
-        pta.add_transition(State(''), letter, letter)
+        pta.add_transition(State(''), State(letter), letter)
 
     states = {
         State(u) for u in utils.prefix_set(samples, alphabet)
@@ -219,8 +223,3 @@ def build_pta(s_plus: set, s_minus: set=set()) -> Automaton:
     pta.states = states
 
     return pta
-
-
-if __name__ == '__main__':
-    a = Automaton({'a', 'b'})
-    print(a)

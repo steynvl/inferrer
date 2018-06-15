@@ -198,12 +198,12 @@ if __name__ == '__main__':
     gold = Gold(s_plus, s_minus)
     gold.learn()
 
-    # s_plus = {'aa', 'aba', 'bba'}
-    # s_minus = {'ab', 'abab'}
-    # gold = Gold(s_plus, s_minus)
-    # gold.learn()
+    s_plus = {'aa', 'aba', 'bba'}
+    s_minus = {'ab', 'abab'}
+    gold = Gold(s_plus, s_minus)
+    gold.learn()
 
-    # s_plus = {'a', 'aa', 'aaa'}
-    # s_minus = set()
-    # gold = Gold(s_plus, s_minus)
-    # gold.learn()
+    s_plus = {'a', 'aa', 'aaa'}
+    s_minus = set()
+    gold = Gold(s_plus, s_minus)
+    gold.learn()

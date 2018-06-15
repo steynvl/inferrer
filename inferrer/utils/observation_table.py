@@ -151,7 +151,7 @@ class ObservationTable:
         :rtype: tuple(bool, str)
         """
         for u in self._blue:
-            if not any([self.__ot[u] == self.__ot[s] for s in self._red]):
+            if not any([self.ot[u] == self.ot[s] for s in self._red]):
                 return False, u
 
         return True, None
@@ -186,7 +186,7 @@ class ObservationTable:
         """
         for r in self._red:
 
-            if p not in self.__ot or r not in self.__ot:
+            if p not in self.ot or r not in self.ot:
                 continue
 
             p1 = self.ot[p]
@@ -206,8 +206,8 @@ class ObservationTable:
         :param r: label of row to add
         :type r: str
         """
-        if r not in self.__ot.keys():
-            self.__ot[r] = {i: None for i in self.exp}
+        if r not in self.ot.keys():
+            self.ot[r] = {i: None for i in self.exp}
 
     def add_column_to_table(self, c: str):
         """
@@ -230,7 +230,7 @@ class ObservationTable:
                  is a hole.
         :rtype: generator(tuple(str, str))
         """
-        for u, col in self.__ot.items():
+        for u, col in self.ot.items():
             for e, val in col.items():
                 if val is None:
                     yield u, e

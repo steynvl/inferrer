@@ -4,7 +4,7 @@ import logging
 def inferrer_logger(target_class):
     """
     Class decorator, that adds an instance of
-    the logger (self.__logger) to the attached
+    the logger (self._logger) to the attached
     class.
 
     :param target_class: Class to decorate with a logger
