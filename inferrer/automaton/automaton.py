@@ -2,7 +2,7 @@ import copy
 from inferrer import utils
 from inferrer.automaton.state import State
 from collections import defaultdict, OrderedDict
-from typing import Set
+from typing import Set, Tuple
 
 
 class Automaton:
@@ -79,7 +79,7 @@ class Automaton:
         """
         return self._transitions[q1][a]
 
-    def parse_string(self, s: str) -> (State, bool):
+    def parse_string(self, s: str) -> Tuple[State, bool]:
         """
         Parses each character of the input string through
         the automaton.
@@ -98,7 +98,7 @@ class Automaton:
 
         return q, q in self.accept_states
 
-    def find_transition_to_q(self, q: State) -> (State, str):
+    def find_transition_to_q(self, q: State) -> Tuple[State, str]:
         """
         Finds the State r that satisfies
         delta(q, a) = r where a is a string in the
@@ -164,9 +164,9 @@ class Automaton:
         rep = [
             'Initial state:    = {}'.format(self._start_state),
             'Alphabet:         = {}'.format(self._alphabet),
-            'States:           = {}'.format(self.states),
-            'Accepting states: = {}'.format(self.accept_states),
-            'Rejecting states: = {}'.format(self.reject_states),
+            'States:           = {}'.format(set(map(str, self.states))),
+            'Accepting states: = {}'.format(set(map(str, self.accept_states))),
+            'Rejecting states: = {}'.format(set(map(str, self.reject_states))),
             '\nTransition function: delta'
         ]
 

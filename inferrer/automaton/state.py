@@ -33,3 +33,6 @@ class State:
 
     def __ne__(self, other):
         return self.name != other.name
+
+    def __str__(self):
+        return self.name

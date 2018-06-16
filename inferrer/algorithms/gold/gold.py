@@ -1,9 +1,10 @@
 from inferrer import utils, automaton
+from typing import Set, Tuple
 
 
 class Gold:
 
-    def __init__(self, pos_examples: set, neg_examples: set):
+    def __init__(self, pos_examples: Set[str], neg_examples: Set[str]):
         """
         An implementation of E. Mark GOLD's algorithm, which tries
         to find the minimum DFA consistent with the sample.
@@ -85,11 +86,10 @@ class Gold:
                 pe = p + e
                 if pe in self._pos_examples:
                     ot.put(p, e, 1)
+                elif pe in self._neg_examples:
+                    ot.put(p, e, 0)
                 else:
-                    if pe in self._neg_examples:
-                        ot.put(p, e, 0)
-                    else:
-                        ot.put(p, e, None)
+                    ot.put(p, e, None)
 
             sta.add(p)
 
@@ -98,7 +98,7 @@ class Gold:
 
         return ot
 
-    def _fill_holes(self, ot: utils.ObservationTable) -> (utils.ObservationTable, bool):
+    def _fill_holes(self, ot: utils.ObservationTable) -> Tuple[utils.ObservationTable, bool]:
         """
         Tries to make the table complete by filling in all the entries that
         are None.
@@ -133,7 +133,7 @@ class Gold:
 
         return ot, False
 
-    def _build_automaton(self, ot) -> automaton.Automaton:
+    def _build_automaton(self, ot: utils.ObservationTable) -> automaton.Automaton:
         """
         Builds an automaton from the observation table.
 
@@ -149,9 +149,10 @@ class Gold:
 
         we = utils.break_strings_in_two(self._red)
         for w, e in we:
-            if ot.entry_exists(w, e):
+            we = w + e
+            if we in self._red and ot.entry_exists(w, e):
                 val = ot.get(w, e)
-                state = automaton.State(w + e)
+                state = automaton.State(we)
                 if val == 1:
                     dfa.accept_states.add(state)
                     states.add(state)
@@ -190,20 +191,3 @@ class Gold:
                     if ue not in dfa.reject_states:
                         return False
         return True
-
-
-if __name__ == '__main__':
-    s_plus = {'bb', 'abb', 'bba', 'bbb'}
-    s_minus = {'a', 'b', 'aa', 'bab'}
-    gold = Gold(s_plus, s_minus)
-    gold.learn()
-
-    s_plus = {'aa', 'aba', 'bba'}
-    s_minus = {'ab', 'abab'}
-    gold = Gold(s_plus, s_minus)
-    gold.learn()
-
-    s_plus = {'a', 'aa', 'aaa'}
-    s_minus = set()
-    gold = Gold(s_plus, s_minus)
-    gold.learn()

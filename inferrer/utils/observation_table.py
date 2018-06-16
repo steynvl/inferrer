@@ -1,9 +1,10 @@
 import collections
+from typing import Set, Tuple, Generator
 
 
 class ObservationTable:
 
-    def __init__(self, blue: set, red: set, alphabet: set):
+    def __init__(self, blue: Set[str], red: Set[str], alphabet: Set[str]):
         """
         Represents a ObservationTable, which is a 2-dimensional table
         that gives information about some target language.
@@ -107,7 +108,7 @@ class ObservationTable:
         """
         return r in self.ot
 
-    def obviously_different_row(self) -> (bool, str):
+    def obviously_different_row(self) -> Tuple[bool, str]:
         """
         Determines if there is an obviously different
         row in the table.
@@ -130,7 +131,7 @@ class ObservationTable:
                             return True, u
         return False, None
 
-    def is_closed_and_consistent(self) -> (bool, bool):
+    def is_closed_and_consistent(self) -> Tuple[bool, bool]:
         """
         Determines whether the observation table is closed
         and consistent.
@@ -140,7 +141,7 @@ class ObservationTable:
         """
         return self.is_closed()[0], self.is_consistent()
 
-    def is_closed(self) -> (bool, str):
+    def is_closed(self) -> Tuple[bool, str]:
         """
         Determines whether the observation table is closed.
 
@@ -220,7 +221,7 @@ class ObservationTable:
         for row in self.ot.keys():
             self.ot[row][c] = None
 
-    def find_holes(self) -> (str, str):
+    def find_holes(self) -> Generator:
         """
         Finds all the entries in the observation table that is
         a hole.
