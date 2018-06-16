@@ -11,9 +11,11 @@ class Gold:
 
         :param pos_examples: Set of positive example strings
                              from the target language
+        :type pos_examples: Set[str]
         :param neg_examples: Set of negative example strings,
                              i.e strings that do not belong in
                              the target language.
+        :type neg_examples: Set[str]
         """
         self._pos_examples = pos_examples
         self._neg_examples = neg_examples

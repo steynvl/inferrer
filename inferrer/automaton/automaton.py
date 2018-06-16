@@ -64,7 +64,7 @@ class Automaton:
                a in self._transitions[q1] and \
                self._transitions[q1][a] in self.states
 
-    def transition(self, q1: State, a: str) -> bool:
+    def transition(self, q1: State, a: str) -> State:
         """
         Performs the transition delta(q1, a) and
         then return the state reached after the
