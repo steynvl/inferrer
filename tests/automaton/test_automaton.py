@@ -1,4 +1,5 @@
 import unittest
+from collections import OrderedDict
 from inferrer import automaton
 
 
@@ -86,6 +87,89 @@ class TestAutomaton(unittest.TestCase):
         q, accepted = pta.parse_string('')
         self.assertFalse(accepted)
         self.assertEqual(automaton.State(''), q)
+
+    def test_build_pta_04(self):
+        positive_examples = {'aaaa', 'aaba', 'bba', 'bbaba'}
+        negative_examples = {'a', 'bb', 'aab', 'aba'}
+
+        pta = automaton.build_pta(positive_examples, negative_examples)
+
+        self.assertEqual(4, len(pta.accept_states))
+        self.assertEqual(4, len(pta.reject_states))
+
+        for s in positive_examples:
+            self.assertTrue(pta.parse_string(s)[1])
+        for s in negative_examples:
+            self.assertFalse(pta.parse_string(s)[1])
+
+    def test_minimize_01(self):
+        alphabet = {'a', 'b', 'c'}
+        dfa = automaton.Automaton(alphabet)
+
+        dfa.add_transition(automaton.State(''), automaton.State('2'), 'a')
+
+        dfa.add_transition(automaton.State(''), automaton.State('3'), 'b')
+        dfa.add_transition(automaton.State(''), automaton.State('3'), 'c')
+
+        dfa.add_transition(automaton.State('3'), automaton.State('3'), 'a')
+        dfa.add_transition(automaton.State('3'), automaton.State('3'), 'b')
+        dfa.add_transition(automaton.State('3'), automaton.State(''), 'c')
+
+        dfa.add_transition(automaton.State('2'), automaton.State('4'), 'a')
+        dfa.add_transition(automaton.State('2'), automaton.State('4'), 'b')
+        dfa.add_transition(automaton.State('2'), automaton.State('4'), 'c')
+
+        dfa.add_transition(automaton.State('4'), automaton.State('2'), 'a')
+        dfa.add_transition(automaton.State('4'), automaton.State('2'), 'b')
+        dfa.add_transition(automaton.State('4'), automaton.State('2'), 'c')
+
+        dfa.add_transition(automaton.State('5'), automaton.State('4'), 'a')
+        dfa.add_transition(automaton.State('5'), automaton.State('4'), 'b')
+        dfa.add_transition(automaton.State('5'), automaton.State('6'), 'c')
+
+        dfa.states.add(automaton.State('7'))
+
+        dfa.accept_states.update({automaton.State(''), automaton.State('6')})
+        dfa.reject_states.update({automaton.State('3'), automaton.State('4'), automaton.State('7')})
+
+        minimized_dfa = dfa.minimize()
+
+        self.assertEqual(4, len(minimized_dfa.states))
+        self.assertSetEqual({automaton.State('')}, minimized_dfa.accept_states)
+        self.assertSetEqual({automaton.State('3'), automaton.State('4')}, minimized_dfa.reject_states)
+
+        expected_transition_table = {
+            automaton.State(''): OrderedDict({
+                'a': automaton.State('2'),
+                'b': automaton.State('3'),
+                'c': automaton.State('3')
+            }),
+            automaton.State('3'): OrderedDict({
+                'a': automaton.State('3'),
+                'b': automaton.State('3'),
+                'c': automaton.State('')
+            }),
+            automaton.State('2'): OrderedDict({
+                'a': automaton.State('4'),
+                'b': automaton.State('4'),
+                'c': automaton.State('4')
+            }),
+            automaton.State('4'): OrderedDict({
+                'a': automaton.State('2'),
+                'b': automaton.State('2'),
+                'c': automaton.State('2')
+            })
+        }
+        transitions = minimized_dfa._transitions
+
+
+        self.assertSetEqual(set(map(str, expected_transition_table.keys())),
+                                set(map(str, transitions.keys())))
+
+        for k in expected_transition_table.keys():
+            for a in expected_transition_table[k].keys():
+                self.assertEqual(expected_transition_table[k][a],
+                                 transitions[k][a])
 
 
 if __name__ == '__main__':

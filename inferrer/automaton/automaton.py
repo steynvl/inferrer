@@ -44,8 +44,7 @@ class Automaton:
         if a not in self._alphabet:
             raise ValueError('\'{}\' is not in the alphabet of the automaton!'.format(a))
 
-        self.states.add(q1)
-        self.states.add(q2)
+        self.states.update({q1, q2})
         self._transitions[q1][a] = q2
 
     def transition_exists(self, q1: State, a: str) -> bool:
@@ -98,7 +97,7 @@ class Automaton:
 
         return q, q in self.accept_states
 
-    def find_transition_to_q(self, q: State) -> Tuple[State, str]:
+    def find_transition_to_q(self, q: State) -> Tuple:
         """
         Finds the State r that satisfies
         delta(q, a) = r where a is a string in the
@@ -119,23 +118,34 @@ class Automaton:
         """
         Minimizes the automaton by removing all
         states (and transitions) that cannot be
-        reached from the initial state
+        reached from the initial state.
 
-        :return: the current instance
-        :rtype: self
+        :return: minimized dfa
+        :rtype: Automaton
         """
-        _states = set()
-        for state in self.states:
-            if state in self._transitions.keys():
-                _states.add(state)
-            else:
-                if state in self.accept_states:
-                    self.accept_states.remove(state)
-                elif state in self.reject_states:
-                    self.reject_states.remove(state)
+        minimized_dfa = Automaton(self._alphabet)
 
-        self.states = _states
-        return self
+        stack = [State('')]
+        visited_states = {State('')}
+        while stack:
+            state = stack.pop()
+
+            minimized_dfa.states.add(state)
+
+            for a in self._alphabet:
+                if state in self._transitions and a in self._transitions[state]:
+                    to_state = self.transition(state, a)
+                    minimized_dfa.add_transition(state, to_state, a)
+                    if to_state not in visited_states:
+                        stack.append(to_state)
+                        visited_states.add(to_state)
+
+            if state in self.accept_states:
+                minimized_dfa.accept_states.add(state)
+            elif state in self.reject_states:
+                minimized_dfa.reject_states.add(state)
+
+        return minimized_dfa
 
     def copy(self):
         """
