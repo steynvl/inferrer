@@ -64,7 +64,7 @@ class Gold:
             a = self._build_automaton(ot)
 
             if self._is_consistent(a, ot):
-                return a
+                return a.minimize()
             else:
                 return automaton.build_pta(self._pos_examples, self._neg_examples)
 

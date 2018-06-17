@@ -108,7 +108,7 @@ class ObservationTable:
         """
         return r in self.ot
 
-    def obviously_different_row(self) -> Tuple[bool, str]:
+    def obviously_different_row(self) -> Tuple:
         """
         Determines if there is an obviously different
         row in the table.

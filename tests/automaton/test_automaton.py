@@ -162,7 +162,6 @@ class TestAutomaton(unittest.TestCase):
         }
         transitions = minimized_dfa._transitions
 
-
         self.assertSetEqual(set(map(str, expected_transition_table.keys())),
                                 set(map(str, transitions.keys())))
 

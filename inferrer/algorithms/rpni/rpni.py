@@ -22,7 +22,7 @@ class RPNI:
         self._pos_examples = pos_examples
         self._neg_examples = neg_examples
         self._samples = pos_examples.union(neg_examples)
-        self._alphabet = utils.determine_alphabet(self._samples)
+        self._alphabet = utils.determine_alphabet(self._pos_examples)
 
         self._red = {automaton.State('')}
         self._blue = set()
@@ -47,7 +47,6 @@ class RPNI:
 
             found = False
             for qr in sorted(self._red, key=functools.cmp_to_key(_cmp)):
-
                 if self._compatible(self._merge(dfa.copy(), qr, qb)):
                     dfa = self._merge(dfa, qr, qb)
                     new_blue_states = set()
@@ -68,7 +67,7 @@ class RPNI:
             if not accepted:
                 dfa.reject_states.add(q)
 
-        return dfa
+        return dfa.minimize()
 
     def _promote(self, qu: automaton.State,  dfa: automaton.Automaton) -> automaton.Automaton:
         """
@@ -180,17 +179,18 @@ def choose(blue: Set[automaton.State]) -> automaton.State:
     :return: One of the elements in the given blue set
     :rtype: State
     """
-    def __cmp(a: automaton.State, b: automaton.State) -> int:
-        if len(a.name) == len(b.name):
-            if a.name > b.name:
-                return 1
-            elif a.name < b.name:
-                return -1
-            else:
-                return 0
-        elif len(a.name) > len(b.name):
-            return 1
-        else:
-            return -1
+    return min(blue, key=functools.cmp_to_key(_cmp))
 
-    return sorted(blue, key=functools.cmp_to_key(__cmp))[0]
+
+def _cmp(a: automaton.State, b: automaton.State) -> int:
+    if len(a.name) == len(b.name):
+        if a.name > b.name:
+            return 1
+        elif a.name < b.name:
+            return -1
+        else:
+            return 0
+    elif len(a.name) > len(b.name):
+        return 1
+    else:
+        return -1
