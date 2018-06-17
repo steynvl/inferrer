@@ -47,7 +47,13 @@ class TestGold(unittest.TestCase):
                 'b': q2
             })
         })
-        self.assertDictEqual(expected_transitions, dfa._transitions)
+        self.assertSetEqual(set(map(str, expected_transitions.keys())),
+                            set(map(str, dfa._transitions.keys())))
+
+        for k in expected_transitions.keys():
+            for a in expected_transitions[k].keys():
+                self.assertEqual(expected_transitions[k][a],
+                                 dfa._transitions[k][a])
 
     def test_gold_01(self):
         s_plus = {'bb', 'abb', 'bba', 'bbb'}

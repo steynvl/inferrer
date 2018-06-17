@@ -225,8 +225,8 @@ class LSTAR:
 
     def _cmp(self, a: str, b: str) -> int:
         """
-        Compares two by comparing the lengths of
-        the strings. If the two strings have the
+        Compares two strings by comparing the lengths
+        of the strings. If the two strings have the
         same length, then the two strings are
         compared lexicographically.
 
