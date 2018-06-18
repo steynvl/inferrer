@@ -63,7 +63,7 @@ class ObservationTable:
 
     def get(self, r: str, c: str):
         """
-        Gets a value in the observation table
+        Gets \a value in the observation table
 
         :param r: row in the table
         :type r: str
@@ -155,7 +155,7 @@ class ObservationTable:
             if not any([self.ot[u] == self.ot[s] for s in self._red]):
                 return False, u
 
-        return True, None
+        return True, ''
 
     def is_consistent(self) -> bool:
         """
@@ -167,11 +167,15 @@ class ObservationTable:
         """
         for s1 in self._red:
             for s2 in self._red:
-                if s1 == s2 or self.ot[s1] != self.ot[s2]:
+                if s1 == s2:
                     continue
 
-                if not all([self.get_row(s1 + a) == self.get_row(s2 + a) for a in self._alphabet]):
-                    return False
+                for a in self._alphabet:
+                    for e in self.exp:
+                        if self.get_row(s1) == self.get_row(s2) and \
+                            self.entry_exists(s1 + a, e) and self.entry_exists(s2 + a, e) \
+                                and self.get(s1 + a, e) != self.get(s2 + a, e):
+                            return False
 
         return True
 

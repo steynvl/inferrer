@@ -182,15 +182,30 @@ def choose(blue: Set[automaton.State]) -> automaton.State:
     return min(blue, key=functools.cmp_to_key(_cmp))
 
 
-def _cmp(a: automaton.State, b: automaton.State) -> int:
-    if len(a.name) == len(b.name):
-        if a.name > b.name:
+def _cmp(q1: automaton.State, q2: automaton.State) -> int:
+    """
+    Compares two states by comparing the
+    name (string value of the state). If the
+    two strings have the same length, then the
+    two strings are compared lexicographically.
+
+    :param q1: state 1
+    :type q1: State
+    :param q2: state 2
+    :type q2: State
+    :return: 1 of a is greater than b, 0 if a
+             is equal to b and -1 if a is less
+             than b.
+    :rtype: int
+    """
+    if len(q1.name) == len(q2.name):
+        if q1.name > q2.name:
             return 1
-        elif a.name < b.name:
+        elif q1.name < q2.name:
             return -1
         else:
             return 0
-    elif len(a.name) > len(b.name):
+    elif len(q1.name) > len(q2.name):
         return 1
     else:
         return -1

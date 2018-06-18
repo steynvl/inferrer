@@ -1,4 +1,3 @@
-import functools
 import copy
 from inferrer import utils, automaton
 from inferrer.algorithms.lstar.oracle import Oracle
@@ -93,16 +92,18 @@ class LSTAR:
         :return: The closed and updated observation table
         :rtype: ObservationTable
         """
-        for s in sorted(self._blue, key=functools.cmp_to_key(self._cmp)):
+        for s in self._blue.copy():
             if not all([ot.get_row(s) != ot.get_row(u) for u in self._red]):
                 continue
 
             self._red.add(s)
             self._blue.remove(s)
 
-            self._blue.update({s + a for a in self._alphabet})
-
-            ot.add_column_to_table(s)
+            for a in self._alphabet:
+                sa = s + a
+                if sa not in self._blue:
+                    self._blue.add(sa)
+                    ot.add_row(sa)
 
             for u, e in ot.find_holes():
                 ot.put(u, e, self._oracle.membership_query(u + e))
@@ -151,8 +152,10 @@ class LSTAR:
                 for a in self._alphabet:
                     for e in ot.exp:
                         if ot.get_row(s1) == ot.get_row(s2) and \
-                                ot.get(s1 + a, e) != ot.get(s2 + a, e):
+                            ot.entry_exists(s1 + a, e) and ot.entry_exists(s2 + a, e) \
+                                and ot.get(s1 + a, e) != ot.get(s2 + a, e):
                             return s1, s2, a, e
+        return '', '', '', ''
 
     def _useq(self, ot: utils.ObservationTable, answer: str) -> utils.ObservationTable:
         """
@@ -171,10 +174,12 @@ class LSTAR:
         :rtype: ObservationTable
         """
         prefix_set = set(utils.prefix_set({answer}, self._alphabet))
+
         for p in prefix_set:
 
             if p not in self._red:
-                ot.add_row(p)
+                if p not in self._blue:
+                    ot.add_row(p)
                 self._red.add(p)
                 self._blue.discard(p)
 
@@ -182,7 +187,8 @@ class LSTAR:
                 pa = p + a
                 if pa not in prefix_set:
                     if pa not in self._blue:
-                        ot.add_row(pa)
+                        if pa not in self._red:
+                            ot.add_row(pa)
                         self._blue.add(pa)
                         self._red.discard(pa)
 
@@ -223,32 +229,3 @@ class LSTAR:
                         dfa.add_transition(u, w, a)
 
         return dfa.minimize()
-
-    def _cmp(self, a: str, b: str) -> int:
-        """
-        Compares two strings by comparing the lengths
-        of the strings. If the two strings have the
-        same length, then the two strings are
-        compared lexicographically.
-
-        :param a: string1
-        :type a: str
-        :param b: string2
-        :type b: str
-        :return: 1 of a is greater than b, 0 if a
-                 is equal to b and -1 if a is less
-                 than b.
-        :rtype: int
-        """
-        if len(a) == len(b):
-            if a < b:
-                return 1
-            elif a > b:
-                return -1
-            else:
-                return 0
-
-        if len(a) > len(b):
-            return 1
-        else:
-            return -1

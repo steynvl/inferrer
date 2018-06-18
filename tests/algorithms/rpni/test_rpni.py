@@ -1,7 +1,9 @@
 import unittest
 import random
+import itertools
 from collections import OrderedDict
-from inferrer import algorithms, automaton, utils
+from typing import Set, Generator
+from inferrer import algorithms, automaton
 
 
 class TestRPNI(unittest.TestCase):
@@ -227,6 +229,39 @@ class TestRPNI(unittest.TestCase):
             self.assertTrue(dfa.parse_string(s)[1])
         for s in s_minus:
             self.assertFalse(dfa.parse_string(s)[1])
+
+    def test_rpni_10(self):
+        """
+        try to let RPNI learn the regular language L.
+        L is a regular language over the alphabet {0, 1} where
+        each string contains an even number of 0's and an even
+        number of 1's.
+        """
+        random.seed(10012)
+        s_plus = set()
+        s_minus = set()
+
+        for i in self._combinations({'0', '1'}, 6):
+            if i.count('0') % 2 == 0 and i.count('1') % 2 == 0:
+                s_plus.add(i)
+            else:
+                s_minus.add(i)
+
+        rpni = algorithms.RPNI(s_plus, s_minus)
+        dfa = rpni.learn()
+
+        for s in s_plus:
+            self.assertTrue(dfa.parse_string(s)[1])
+        for s in s_minus:
+            self.assertFalse(dfa.parse_string(s)[1])
+
+        self.assertTrue(dfa.parse_string('110110')[1])
+
+    @staticmethod
+    def _combinations(s: Set[str], repeat: int) -> Generator:
+        for rep in range(repeat + 1):
+            for p in itertools.product(s, repeat=rep):
+                yield ''.join(p)
 
 
 if __name__ == '__main__':
