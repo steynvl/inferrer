@@ -41,77 +41,9 @@
 <dl class="class">
 <dt id="inferrer.algorithms.gold.gold.Gold">
 <em class="property">class </em><code class="descclassname">inferrer.algorithms.gold.gold.</code><code class="descname">Gold</code><span class="sig-paren">(</span><em>pos_examples: Set[str], neg_examples: Set[str]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/algorithms/gold/gold.html#Gold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.algorithms.gold.gold.Gold" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">inferrer.algorithms.algorithm.Algoritm</span></code></p>
 <p>An implementation of E. Mark GOLD’s algorithm, which tries
 to find the minimum DFA consistent with the sample.</p>
-<dl class="method">
-<dt id="inferrer.algorithms.gold.gold.Gold.build_automaton">
-<code class="descname">build_automaton</code><span class="sig-paren">(</span><em>ot: inferrer.utils.observation_table.ObservationTable</em><span class="sig-paren">)</span> &#x2192; inferrer.automaton.automaton.Automaton<a class="reference internal" href="_modules/inferrer/algorithms/gold/gold.html#Gold.build_automaton"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.algorithms.gold.gold.Gold.build_automaton" title="Permalink to this definition">¶</a></dt>
-<dd><p>Builds an automaton from the observation table.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Automaton built from the observation table</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="inferrer.automaton.html#inferrer.automaton.automaton.Automaton" title="inferrer.automaton.automaton.Automaton">Automaton</a></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="inferrer.algorithms.gold.gold.Gold.build_table">
-<code class="descname">build_table</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; inferrer.utils.observation_table.ObservationTable<a class="reference internal" href="_modules/inferrer/algorithms/gold/gold.html#Gold.build_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.algorithms.gold.gold.Gold.build_table" title="Permalink to this definition">¶</a></dt>
-<dd><p>Obtains a table from the sample.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Initial observation table</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="inferrer.utils.html#inferrer.utils.observation_table.ObservationTable" title="inferrer.utils.observation_table.ObservationTable">ObservationTable</a></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="inferrer.algorithms.gold.gold.Gold.fill_holes">
-<code class="descname">fill_holes</code><span class="sig-paren">(</span><em>ot: inferrer.utils.observation_table.ObservationTable</em><span class="sig-paren">)</span> &#x2192; Tuple[inferrer.utils.observation_table.ObservationTable, bool]<a class="reference internal" href="_modules/inferrer/algorithms/gold/gold.html#Gold.fill_holes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.algorithms.gold.gold.Gold.fill_holes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Tries to make the table complete by filling in all the entries that
-are None.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ot</strong> – the updated observation table</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">updated ObservationTable and whether the method was successful.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple(<a class="reference internal" href="inferrer.utils.html#inferrer.utils.observation_table.ObservationTable" title="inferrer.utils.observation_table.ObservationTable">ObservationTable</a>, bool)</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="staticmethod">
-<dt id="inferrer.algorithms.gold.gold.Gold.is_consistent">
-<em class="property">static </em><code class="descname">is_consistent</code><span class="sig-paren">(</span><em>dfa: inferrer.automaton.automaton.Automaton</em>, <em>ot: inferrer.utils.observation_table.ObservationTable</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/inferrer/algorithms/gold/gold.html#Gold.is_consistent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.algorithms.gold.gold.Gold.is_consistent" title="Permalink to this definition">¶</a></dt>
-<dd><p>Determines whether the automaton is consistent with the
-observation table ot.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Whether the automaton and observation table are consistent.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 <dl class="method">
 <dt id="inferrer.algorithms.gold.gold.Gold.learn">
 <code class="descname">learn</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; inferrer.automaton.automaton.Automaton<a class="reference internal" href="_modules/inferrer/algorithms/gold/gold.html#Gold.learn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.algorithms.gold.gold.Gold.learn" title="Permalink to this definition">¶</a></dt>

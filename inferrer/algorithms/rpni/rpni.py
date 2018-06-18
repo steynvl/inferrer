@@ -1,9 +1,10 @@
 import functools
 from inferrer import utils, automaton
+from inferrer.algorithms.algorithm import Algoritm
 from typing import Set
 
 
-class RPNI:
+class RPNI(Algoritm):
     """
     An implementation of the Regular Positive and Negative Inference (RPNI)
     algorithm. This algorithm tries to make sure that some generalisation
@@ -20,8 +21,7 @@ class RPNI:
                              the target language.
         :type neg_examples: Set[str]
         """
-        self._pos_examples = pos_examples
-        self._neg_examples = neg_examples
+        super().__init__(pos_examples, neg_examples)
         self._samples = pos_examples.union(neg_examples)
         self._alphabet = utils.determine_alphabet(self._pos_examples)
 
@@ -43,13 +43,13 @@ class RPNI:
         self._blue = {automaton.State(i) for i in self._alphabet.intersection(pref_set)}
 
         while len(self._blue) != 0:
-            qb = choose(self._blue)
+            qb = _choose(self._blue)
             self._blue.remove(qb)
 
             found = False
             for qr in sorted(self._red, key=functools.cmp_to_key(_cmp)):
-                if self.compatible(self.merge(dfa.copy(), qr, qb)):
-                    dfa = self.merge(dfa, qr, qb)
+                if self._compatible(self._merge(dfa.copy(), qr, qb)):
+                    dfa = self._merge(dfa, qr, qb)
                     new_blue_states = set()
                     for q in self._red:
                         for a in self._alphabet:
@@ -61,7 +61,7 @@ class RPNI:
                     found = True
 
             if not found:
-                dfa = self.promote(qb, dfa)
+                dfa = self._promote(qb, dfa)
 
         for s in self._neg_examples:
             q, accepted = dfa.parse_string(s)
@@ -70,7 +70,7 @@ class RPNI:
 
         return dfa.minimize()
 
-    def promote(self, qu: automaton.State, dfa: automaton.Automaton) -> automaton.Automaton:
+    def _promote(self, qu: automaton.State, dfa: automaton.Automaton) -> automaton.Automaton:
         """
         Given a state blue state qu, this method promotes this state
         ro red and all the successors in the dfa. The method returns
@@ -92,7 +92,7 @@ class RPNI:
 
         return dfa
 
-    def compatible(self, dfa: automaton.Automaton) -> bool:
+    def _compatible(self, dfa: automaton.Automaton) -> bool:
         """
         Determines whether the current automaton can parse any
         string in the set of negative example strings.
@@ -108,9 +108,9 @@ class RPNI:
         """
         return not any(dfa.parse_string(w)[1] for w in self._neg_examples)
 
-    def merge(self, dfa: automaton.Automaton,
-              q: automaton.State,
-              q_prime: automaton.State) -> automaton.Automaton:
+    def _merge(self, dfa: automaton.Automaton,
+               q: automaton.State,
+               q_prime: automaton.State) -> automaton.Automaton:
         """
         Takes as arguments a red state q and a blue state q'.
         The method first finds the unique pair (qf, a) such
@@ -136,11 +136,11 @@ class RPNI:
 
         dfa.add_transition(qf, q, a)
 
-        return self.fold(dfa, q, q_prime)
+        return self._fold(dfa, q, q_prime)
 
-    def fold(self, dfa: automaton.Automaton,
-             q: automaton.State,
-             q_prime: automaton.State) -> automaton.Automaton:
+    def _fold(self, dfa: automaton.Automaton,
+              q: automaton.State,
+              q_prime: automaton.State) -> automaton.Automaton:
         """
         Folds the tree rooted in q' into the rest of the DFA. The
         possible intermediate situations of non-determinism
@@ -161,15 +161,15 @@ class RPNI:
         for a in self._alphabet:
             if dfa.transition_exists(q_prime, a):
                 if dfa.transition_exists(q, a):
-                    dfa = self.fold(dfa, dfa.transition(q, a),
-                                    dfa.transition(q_prime, a))
+                    dfa = self._fold(dfa, dfa.transition(q, a),
+                                     dfa.transition(q_prime, a))
                 else:
                     dfa.add_transition(q, dfa.transition(q_prime, a), a)
 
         return dfa
 
 
-def choose(blue: Set[automaton.State]) -> automaton.State:
+def _choose(blue: Set[automaton.State]) -> automaton.State:
     """
     A deterministic function that chooses one of the
     elements in the given blue set. It does so by

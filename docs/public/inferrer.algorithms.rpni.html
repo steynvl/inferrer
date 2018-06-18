@@ -41,60 +41,10 @@
 <dl class="class">
 <dt id="inferrer.algorithms.rpni.rpni.RPNI">
 <em class="property">class </em><code class="descclassname">inferrer.algorithms.rpni.rpni.</code><code class="descname">RPNI</code><span class="sig-paren">(</span><em>pos_examples: Set[str], neg_examples: Set[str]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/algorithms/rpni/rpni.html#RPNI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.algorithms.rpni.rpni.RPNI" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">inferrer.algorithms.algorithm.Algoritm</span></code></p>
 <p>An implementation of the Regular Positive and Negative Inference (RPNI)
 algorithm. This algorithm tries to make sure that some generalisation
 takes place and, in the best case, returns the correct target automaton.</p>
-<dl class="method">
-<dt id="inferrer.algorithms.rpni.rpni.RPNI.compatible">
-<code class="descname">compatible</code><span class="sig-paren">(</span><em>dfa: inferrer.automaton.automaton.Automaton</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/inferrer/algorithms/rpni/rpni.html#RPNI.compatible"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.algorithms.rpni.rpni.RPNI.compatible" title="Permalink to this definition">¶</a></dt>
-<dd><p>Determines whether the current automaton can parse any
-string in the set of negative example strings.
-Returns True if the current automaton cannot parse
-any string from the negative examples, returns False
-if some counter-example is accepted by the current
-automaton.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dfa</strong> (<a class="reference internal" href="inferrer.automaton.html#inferrer.automaton.automaton.Automaton" title="inferrer.automaton.automaton.Automaton"><em>Automaton</em></a>) – the dfa</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Boolean indicating whether the dfa is compatible.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="inferrer.algorithms.rpni.rpni.RPNI.fold">
-<code class="descname">fold</code><span class="sig-paren">(</span><em>dfa: inferrer.automaton.automaton.Automaton</em>, <em>q: inferrer.automaton.state.State</em>, <em>q_prime: inferrer.automaton.state.State</em><span class="sig-paren">)</span> &#x2192; inferrer.automaton.automaton.Automaton<a class="reference internal" href="_modules/inferrer/algorithms/rpni/rpni.html#RPNI.fold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.algorithms.rpni.rpni.RPNI.fold" title="Permalink to this definition">¶</a></dt>
-<dd><p>Folds the tree rooted in q’ into the rest of the DFA. The
-possible intermediate situations of non-determinism
-are dealt with during the recursive calls.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>dfa</strong> (<a class="reference internal" href="inferrer.automaton.html#inferrer.automaton.automaton.Automaton" title="inferrer.automaton.automaton.Automaton"><em>Automaton</em></a>) – the automaton to update with a folding of states</li>
-<li><strong>q</strong> (<a class="reference internal" href="inferrer.automaton.html#inferrer.automaton.state.State" title="inferrer.automaton.state.State"><em>State</em></a>) – State</li>
-<li><strong>q_prime</strong> (<a class="reference internal" href="inferrer.automaton.html#inferrer.automaton.state.State" title="inferrer.automaton.state.State"><em>State</em></a>) – State to fold</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">updated Automaton</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="inferrer.automaton.html#inferrer.automaton.automaton.Automaton" title="inferrer.automaton.automaton.Automaton">Automaton</a></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 <dl class="method">
 <dt id="inferrer.algorithms.rpni.rpni.RPNI.learn">
 <code class="descname">learn</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; inferrer.automaton.automaton.Automaton<a class="reference internal" href="_modules/inferrer/algorithms/rpni/rpni.html#RPNI.learn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.algorithms.rpni.rpni.RPNI.learn" title="Permalink to this definition">¶</a></dt>
@@ -113,83 +63,6 @@ consistent with the sample.</p>
 </table>
 </dd></dl>
 
-<dl class="method">
-<dt id="inferrer.algorithms.rpni.rpni.RPNI.merge">
-<code class="descname">merge</code><span class="sig-paren">(</span><em>dfa: inferrer.automaton.automaton.Automaton</em>, <em>q: inferrer.automaton.state.State</em>, <em>q_prime: inferrer.automaton.state.State</em><span class="sig-paren">)</span> &#x2192; inferrer.automaton.automaton.Automaton<a class="reference internal" href="_modules/inferrer/algorithms/rpni/rpni.html#RPNI.merge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.algorithms.rpni.rpni.RPNI.merge" title="Permalink to this definition">¶</a></dt>
-<dd><p>Takes as arguments a red state q and a blue state q’.
-The method first finds the unique pair (qf, a) such
-that q’ = delta(qf, a).
-The method then redirects delta(qf, a) to q. After that
-the tree rooted in q’ is folded into the rest of the DFA.
-The possible intermediate situations of non-determinism
-are dealt with during the recursive calls to fold.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>dfa</strong> (<a class="reference internal" href="inferrer.automaton.html#inferrer.automaton.automaton.Automaton" title="inferrer.automaton.automaton.Automaton"><em>Automaton</em></a>) – the automaton to update with a merge</li>
-<li><strong>q</strong> (<a class="reference internal" href="inferrer.automaton.html#inferrer.automaton.state.State" title="inferrer.automaton.state.State"><em>State</em></a>) – State from the red set</li>
-<li><strong>q_prime</strong> (<a class="reference internal" href="inferrer.automaton.html#inferrer.automaton.state.State" title="inferrer.automaton.state.State"><em>State</em></a>) – State from the blue</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">updated Automaton</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="inferrer.automaton.html#inferrer.automaton.automaton.Automaton" title="inferrer.automaton.automaton.Automaton">Automaton</a></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="inferrer.algorithms.rpni.rpni.RPNI.promote">
-<code class="descname">promote</code><span class="sig-paren">(</span><em>qu: inferrer.automaton.state.State</em>, <em>dfa: inferrer.automaton.automaton.Automaton</em><span class="sig-paren">)</span> &#x2192; inferrer.automaton.automaton.Automaton<a class="reference internal" href="_modules/inferrer/algorithms/rpni/rpni.html#RPNI.promote"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.algorithms.rpni.rpni.RPNI.promote" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given a state blue state qu, this method promotes this state
-ro red and all the successors in the dfa. The method returns
-the updated dfa.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>qu</strong> (<a class="reference internal" href="inferrer.automaton.html#inferrer.automaton.state.State" title="inferrer.automaton.state.State"><em>State</em></a>) – State with colour blue</li>
-<li><strong>dfa</strong> (<a class="reference internal" href="inferrer.automaton.html#inferrer.automaton.automaton.Automaton" title="inferrer.automaton.automaton.Automaton"><em>Automaton</em></a>) – the dfa</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Updated dfa</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="inferrer.automaton.html#inferrer.automaton.automaton.Automaton" title="inferrer.automaton.automaton.Automaton">Automaton</a></p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="function">
-<dt id="inferrer.algorithms.rpni.rpni.choose">
-<code class="descclassname">inferrer.algorithms.rpni.rpni.</code><code class="descname">choose</code><span class="sig-paren">(</span><em>blue: Set[inferrer.automaton.state.State]</em><span class="sig-paren">)</span> &#x2192; inferrer.automaton.state.State<a class="reference internal" href="_modules/inferrer/algorithms/rpni/rpni.html#choose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.algorithms.rpni.rpni.choose" title="Permalink to this definition">¶</a></dt>
-<dd><p>A deterministic function that chooses one of the
-elements in the given blue set. It does so by
-choosing the minimal &lt;u, a&gt; in lexicographic order.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>blue</strong> (<em>Set</em><em>[</em><a class="reference internal" href="inferrer.automaton.html#inferrer.automaton.state.State" title="inferrer.automaton.state.State"><em>State</em></a><em>]</em>) – Set of blue states</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">One of the elements in the given blue set</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="inferrer.automaton.html#inferrer.automaton.state.State" title="inferrer.automaton.state.State">State</a></td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 </div>

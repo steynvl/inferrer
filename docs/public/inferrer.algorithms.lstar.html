@@ -40,8 +40,8 @@
 <span id="inferrer-algorithms-lstar-lstar-module"></span><h2>inferrer.algorithms.lstar.lstar module<a class="headerlink" href="#module-inferrer.algorithms.lstar.lstar" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="inferrer.algorithms.lstar.lstar.LSTAR">
-<em class="property">class </em><code class="descclassname">inferrer.algorithms.lstar.lstar.</code><code class="descname">LSTAR</code><span class="sig-paren">(</span><em>oracle: inferrer.algorithms.lstar.oracle.Oracle, alphabet: Set[str]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/algorithms/lstar/lstar.html#LSTAR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.algorithms.lstar.lstar.LSTAR" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<em class="property">class </em><code class="descclassname">inferrer.algorithms.lstar.lstar.</code><code class="descname">LSTAR</code><span class="sig-paren">(</span><em>pos_examples: Set[str], neg_examples: Set[str], oracle: inferrer.algorithms.lstar.oracle.Oracle, alphabet: Set[str]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/algorithms/lstar/lstar.html#LSTAR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.algorithms.lstar.lstar.LSTAR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">inferrer.algorithms.algorithm.Algoritm</span></code></p>
 <p>An implementation of Dana Angluin’s L* algorithm, which
 learns regular languages from Queries and Counterexamples.</p>
 <p>The general idea of L* is to:
@@ -51,102 +51,6 @@ Use the counter-example to update the table.
 Submit membership queries to make the table closed and complete.
 Iterate until the Oracle, tells us the correct language has been
 reached.</p>
-<dl class="method">
-<dt id="inferrer.algorithms.lstar.lstar.LSTAR.build_automaton">
-<code class="descname">build_automaton</code><span class="sig-paren">(</span><em>ot: inferrer.utils.observation_table.ObservationTable</em><span class="sig-paren">)</span> &#x2192; inferrer.automaton.automaton.Automaton<a class="reference internal" href="_modules/inferrer/algorithms/lstar/lstar.html#LSTAR.build_automaton"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.algorithms.lstar.lstar.LSTAR.build_automaton" title="Permalink to this definition">¶</a></dt>
-<dd><p>Builds an automaton from the observation table.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ot</strong> (<a class="reference internal" href="inferrer.utils.html#inferrer.utils.observation_table.ObservationTable" title="inferrer.utils.observation_table.ObservationTable"><em>ObservationTable</em></a>) – The data to build the dfa from.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The dfa built from the observation table.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="inferrer.automaton.html#inferrer.automaton.automaton.Automaton" title="inferrer.automaton.automaton.Automaton">Automaton</a></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="inferrer.algorithms.lstar.lstar.LSTAR.close">
-<code class="descname">close</code><span class="sig-paren">(</span><em>ot: inferrer.utils.observation_table.ObservationTable</em><span class="sig-paren">)</span> &#x2192; inferrer.utils.observation_table.ObservationTable<a class="reference internal" href="_modules/inferrer/algorithms/lstar/lstar.html#LSTAR.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.algorithms.lstar.lstar.LSTAR.close" title="Permalink to this definition">¶</a></dt>
-<dd><p>Closes the observation table by adding an extra row.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ot</strong> (<a class="reference internal" href="inferrer.utils.html#inferrer.utils.observation_table.ObservationTable" title="inferrer.utils.observation_table.ObservationTable"><em>ObservationTable</em></a>) – The observation table to close.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The closed and updated observation table</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="inferrer.utils.html#inferrer.utils.observation_table.ObservationTable" title="inferrer.utils.observation_table.ObservationTable">ObservationTable</a></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="inferrer.algorithms.lstar.lstar.LSTAR.consistent">
-<code class="descname">consistent</code><span class="sig-paren">(</span><em>ot: inferrer.utils.observation_table.ObservationTable</em><span class="sig-paren">)</span> &#x2192; inferrer.utils.observation_table.ObservationTable<a class="reference internal" href="_modules/inferrer/algorithms/lstar/lstar.html#LSTAR.consistent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.algorithms.lstar.lstar.LSTAR.consistent" title="Permalink to this definition">¶</a></dt>
-<dd><p>Makes the observation table consistent by adding an extra
-column.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ot</strong> (<a class="reference internal" href="inferrer.utils.html#inferrer.utils.observation_table.ObservationTable" title="inferrer.utils.observation_table.ObservationTable"><em>ObservationTable</em></a>) – The observation table to make consistent.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The consistent and updated observation table</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="inferrer.utils.html#inferrer.utils.observation_table.ObservationTable" title="inferrer.utils.observation_table.ObservationTable">ObservationTable</a></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="inferrer.algorithms.lstar.lstar.LSTAR.find_inconsistent">
-<code class="descname">find_inconsistent</code><span class="sig-paren">(</span><em>ot: inferrer.utils.observation_table.ObservationTable</em><span class="sig-paren">)</span> &#x2192; Tuple[str, str, str, str]<a class="reference internal" href="_modules/inferrer/algorithms/lstar/lstar.html#LSTAR.find_inconsistent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.algorithms.lstar.lstar.LSTAR.find_inconsistent" title="Permalink to this definition">¶</a></dt>
-<dd><p>Tries to find two inconsistent rows s1 and s2 in the
-observation table. s1 and s2 are elements of red.
-OT[s1] == OT[s2] and OT[s1.a][e] != OT[s2.a][e] where
-a is an element in the alphabet and e is an
-experiment (element in the set ot.exp)</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ot</strong> (<a class="reference internal" href="inferrer.utils.html#inferrer.utils.observation_table.ObservationTable" title="inferrer.utils.observation_table.ObservationTable"><em>ObservationTable</em></a>) – The observation table to find two inconsistent
-red states.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Inconsistent row</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Tuple[str, str, str, str]</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="inferrer.algorithms.lstar.lstar.LSTAR.initialise">
-<code class="descname">initialise</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; inferrer.utils.observation_table.ObservationTable<a class="reference internal" href="_modules/inferrer/algorithms/lstar/lstar.html#LSTAR.initialise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.algorithms.lstar.lstar.LSTAR.initialise" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialises an observation table. This consists of
-building one red row and as many blue rows as there
-are symbols in the alphabet.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Initialised observation table</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="inferrer.utils.html#inferrer.utils.observation_table.ObservationTable" title="inferrer.utils.observation_table.ObservationTable">ObservationTable</a></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 <dl class="method">
 <dt id="inferrer.algorithms.lstar.lstar.LSTAR.learn">
 <code class="descname">learn</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; inferrer.automaton.automaton.Automaton<a class="reference internal" href="_modules/inferrer/algorithms/lstar/lstar.html#LSTAR.learn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.algorithms.lstar.lstar.LSTAR.learn" title="Permalink to this definition">¶</a></dt>
@@ -159,35 +63,6 @@ from a minimally adequate Teacher (Oracle).</p>
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The dfa accepting the target language.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="inferrer.automaton.html#inferrer.automaton.automaton.Automaton" title="inferrer.automaton.automaton.Automaton">Automaton</a></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="inferrer.algorithms.lstar.lstar.LSTAR.useq">
-<code class="descname">useq</code><span class="sig-paren">(</span><em>ot: inferrer.utils.observation_table.ObservationTable</em>, <em>answer: str</em><span class="sig-paren">)</span> &#x2192; inferrer.utils.observation_table.ObservationTable<a class="reference internal" href="_modules/inferrer/algorithms/lstar/lstar.html#LSTAR.useq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.algorithms.lstar.lstar.LSTAR.useq" title="Permalink to this definition">¶</a></dt>
-<dd><p>This method is called when the table is closed and complete.
-The algorithm then makes an equivalence query to the oracle,
-if the oracle is not satisfied and provides us with a
-counterexample, then this method is called with that counterexample.
-The method adds new rows to the observation table, to account
-for the new counterexample.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>ot</strong> (<a class="reference internal" href="inferrer.utils.html#inferrer.utils.observation_table.ObservationTable" title="inferrer.utils.observation_table.ObservationTable"><em>ObservationTable</em></a>) – The observation table to update</li>
-<li><strong>answer</strong> (<em>str</em>) – The counter-example given by the oracle</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Updated ObservationTable</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="inferrer.utils.html#inferrer.utils.observation_table.ObservationTable" title="inferrer.utils.observation_table.ObservationTable">ObservationTable</a></p>
-</td>
 </tr>
 </tbody>
 </table>
