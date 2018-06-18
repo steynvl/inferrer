@@ -3,12 +3,13 @@ from typing import Set, Tuple
 
 
 class Gold:
+    """
+    An implementation of E. Mark GOLD's algorithm, which tries
+    to find the minimum DFA consistent with the sample.
+    """
 
     def __init__(self, pos_examples: Set[str], neg_examples: Set[str]):
         """
-        An implementation of E. Mark GOLD's algorithm, which tries
-        to find the minimum DFA consistent with the sample.
-
         :param pos_examples: Set of positive example strings
                              from the target language
         :type pos_examples: Set[str]
@@ -34,7 +35,7 @@ class Gold:
         :return: The minimum DFA consistent with the sample
         :rtype: Automaton
         """
-        ot = self._build_table()
+        ot = self.build_table()
 
         od_row, x = ot.obviously_different_row()
         while od_row:
@@ -56,19 +57,19 @@ class Gold:
 
             od_row, x = ot.obviously_different_row()
 
-        ot, failed = self._fill_holes(ot)
+        ot, failed = self.fill_holes(ot)
 
         if failed:
             return automaton.build_pta(self._pos_examples, self._neg_examples)
         else:
-            a = self._build_automaton(ot)
+            a = self.build_automaton(ot)
 
-            if self._is_consistent(a, ot):
+            if self.is_consistent(a, ot):
                 return a.minimize()
             else:
                 return automaton.build_pta(self._pos_examples, self._neg_examples)
 
-    def _build_table(self) -> utils.ObservationTable:
+    def build_table(self) -> utils.ObservationTable:
         """
         Obtains a table from the sample.
 
@@ -100,7 +101,7 @@ class Gold:
 
         return ot
 
-    def _fill_holes(self, ot: utils.ObservationTable) -> Tuple[utils.ObservationTable, bool]:
+    def fill_holes(self, ot: utils.ObservationTable) -> Tuple[utils.ObservationTable, bool]:
         """
         Tries to make the table complete by filling in all the entries that
         are None.
@@ -135,7 +136,7 @@ class Gold:
 
         return ot, False
 
-    def _build_automaton(self, ot: utils.ObservationTable) -> automaton.Automaton:
+    def build_automaton(self, ot: utils.ObservationTable) -> automaton.Automaton:
         """
         Builds an automaton from the observation table.
 
@@ -173,7 +174,7 @@ class Gold:
         return dfa
 
     @staticmethod
-    def _is_consistent(dfa: automaton.Automaton, ot: utils.ObservationTable) -> bool:
+    def is_consistent(dfa: automaton.Automaton, ot: utils.ObservationTable) -> bool:
         """
         Determines whether the automaton is consistent with the
         observation table ot.

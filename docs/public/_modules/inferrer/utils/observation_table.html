@@ -1,0 +1,317 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferrer.utils.observation_table &#8212; inferrer 0.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for inferrer.utils.observation_table</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Generator</span>
+
+
+<div class="viewcode-block" id="ObservationTable"><a class="viewcode-back" href="../../../inferrer.utils.html#inferrer.utils.observation_table.ObservationTable">[docs]</a><span class="k">class</span> <span class="nc">ObservationTable</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">blue</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">red</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">alphabet</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Represents a ObservationTable, which is a 2-dimensional table</span>
+<span class="sd">        that gives information about some target language.</span>
+
+<span class="sd">        :param blue: set containing blue states</span>
+<span class="sd">        :type blue: set</span>
+<span class="sd">        :param red: set containing red states</span>
+<span class="sd">        :type red: set</span>
+<span class="sd">        :param alphabet: alphabet of the regular language</span>
+<span class="sd">        :type alphabet: set</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_blue</span> <span class="o">=</span> <span class="n">blue</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_red</span> <span class="o">=</span> <span class="n">red</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_alphabet</span> <span class="o">=</span> <span class="n">alphabet</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__ot</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__exp</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__sta</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__ot</span>
+
+    <span class="nd">@ot</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">ot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ot</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__ot</span> <span class="o">=</span> <span class="n">ot</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">exp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__exp</span>
+
+    <span class="nd">@exp</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">exp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exp</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__exp</span> <span class="o">=</span> <span class="n">exp</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sta</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sta</span>
+
+    <span class="nd">@sta</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">sta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sta</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__sta</span> <span class="o">=</span> <span class="n">sta</span>
+
+<div class="viewcode-block" id="ObservationTable.put"><a class="viewcode-back" href="../../../inferrer.utils.html#inferrer.utils.observation_table.ObservationTable.put">[docs]</a>    <span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">c</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Puts a value in the observation table</span>
+
+<span class="sd">        :param r: row in the table</span>
+<span class="sd">        :type r: str</span>
+<span class="sd">        :param c: column in the table</span>
+<span class="sd">        :type c: str</span>
+<span class="sd">        :param val: to put in table:</span>
+<span class="sd">        :type val: 1, 0 or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ot</span><span class="p">[</span><span class="n">r</span><span class="p">][</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span></div>
+
+<div class="viewcode-block" id="ObservationTable.get"><a class="viewcode-back" href="../../../inferrer.utils.html#inferrer.utils.observation_table.ObservationTable.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">c</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets \a value in the observation table</span>
+
+<span class="sd">        :param r: row in the table</span>
+<span class="sd">        :type r: str</span>
+<span class="sd">        :param c: column in the table</span>
+<span class="sd">        :type c: str</span>
+<span class="sd">        :return: 1, 0 or None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ot</span><span class="p">[</span><span class="n">r</span><span class="p">][</span><span class="n">c</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ObservationTable.entry_exists"><a class="viewcode-back" href="../../../inferrer.utils.html#inferrer.utils.observation_table.ObservationTable.entry_exists">[docs]</a>    <span class="k">def</span> <span class="nf">entry_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">col</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine whether an entry in the 2-dimensional</span>
+<span class="sd">        table exists by checking if the row and column</span>
+<span class="sd">        are both defined in the table.</span>
+
+<span class="sd">        :param r: row</span>
+<span class="sd">        :type r: str</span>
+<span class="sd">        :param col: column</span>
+<span class="sd">        :type col: str</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ot</span> <span class="ow">and</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ot</span><span class="p">[</span><span class="n">r</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ObservationTable.get_row"><a class="viewcode-back" href="../../../inferrer.utils.html#inferrer.utils.observation_table.ObservationTable.get_row">[docs]</a>    <span class="k">def</span> <span class="nf">get_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the row in the observation table.</span>
+
+<span class="sd">        :param r: row in the table</span>
+<span class="sd">        :type r: str</span>
+<span class="sd">        :return: columns of the row</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ot</span><span class="p">[</span><span class="n">r</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ObservationTable.row_exists"><a class="viewcode-back" href="../../../inferrer.utils.html#inferrer.utils.observation_table.ObservationTable.row_exists">[docs]</a>    <span class="k">def</span> <span class="nf">row_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines if a row exists in the table.</span>
+
+<span class="sd">        :param r:</span>
+<span class="sd">        :type r: str</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ot</span></div>
+
+<div class="viewcode-block" id="ObservationTable.obviously_different_row"><a class="viewcode-back" href="../../../inferrer.utils.html#inferrer.utils.observation_table.ObservationTable.obviously_different_row">[docs]</a>    <span class="k">def</span> <span class="nf">obviously_different_row</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines if there is an obviously different</span>
+<span class="sd">        row in the table.</span>
+
+<span class="sd">        :return: whether or not there is one along with</span>
+<span class="sd">                 the row.</span>
+<span class="sd">        :rtype: tuple(bool, str)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_blue</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ot</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">u</span> <span class="o">==</span> <span class="n">v</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">exp</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry_exists</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry_exists</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+                        <span class="n">ue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+                        <span class="n">ve</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+
+                        <span class="k">if</span> <span class="n">ue</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ve</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> \
+                                <span class="ow">and</span> <span class="n">ue</span> <span class="o">!=</span> <span class="n">ve</span><span class="p">:</span>
+                            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">u</span>
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="ObservationTable.is_closed_and_consistent"><a class="viewcode-back" href="../../../inferrer.utils.html#inferrer.utils.observation_table.ObservationTable.is_closed_and_consistent">[docs]</a>    <span class="k">def</span> <span class="nf">is_closed_and_consistent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines whether the observation table is closed</span>
+<span class="sd">        and consistent.</span>
+
+<span class="sd">        :return: tuple, where the first element is a boolean</span>
+<span class="sd">        :rtype: tuple(bool, bool)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_closed</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_consistent</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ObservationTable.is_closed"><a class="viewcode-back" href="../../../inferrer.utils.html#inferrer.utils.observation_table.ObservationTable.is_closed">[docs]</a>    <span class="k">def</span> <span class="nf">is_closed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines whether the observation table is closed.</span>
+
+<span class="sd">        :return: Boolean whether the table of the instance</span>
+<span class="sd">                 is closed and if it not it also returns</span>
+<span class="sd">                 the row that causes the table to not be</span>
+<span class="sd">                 closed.</span>
+<span class="sd">        :rtype: tuple(bool, str)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_blue</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">ot</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">ot</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_red</span><span class="p">]):</span>
+                <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">u</span>
+
+        <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;&#39;</span></div>
+
+<div class="viewcode-block" id="ObservationTable.is_consistent"><a class="viewcode-back" href="../../../inferrer.utils.html#inferrer.utils.observation_table.ObservationTable.is_consistent">[docs]</a>    <span class="k">def</span> <span class="nf">is_consistent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines whether the observation table is consistent.</span>
+
+<span class="sd">        :return: Boolean indicating whether the table is consistent.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">s1</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_red</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">s2</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_red</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">s1</span> <span class="o">==</span> <span class="n">s2</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alphabet</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">exp</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_row</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_row</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span> <span class="ow">and</span> \
+                            <span class="bp">self</span><span class="o">.</span><span class="n">entry_exists</span><span class="p">(</span><span class="n">s1</span> <span class="o">+</span> <span class="n">a</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">entry_exists</span><span class="p">(</span><span class="n">s2</span> <span class="o">+</span> <span class="n">a</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span> \
+                                <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">s1</span> <span class="o">+</span> <span class="n">a</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">s2</span> <span class="o">+</span> <span class="n">a</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+                            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="ObservationTable.find_compatible_row"><a class="viewcode-back" href="../../../inferrer.utils.html#inferrer.utils.observation_table.ObservationTable.find_compatible_row">[docs]</a>    <span class="k">def</span> <span class="nf">find_compatible_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finds a compatible row in the observation table indexed</span>
+<span class="sd">        by p.</span>
+
+<span class="sd">        :param p: row indexed by p</span>
+<span class="sd">        :type p: str</span>
+<span class="sd">        :return: The row compatible with p, or None if no</span>
+<span class="sd">                 row exists.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_red</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="n">p</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ot</span> <span class="ow">or</span> <span class="n">r</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ot</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">p1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ot</span><span class="p">[</span><span class="n">p</span><span class="p">]</span>
+            <span class="n">r1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ot</span><span class="p">[</span><span class="n">r</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">([(</span><span class="n">e</span> <span class="ow">in</span> <span class="n">p1</span> <span class="ow">and</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">r1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">((</span><span class="n">p1</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">r1</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="ow">or</span> <span class="p">(</span><span class="n">p1</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">r1</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">exp</span><span class="p">]):</span>
+                <span class="k">return</span> <span class="n">r</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="ObservationTable.add_row"><a class="viewcode-back" href="../../../inferrer.utils.html#inferrer.utils.observation_table.ObservationTable.add_row">[docs]</a>    <span class="k">def</span> <span class="nf">add_row</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a new row to the observation table with the</span>
+<span class="sd">        label r.</span>
+
+<span class="sd">        :param r: label of row to add</span>
+<span class="sd">        :type r: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">r</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ot</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ot</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">exp</span><span class="p">}</span></div>
+
+<div class="viewcode-block" id="ObservationTable.add_column_to_table"><a class="viewcode-back" href="../../../inferrer.utils.html#inferrer.utils.observation_table.ObservationTable.add_column_to_table">[docs]</a>    <span class="k">def</span> <span class="nf">add_column_to_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a new column to the observation table with the</span>
+<span class="sd">        label c and initialises all of the entries to None.</span>
+
+<span class="sd">        :param c: label of the column to add</span>
+<span class="sd">        :type c: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ot</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ot</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="ObservationTable.find_holes"><a class="viewcode-back" href="../../../inferrer.utils.html#inferrer.utils.observation_table.ObservationTable.find_holes">[docs]</a>    <span class="k">def</span> <span class="nf">find_holes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finds all the entries in the observation table that is</span>
+<span class="sd">        a hole.</span>
+
+<span class="sd">        :return: Generator with the row and column values</span>
+<span class="sd">                 for which the entry in the observation table</span>
+<span class="sd">                 is a hole.</span>
+<span class="sd">        :rtype: generator(tuple(str, str))</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ot</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">col</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="n">u</span><span class="p">,</span> <span class="n">e</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Steyn van Litsenborgh.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

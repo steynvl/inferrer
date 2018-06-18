@@ -161,8 +161,7 @@ class ObservationTable:
         """
         Determines whether the observation table is consistent.
 
-        :return: Boolean indicating whether the table is
-        consistent.
+        :return: Boolean indicating whether the table is consistent.
         :rtype: bool
         """
         for s1 in self._red:

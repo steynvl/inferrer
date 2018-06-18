@@ -4,13 +4,14 @@ from typing import Set
 
 
 class RPNI:
+    """
+    An implementation of the Regular Positive and Negative Inference (RPNI)
+    algorithm. This algorithm tries to make sure that some generalisation
+    takes place and, in the best case, returns the correct target automaton.
+    """
 
     def __init__(self, pos_examples: Set[str], neg_examples: Set[str]):
         """
-        An implementation of the Regular Positive and Negative Inference (RPNI)
-        algorithm. This algorithm tries to make sure that some generalisation
-        takes place and, in the best case, returns the correct target automaton.
-
         :param pos_examples: Set of positive example strings
                              from the target language
         :type pos_examples: Set[str]
@@ -47,8 +48,8 @@ class RPNI:
 
             found = False
             for qr in sorted(self._red, key=functools.cmp_to_key(_cmp)):
-                if self._compatible(self._merge(dfa.copy(), qr, qb)):
-                    dfa = self._merge(dfa, qr, qb)
+                if self.compatible(self.merge(dfa.copy(), qr, qb)):
+                    dfa = self.merge(dfa, qr, qb)
                     new_blue_states = set()
                     for q in self._red:
                         for a in self._alphabet:
@@ -60,7 +61,7 @@ class RPNI:
                     found = True
 
             if not found:
-                dfa = self._promote(qb, dfa)
+                dfa = self.promote(qb, dfa)
 
         for s in self._neg_examples:
             q, accepted = dfa.parse_string(s)
@@ -69,7 +70,7 @@ class RPNI:
 
         return dfa.minimize()
 
-    def _promote(self, qu: automaton.State,  dfa: automaton.Automaton) -> automaton.Automaton:
+    def promote(self, qu: automaton.State, dfa: automaton.Automaton) -> automaton.Automaton:
         """
         Given a state blue state qu, this method promotes this state
         ro red and all the successors in the dfa. The method returns
@@ -91,7 +92,7 @@ class RPNI:
 
         return dfa
 
-    def _compatible(self, dfa: automaton.Automaton) -> bool:
+    def compatible(self, dfa: automaton.Automaton) -> bool:
         """
         Determines whether the current automaton can parse any
         string in the set of negative example strings.
@@ -107,9 +108,9 @@ class RPNI:
         """
         return not any(dfa.parse_string(w)[1] for w in self._neg_examples)
 
-    def _merge(self, dfa: automaton.Automaton,
-               q: automaton.State,
-               q_prime: automaton.State) -> automaton.Automaton:
+    def merge(self, dfa: automaton.Automaton,
+              q: automaton.State,
+              q_prime: automaton.State) -> automaton.Automaton:
         """
         Takes as arguments a red state q and a blue state q'.
         The method first finds the unique pair (qf, a) such
@@ -135,11 +136,11 @@ class RPNI:
 
         dfa.add_transition(qf, q, a)
 
-        return self._fold(dfa, q, q_prime)
+        return self.fold(dfa, q, q_prime)
 
-    def _fold(self, dfa: automaton.Automaton,
-              q: automaton.State,
-              q_prime: automaton.State) -> automaton.Automaton:
+    def fold(self, dfa: automaton.Automaton,
+             q: automaton.State,
+             q_prime: automaton.State) -> automaton.Automaton:
         """
         Folds the tree rooted in q' into the rest of the DFA. The
         possible intermediate situations of non-determinism
@@ -160,8 +161,8 @@ class RPNI:
         for a in self._alphabet:
             if dfa.transition_exists(q_prime, a):
                 if dfa.transition_exists(q, a):
-                    dfa = self._fold(dfa, dfa.transition(q, a),
-                                     dfa.transition(q_prime, a))
+                    dfa = self.fold(dfa, dfa.transition(q, a),
+                                    dfa.transition(q_prime, a))
                 else:
                     dfa.add_transition(q, dfa.transition(q_prime, a), a)
 

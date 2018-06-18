@@ -1,0 +1,485 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferrer.utils package &#8212; inferrer 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="inferrer.tools package" href="inferrer.tools.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="inferrer-utils-package">
+<h1>inferrer.utils package<a class="headerlink" href="#inferrer-utils-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-inferrer.utils.observation_table">
+<span id="inferrer-utils-observation-table-module"></span><h2>inferrer.utils.observation_table module<a class="headerlink" href="#module-inferrer.utils.observation_table" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferrer.utils.observation_table.ObservationTable">
+<em class="property">class </em><code class="descclassname">inferrer.utils.observation_table.</code><code class="descname">ObservationTable</code><span class="sig-paren">(</span><em>blue: Set[str], red: Set[str], alphabet: Set[str]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/utils/observation_table.html#ObservationTable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.utils.observation_table.ObservationTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="inferrer.utils.observation_table.ObservationTable.add_column_to_table">
+<code class="descname">add_column_to_table</code><span class="sig-paren">(</span><em>c: str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/utils/observation_table.html#ObservationTable.add_column_to_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.utils.observation_table.ObservationTable.add_column_to_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a new column to the observation table with the
+label c and initialises all of the entries to None.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>c</strong> (<em>str</em>) – label of the column to add</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferrer.utils.observation_table.ObservationTable.add_row">
+<code class="descname">add_row</code><span class="sig-paren">(</span><em>r: str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/utils/observation_table.html#ObservationTable.add_row"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.utils.observation_table.ObservationTable.add_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a new row to the observation table with the
+label r.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>r</strong> (<em>str</em>) – label of row to add</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferrer.utils.observation_table.ObservationTable.entry_exists">
+<code class="descname">entry_exists</code><span class="sig-paren">(</span><em>r: str</em>, <em>col: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/inferrer/utils/observation_table.html#ObservationTable.entry_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.utils.observation_table.ObservationTable.entry_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine whether an entry in the 2-dimensional
+table exists by checking if the row and column
+are both defined in the table.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>r</strong> (<em>str</em>) – row</li>
+<li><strong>col</strong> (<em>str</em>) – column</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferrer.utils.observation_table.ObservationTable.exp">
+<code class="descname">exp</code><a class="headerlink" href="#inferrer.utils.observation_table.ObservationTable.exp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferrer.utils.observation_table.ObservationTable.find_compatible_row">
+<code class="descname">find_compatible_row</code><span class="sig-paren">(</span><em>p: str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/utils/observation_table.html#ObservationTable.find_compatible_row"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.utils.observation_table.ObservationTable.find_compatible_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds a compatible row in the observation table indexed
+by p.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<em>str</em>) – row indexed by p</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The row compatible with p, or None if no
+row exists.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferrer.utils.observation_table.ObservationTable.find_holes">
+<code class="descname">find_holes</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Generator<a class="reference internal" href="_modules/inferrer/utils/observation_table.html#ObservationTable.find_holes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.utils.observation_table.ObservationTable.find_holes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds all the entries in the observation table that is
+a hole.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Generator with the row and column values
+for which the entry in the observation table
+is a hole.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">generator(tuple(str, str))</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferrer.utils.observation_table.ObservationTable.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>r: str</em>, <em>c: str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/utils/observation_table.html#ObservationTable.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.utils.observation_table.ObservationTable.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets  value in the observation table</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>r</strong> (<em>str</em>) – row in the table</li>
+<li><strong>c</strong> (<em>str</em>) – column in the table</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">1, 0 or None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferrer.utils.observation_table.ObservationTable.get_row">
+<code class="descname">get_row</code><span class="sig-paren">(</span><em>r: str</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="_modules/inferrer/utils/observation_table.html#ObservationTable.get_row"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.utils.observation_table.ObservationTable.get_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the row in the observation table.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>r</strong> (<em>str</em>) – row in the table</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">columns of the row</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferrer.utils.observation_table.ObservationTable.is_closed">
+<code class="descname">is_closed</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Tuple[bool, str]<a class="reference internal" href="_modules/inferrer/utils/observation_table.html#ObservationTable.is_closed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.utils.observation_table.ObservationTable.is_closed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines whether the observation table is closed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Boolean whether the table of the instance
+is closed and if it not it also returns
+the row that causes the table to not be
+closed.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(bool, str)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferrer.utils.observation_table.ObservationTable.is_closed_and_consistent">
+<code class="descname">is_closed_and_consistent</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Tuple[bool, bool]<a class="reference internal" href="_modules/inferrer/utils/observation_table.html#ObservationTable.is_closed_and_consistent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.utils.observation_table.ObservationTable.is_closed_and_consistent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines whether the observation table is closed
+and consistent.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">tuple, where the first element is a boolean</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(bool, bool)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferrer.utils.observation_table.ObservationTable.is_consistent">
+<code class="descname">is_consistent</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/inferrer/utils/observation_table.html#ObservationTable.is_consistent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.utils.observation_table.ObservationTable.is_consistent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines whether the observation table is consistent.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Boolean indicating whether the table is consistent.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferrer.utils.observation_table.ObservationTable.obviously_different_row">
+<code class="descname">obviously_different_row</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Tuple<a class="reference internal" href="_modules/inferrer/utils/observation_table.html#ObservationTable.obviously_different_row"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.utils.observation_table.ObservationTable.obviously_different_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines if there is an obviously different
+row in the table.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">whether or not there is one along with
+the row.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">tuple(bool, str)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferrer.utils.observation_table.ObservationTable.ot">
+<code class="descname">ot</code><a class="headerlink" href="#inferrer.utils.observation_table.ObservationTable.ot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferrer.utils.observation_table.ObservationTable.put">
+<code class="descname">put</code><span class="sig-paren">(</span><em>r: str</em>, <em>c: str</em>, <em>val</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/utils/observation_table.html#ObservationTable.put"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.utils.observation_table.ObservationTable.put" title="Permalink to this definition">¶</a></dt>
+<dd><p>Puts a value in the observation table</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>r</strong> (<em>str</em>) – row in the table</li>
+<li><strong>c</strong> (<em>str</em>) – column in the table</li>
+<li><strong>val</strong> (<em>1</em><em>, </em><em>0</em><em> or </em><em>None</em>) – to put in table:</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferrer.utils.observation_table.ObservationTable.row_exists">
+<code class="descname">row_exists</code><span class="sig-paren">(</span><em>r: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/inferrer/utils/observation_table.html#ObservationTable.row_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.utils.observation_table.ObservationTable.row_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines if a row exists in the table.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>r</strong> (<em>str</em>) – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="inferrer.utils.observation_table.ObservationTable.sta">
+<code class="descname">sta</code><a class="headerlink" href="#inferrer.utils.observation_table.ObservationTable.sta" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferrer.utils.utils">
+<span id="inferrer-utils-utils-module"></span><h2>inferrer.utils.utils module<a class="headerlink" href="#module-inferrer.utils.utils" title="Permalink to this headline">¶</a></h2>
+<p>Module containing utility functions such as
+performing operations on strings and combinatorics
+on sets.</p>
+<dl class="function">
+<dt id="inferrer.utils.utils.break_strings_in_two">
+<code class="descclassname">inferrer.utils.utils.</code><code class="descname">break_strings_in_two</code><span class="sig-paren">(</span><em>red: Set[str]</em><span class="sig-paren">)</span> &#x2192; Set[Tuple[str, str]]<a class="reference internal" href="_modules/inferrer/utils/utils.html#break_strings_in_two"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.utils.utils.break_strings_in_two" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates all possible combinations of splitting a
+string in two parts. Performs this operation on every
+element in the set red and returns a set containing all
+these different combinations.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;abcd&#39;</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">break_strings_in_two</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+<span class="go">{(&#39;&#39;, &#39;abcd&#39;), (&#39;abcd&#39;, &#39;&#39;), (&#39;a&#39;, &#39;bcd&#39;), (&#39;abc&#39;, &#39;d&#39;), (&#39;ab&#39;, &#39;cd&#39;)}</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>red</strong> (<em>Set</em><em>[</em><em>str</em><em>]</em>) – Set with strings to break up</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Set containing all possible combinations.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Set[Tuple[str, str]]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="inferrer.utils.utils.determine_alphabet">
+<code class="descclassname">inferrer.utils.utils.</code><code class="descname">determine_alphabet</code><span class="sig-paren">(</span><em>s: Set[str]</em><span class="sig-paren">)</span> &#x2192; Set[str]<a class="reference internal" href="_modules/inferrer/utils/utils.html#determine_alphabet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.utils.utils.determine_alphabet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the alphabet (Sigma) of the target
+regular language.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;abc&#39;</span><span class="p">,</span> <span class="s1">&#39;cba&#39;</span><span class="p">,</span> <span class="s1">&#39;bca&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;aa&#39;</span><span class="p">,</span> <span class="s1">&#39;bb&#39;</span><span class="p">,</span> <span class="s1">&#39;cc&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">determine_alphabet</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+<span class="go">{&#39;b&#39;, &#39;d&#39;, &#39;c&#39;, &#39;a&#39;}</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>s</strong> (<em>Set</em><em>[</em><em>str</em><em>]</em>) – Set containing positive and negative
+example strings of the target regular
+language.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Set containing the unique alphabet of the
+regular language.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Set[str]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="inferrer.utils.utils.prefix_set">
+<code class="descclassname">inferrer.utils.utils.</code><code class="descname">prefix_set</code><span class="sig-paren">(</span><em>s: Set[str], alphabet: Set[str] = None</em><span class="sig-paren">)</span> &#x2192; Generator<a class="reference internal" href="_modules/inferrer/utils/utils.html#prefix_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.utils.utils.prefix_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the prefix set of the set s given the
+alphabet.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;aaa&#39;</span><span class="p">,</span> <span class="s1">&#39;bbb&#39;</span><span class="p">,</span> <span class="s1">&#39;aba&#39;</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prefix_set</span><span class="p">(</span><span class="n">s</span><span class="p">)))</span>
+<span class="go"> b a bb ab aa bbb aba aaa</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>s</strong> (<em>set</em>) – The set fo calculate the prefix set on</li>
+<li><strong>alphabet</strong> (<em>set</em>) – Alphabet of the regular language</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Generator with all the prefixes</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Generator[str]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="inferrer.utils.utils.suffix_set">
+<code class="descclassname">inferrer.utils.utils.</code><code class="descname">suffix_set</code><span class="sig-paren">(</span><em>s: Set[str], alphabet: Set[str] = None</em><span class="sig-paren">)</span> &#x2192; Generator<a class="reference internal" href="_modules/inferrer/utils/utils.html#suffix_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.utils.utils.suffix_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the suffix set of the set s given the
+alphabet.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;aaa&#39;</span><span class="p">,</span> <span class="s1">&#39;bbb&#39;</span><span class="p">,</span> <span class="s1">&#39;aba&#39;</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prefix_set</span><span class="p">(</span><span class="n">s</span><span class="p">)))</span>
+<span class="go"> a b aa ba bb aaa aba bbb</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>s</strong> (<em>set</em>) – The set fo calculate the suffix set on</li>
+<li><strong>alphabet</strong> (<em>set</em>) – Alphabet of the regular language</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Generator with all the suffixes</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Generator[str]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferrer.utils">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-inferrer.utils" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">inferrer.utils package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-inferrer.utils.observation_table">inferrer.utils.observation_table module</a></li>
+<li><a class="reference internal" href="#module-inferrer.utils.utils">inferrer.utils.utils module</a></li>
+<li><a class="reference internal" href="#module-inferrer.utils">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="inferrer.html">inferrer package</a><ul>
+      <li>Previous: <a href="inferrer.tools.html" title="previous chapter">inferrer.tools package</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/inferrer.utils.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Steyn van Litsenborgh.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/inferrer.utils.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

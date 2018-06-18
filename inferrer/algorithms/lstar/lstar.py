@@ -5,20 +5,21 @@ from typing import Set, Tuple
 
 
 class LSTAR:
+    """
+    An implementation of Dana Angluin's L* algorithm, which
+    learns regular languages from Queries and Counterexamples.
+
+    The general idea of L* is to:
+    Find a consistent observation table (representing a DFA).
+    Submit is as an equivalence query.
+    Use the counter-example to update the table.
+    Submit membership queries to make the table closed and complete.
+    Iterate until the Oracle, tells us the correct language has been
+    reached.
+    """
 
     def __init__(self, oracle: Oracle, alphabet: Set[str]):
         """
-        An implementation of Dana Angluin's L* algorithm, which
-        learns regular languages from Queries and Counterexamples.
-
-        The general idea of L* is to:
-        Find a consistent observation table (representing a DFA).
-        Submit is as an equivalence query.
-        Use the counter-example to update the table.
-        Submit membership queries to make the table closed and complete.
-        Iterate until the Oracle, tells us the correct language has been
-        reached.
-
         :param oracle: Minimally adequate teacher (MAT)
         :type oracle: Oracle
         :param alphabet: Alphabet of the target language.
@@ -37,30 +38,30 @@ class LSTAR:
         :return: The dfa accepting the target language.
         :rtype: Automaton
         """
-        ot = self._initialise()
+        ot = self.initialise()
 
         while True:
             is_closed, is_consistent = ot.is_closed_and_consistent()
             while not is_closed or not is_consistent:
                 if not is_closed:
-                    ot = self._close(ot)
+                    ot = self.close(ot)
 
                 if not is_consistent:
-                    ot = self._consistent(ot)
+                    ot = self.consistent(ot)
 
                 is_closed, is_consistent = ot.is_closed_and_consistent()
 
-            dfa = self._build_automaton(ot)
+            dfa = self.build_automaton(ot)
             answer, satisfied = self._oracle.equivalence_query(dfa)
 
             if satisfied:
                 break
 
-            ot = self._useq(ot, answer)
+            ot = self.useq(ot, answer)
 
         return dfa
 
-    def _initialise(self) -> utils.ObservationTable:
+    def initialise(self) -> utils.ObservationTable:
         """
         Initialises an observation table. This consists of
         building one red row and as many blue rows as there
@@ -83,7 +84,7 @@ class LSTAR:
 
         return ot
 
-    def _close(self, ot: utils.ObservationTable) -> utils.ObservationTable:
+    def close(self, ot: utils.ObservationTable) -> utils.ObservationTable:
         """
         Closes the observation table by adding an extra row.
 
@@ -110,7 +111,7 @@ class LSTAR:
 
         return ot
 
-    def _consistent(self, ot: utils.ObservationTable) -> utils.ObservationTable:
+    def consistent(self, ot: utils.ObservationTable) -> utils.ObservationTable:
         """
         Makes the observation table consistent by adding an extra
         column.
@@ -120,7 +121,7 @@ class LSTAR:
         :return: The consistent and updated observation table
         :rtype: ObservationTable
         """
-        s1, s2, a, e = self._find_inconsistent(ot)
+        s1, s2, a, e = self.find_inconsistent(ot)
 
         ae = a + e
         ot.exp.add(ae)
@@ -131,7 +132,7 @@ class LSTAR:
 
         return ot
 
-    def _find_inconsistent(self, ot: utils.ObservationTable) -> Tuple[str, str, str, str]:
+    def find_inconsistent(self, ot: utils.ObservationTable) -> Tuple[str, str, str, str]:
         """
         Tries to find two inconsistent rows s1 and s2 in the
         observation table. s1 and s2 are elements of red.
@@ -157,7 +158,7 @@ class LSTAR:
                             return s1, s2, a, e
         return '', '', '', ''
 
-    def _useq(self, ot: utils.ObservationTable, answer: str) -> utils.ObservationTable:
+    def useq(self, ot: utils.ObservationTable, answer: str) -> utils.ObservationTable:
         """
         This method is called when the table is closed and complete.
         The algorithm then makes an equivalence query to the oracle,
@@ -197,7 +198,7 @@ class LSTAR:
 
         return ot
 
-    def _build_automaton(self, ot: utils.ObservationTable) -> automaton.Automaton:
+    def build_automaton(self, ot: utils.ObservationTable) -> automaton.Automaton:
         """
         Builds an automaton from the observation table.
 

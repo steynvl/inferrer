@@ -1,0 +1,208 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferrer.algorithms.gold package &#8212; inferrer 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="inferrer.algorithms.lstar package" href="inferrer.algorithms.lstar.html" />
+    <link rel="prev" title="inferrer.algorithms package" href="inferrer.algorithms.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="inferrer-algorithms-gold-package">
+<h1>inferrer.algorithms.gold package<a class="headerlink" href="#inferrer-algorithms-gold-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-inferrer.algorithms.gold.gold">
+<span id="inferrer-algorithms-gold-gold-module"></span><h2>inferrer.algorithms.gold.gold module<a class="headerlink" href="#module-inferrer.algorithms.gold.gold" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferrer.algorithms.gold.gold.Gold">
+<em class="property">class </em><code class="descclassname">inferrer.algorithms.gold.gold.</code><code class="descname">Gold</code><span class="sig-paren">(</span><em>pos_examples: Set[str], neg_examples: Set[str]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/algorithms/gold/gold.html#Gold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.algorithms.gold.gold.Gold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>An implementation of E. Mark GOLD’s algorithm, which tries
+to find the minimum DFA consistent with the sample.</p>
+<dl class="method">
+<dt id="inferrer.algorithms.gold.gold.Gold.build_automaton">
+<code class="descname">build_automaton</code><span class="sig-paren">(</span><em>ot: inferrer.utils.observation_table.ObservationTable</em><span class="sig-paren">)</span> &#x2192; inferrer.automaton.automaton.Automaton<a class="reference internal" href="_modules/inferrer/algorithms/gold/gold.html#Gold.build_automaton"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.algorithms.gold.gold.Gold.build_automaton" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds an automaton from the observation table.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Automaton built from the observation table</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="inferrer.automaton.html#inferrer.automaton.automaton.Automaton" title="inferrer.automaton.automaton.Automaton">Automaton</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferrer.algorithms.gold.gold.Gold.build_table">
+<code class="descname">build_table</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; inferrer.utils.observation_table.ObservationTable<a class="reference internal" href="_modules/inferrer/algorithms/gold/gold.html#Gold.build_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.algorithms.gold.gold.Gold.build_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtains a table from the sample.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Initial observation table</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="inferrer.utils.html#inferrer.utils.observation_table.ObservationTable" title="inferrer.utils.observation_table.ObservationTable">ObservationTable</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferrer.algorithms.gold.gold.Gold.fill_holes">
+<code class="descname">fill_holes</code><span class="sig-paren">(</span><em>ot: inferrer.utils.observation_table.ObservationTable</em><span class="sig-paren">)</span> &#x2192; Tuple[inferrer.utils.observation_table.ObservationTable, bool]<a class="reference internal" href="_modules/inferrer/algorithms/gold/gold.html#Gold.fill_holes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.algorithms.gold.gold.Gold.fill_holes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tries to make the table complete by filling in all the entries that
+are None.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ot</strong> – the updated observation table</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">updated ObservationTable and whether the method was successful.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple(<a class="reference internal" href="inferrer.utils.html#inferrer.utils.observation_table.ObservationTable" title="inferrer.utils.observation_table.ObservationTable">ObservationTable</a>, bool)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="inferrer.algorithms.gold.gold.Gold.is_consistent">
+<em class="property">static </em><code class="descname">is_consistent</code><span class="sig-paren">(</span><em>dfa: inferrer.automaton.automaton.Automaton</em>, <em>ot: inferrer.utils.observation_table.ObservationTable</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/inferrer/algorithms/gold/gold.html#Gold.is_consistent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.algorithms.gold.gold.Gold.is_consistent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines whether the automaton is consistent with the
+observation table ot.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Whether the automaton and observation table are consistent.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferrer.algorithms.gold.gold.Gold.learn">
+<code class="descname">learn</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; inferrer.automaton.automaton.Automaton<a class="reference internal" href="_modules/inferrer/algorithms/gold/gold.html#Gold.learn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.algorithms.gold.gold.Gold.learn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Learns the grammar from the sets of positive and negative
+example strings. This method returns the minimal DFA
+consistent with the sample.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The minimum DFA consistent with the sample</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="inferrer.automaton.html#inferrer.automaton.automaton.Automaton" title="inferrer.automaton.automaton.Automaton">Automaton</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferrer.algorithms.gold">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-inferrer.algorithms.gold" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">inferrer.algorithms.gold package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-inferrer.algorithms.gold.gold">inferrer.algorithms.gold.gold module</a></li>
+<li><a class="reference internal" href="#module-inferrer.algorithms.gold">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="inferrer.html">inferrer package</a><ul>
+  <li><a href="inferrer.algorithms.html">inferrer.algorithms package</a><ul>
+      <li>Previous: <a href="inferrer.algorithms.html" title="previous chapter">inferrer.algorithms package</a></li>
+      <li>Next: <a href="inferrer.algorithms.lstar.html" title="next chapter">inferrer.algorithms.lstar package</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/inferrer.algorithms.gold.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Steyn van Litsenborgh.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/inferrer.algorithms.gold.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
