@@ -228,5 +228,6 @@ class TestRPNI(unittest.TestCase):
         for s in s_minus:
             self.assertFalse(dfa.parse_string(s)[1])
 
+
 if __name__ == '__main__':
     unittest.main()

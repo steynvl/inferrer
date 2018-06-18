@@ -51,14 +51,15 @@ class LSTAR:
 
                 is_closed, is_consistent = ot.is_closed_and_consistent()
 
-            answer, satisfied = self._oracle.equivalence_query()
+            dfa = self._build_automaton(ot)
+            answer, satisfied = self._oracle.equivalence_query(dfa)
 
             if satisfied:
                 break
 
             ot = self._useq(ot, answer)
 
-        return self._build_automaton(ot)
+        return dfa
 
     def _initialise(self) -> utils.ObservationTable:
         """

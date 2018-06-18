@@ -118,7 +118,10 @@ class Automaton:
         """
         Minimizes the automaton by removing all
         states (and transitions) that cannot be
-        reached from the initial state.
+        reached from the initial state. This is
+        done by performing an iterative dept-first
+        search over the execution tree given the
+        initial state and alphabet.
 
         :return: minimized dfa
         :rtype: Automaton
