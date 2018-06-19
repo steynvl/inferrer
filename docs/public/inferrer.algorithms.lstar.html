@@ -40,10 +40,10 @@
 <span id="inferrer-algorithms-lstar-lstar-module"></span><h2>inferrer.algorithms.lstar.lstar module<a class="headerlink" href="#module-inferrer.algorithms.lstar.lstar" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="inferrer.algorithms.lstar.lstar.LSTAR">
-<em class="property">class </em><code class="descclassname">inferrer.algorithms.lstar.lstar.</code><code class="descname">LSTAR</code><span class="sig-paren">(</span><em>pos_examples: Set[str], neg_examples: Set[str], oracle: inferrer.algorithms.lstar.oracle.Oracle, alphabet: Set[str]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/algorithms/lstar/lstar.html#LSTAR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.algorithms.lstar.lstar.LSTAR" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">inferrer.algorithms.algorithm.Algoritm</span></code></p>
+<em class="property">class </em><code class="descclassname">inferrer.algorithms.lstar.lstar.</code><code class="descname">LSTAR</code><span class="sig-paren">(</span><em>pos_examples: Set[str], neg_examples: Set[str], alphabet: Set[str], oracle: inferrer.algorithms.lstar.oracle.Oracle</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/algorithms/lstar/lstar.html#LSTAR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.algorithms.lstar.lstar.LSTAR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">inferrer.algorithms.algorithm.Algorithm</span></code></p>
 <p>An implementation of Dana Angluin’s L* algorithm, which
-learns regular languages from Queries and Counterexamples.</p>
+learns regular languages from queries and counterexamples.</p>
 <p>The general idea of L* is to:
 Find a consistent observation table (representing a DFA).
 Submit is as an equivalence query.

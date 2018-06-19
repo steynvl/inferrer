@@ -31,17 +31,17 @@
             
   <h1>Source code for inferrer.algorithms.gold.gold</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">inferrer</span> <span class="k">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">automaton</span>
-<span class="kn">from</span> <span class="nn">inferrer.algorithms.algorithm</span> <span class="k">import</span> <span class="n">Algoritm</span>
+<span class="kn">from</span> <span class="nn">inferrer.algorithms.algorithm</span> <span class="k">import</span> <span class="n">Algorithm</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span>
 
 
-<div class="viewcode-block" id="Gold"><a class="viewcode-back" href="../../../../inferrer.algorithms.gold.html#inferrer.algorithms.gold.gold.Gold">[docs]</a><span class="k">class</span> <span class="nc">Gold</span><span class="p">(</span><span class="n">Algoritm</span><span class="p">):</span>
+<div class="viewcode-block" id="Gold"><a class="viewcode-back" href="../../../../inferrer.algorithms.gold.html#inferrer.algorithms.gold.gold.Gold">[docs]</a><span class="k">class</span> <span class="nc">Gold</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An implementation of E. Mark GOLD&#39;s algorithm, which tries</span>
 <span class="sd">    to find the minimum DFA consistent with the sample.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos_examples</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">neg_examples</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos_examples</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">neg_examples</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">alphabet</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :param pos_examples: Set of positive example strings</span>
 <span class="sd">                             from the target language</span>
@@ -50,10 +50,12 @@
 <span class="sd">                             i.e strings that do not belong in</span>
 <span class="sd">                             the target language.</span>
 <span class="sd">        :type neg_examples: Set[str]</span>
+<span class="sd">        :param alphabet: The alphabet (Sigma) of the target</span>
+<span class="sd">                         regular language.</span>
+<span class="sd">        :type alphabet: Set[str]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">pos_examples</span><span class="p">,</span> <span class="n">neg_examples</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">pos_examples</span><span class="p">,</span> <span class="n">neg_examples</span><span class="p">,</span> <span class="n">alphabet</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span> <span class="o">=</span> <span class="n">pos_examples</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">neg_examples</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_alphabet</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">determine_alphabet</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_samples</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_red</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;&#39;</span><span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_blue</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>

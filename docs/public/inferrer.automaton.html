@@ -42,6 +42,7 @@
 <dt id="inferrer.automaton.automaton.Automaton">
 <em class="property">class </em><code class="descclassname">inferrer.automaton.automaton.</code><code class="descname">Automaton</code><span class="sig-paren">(</span><em>alphabet: Set[str], start_state: inferrer.automaton.state.State = &lt;inferrer.automaton.state.State object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/automaton/automaton.html#Automaton"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.automaton.Automaton" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Implements a deterministic finite automaton.</p>
 <dl class="method">
 <dt id="inferrer.automaton.automaton.Automaton.add_transition">
 <code class="descname">add_transition</code><span class="sig-paren">(</span><em>q1: inferrer.automaton.state.State</em>, <em>q2: inferrer.automaton.state.State</em>, <em>a: str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/automaton/automaton.html#Automaton.add_transition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.automaton.Automaton.add_transition" title="Permalink to this definition">¶</a></dt>
@@ -140,6 +141,24 @@ the automaton accepted the input string.</td>
 </dd></dl>
 
 <dl class="method">
+<dt id="inferrer.automaton.automaton.Automaton.to_regex">
+<code class="descname">to_regex</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/inferrer/automaton/automaton.html#Automaton.to_regex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.automaton.Automaton.to_regex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a DFA to an equivalent regular expression.
+Please consult Sipser for an explanation of this algorithm:
+<a class="reference external" href="https://www.amazon.com/Introduction-Theory-Computation-Michael-Sipser/dp/113318779X">https://www.amazon.com/Introduction-Theory-Computation-Michael-Sipser/dp/113318779X</a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">DFA converted to regular expression.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="inferrer.automaton.automaton.Automaton.transition">
 <code class="descname">transition</code><span class="sig-paren">(</span><em>q1: inferrer.automaton.state.State</em>, <em>a: str</em><span class="sig-paren">)</span> &#x2192; inferrer.automaton.state.State<a class="reference internal" href="_modules/inferrer/automaton/automaton.html#Automaton.transition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.automaton.Automaton.transition" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs the transition delta(q1, a) and
@@ -184,6 +203,34 @@ delta(q1, a) is defined.</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferrer.automaton.automaton.Automaton.walk_path">
+<code class="descname">walk_path</code><span class="sig-paren">(</span><em>q: inferrer.automaton.state.State</em>, <em>a: str</em><span class="sig-paren">)</span> &#x2192; Generator<a class="reference internal" href="_modules/inferrer/automaton/automaton.html#Automaton.walk_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.automaton.Automaton.walk_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Traverses the string a through the automaton
+starting at state q. This method returns
+a generator of the states visited while walking
+through the automaton.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>q</strong> (<a class="reference internal" href="#inferrer.automaton.state.State" title="inferrer.automaton.state.State"><em>State</em></a>) – State the automaton should starts
+in when traversing a.</li>
+<li><strong>a</strong> (<em>str</em>) – String with symbols from the alphabet.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Generator of visited states</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Generator[<a class="reference internal" href="#inferrer.automaton.state.State" title="inferrer.automaton.state.State">State</a>]</p>
 </td>
 </tr>
 </tbody>

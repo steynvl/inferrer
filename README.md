@@ -65,7 +65,7 @@ This DFA is then converted to the following regular expression:
 ((10(00)*1|0)(1(00)*1)*(1(00)*01|0)|10(00)*01|11)*
 ```
 
-## References
+## Resources
 
 * [Learning Regular Sets from Queries and Counterexamples](https://www.sciencedirect.com/science/article/pii/0890540187900526)
 * [Grammatical Inference: Learning Automata and Grammars](http://www.cambridge.org/gb/academic/subjects/computer-science/pattern-recognition-and-machine-learning/grammatical-inference-learning-automata-and-grammars?format=HB#hUi22RWdy3vfxPdp.97)

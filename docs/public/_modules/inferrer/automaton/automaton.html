@@ -34,15 +34,16 @@
 <span class="kn">from</span> <span class="nn">inferrer</span> <span class="k">import</span> <span class="n">utils</span>
 <span class="kn">from</span> <span class="nn">inferrer.automaton.state</span> <span class="k">import</span> <span class="n">State</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">OrderedDict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Generator</span>
 
 
 <div class="viewcode-block" id="Automaton"><a class="viewcode-back" href="../../../inferrer.automaton.html#inferrer.automaton.automaton.Automaton">[docs]</a><span class="k">class</span> <span class="nc">Automaton</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implements a deterministic finite automaton.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alphabet</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">start_state</span><span class="p">:</span> <span class="n">State</span><span class="o">=</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initiates a deterministic finite automaton</span>
-
 <span class="sd">        :param alphabet: The alphabet of the regular language</span>
 <span class="sd">        :type alphabet: set</span>
 <span class="sd">        :param start_state: the initial state of the automaton</span>
@@ -129,6 +130,28 @@
 
         <span class="k">return</span> <span class="n">q</span><span class="p">,</span> <span class="n">q</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">accept_states</span></div>
 
+<div class="viewcode-block" id="Automaton.walk_path"><a class="viewcode-back" href="../../../inferrer.automaton.html#inferrer.automaton.automaton.Automaton.walk_path">[docs]</a>    <span class="k">def</span> <span class="nf">walk_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">:</span> <span class="n">State</span><span class="p">,</span> <span class="n">a</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Traverses the string a through the automaton</span>
+<span class="sd">        starting at state q. This method returns</span>
+<span class="sd">        a generator of the states visited while walking</span>
+<span class="sd">        through the automaton.</span>
+
+<span class="sd">        :param q: State the automaton should starts</span>
+<span class="sd">                  in when traversing a.</span>
+<span class="sd">        :type q: State</span>
+<span class="sd">        :param a: String with symbols from the alphabet.</span>
+<span class="sd">        :type a: str</span>
+<span class="sd">        :return: Generator of visited states</span>
+<span class="sd">        :rtype: Generator[State]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">yield</span> <span class="n">q</span>
+        <span class="k">for</span> <span class="n">letter</span> <span class="ow">in</span> <span class="n">a</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">transition_exists</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">letter</span><span class="p">):</span>
+                <span class="k">return</span>
+            <span class="n">q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transition</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">letter</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">q</span></div>
+
 <div class="viewcode-block" id="Automaton.find_transition_to_q"><a class="viewcode-back" href="../../../inferrer.automaton.html#inferrer.automaton.automaton.Automaton.find_transition_to_q">[docs]</a>    <span class="k">def</span> <span class="nf">find_transition_to_q</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Finds the State r that satisfies</span>
@@ -197,6 +220,78 @@
         <span class="n">cp</span><span class="o">.</span><span class="n">_transitions</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_transitions</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">cp</span></div>
+
+<div class="viewcode-block" id="Automaton.to_regex"><a class="viewcode-back" href="../../../inferrer.automaton.html#inferrer.automaton.automaton.Automaton.to_regex">[docs]</a>    <span class="k">def</span> <span class="nf">to_regex</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts a DFA to an equivalent regular expression.</span>
+<span class="sd">        Please consult Sipser for an explanation of this algorithm:</span>
+<span class="sd">        https://www.amazon.com/Introduction-Theory-Computation-Michael-Sipser/dp/113318779X</span>
+
+<span class="sd">        :return: DFA converted to regular expression.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">initial</span> <span class="o">=</span> <span class="n">State</span><span class="p">(</span><span class="s1">&#39;__initial__&#39;</span><span class="p">)</span>
+        <span class="n">final</span> <span class="o">=</span> <span class="n">State</span><span class="p">(</span><span class="s1">&#39;__final__&#39;</span><span class="p">)</span>
+        <span class="n">states</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">)</span><span class="o">.</span><span class="n">union</span><span class="p">({</span><span class="n">initial</span><span class="p">,</span> <span class="n">final</span><span class="p">}),</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">dfa_states</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">expressions</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">states</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">states</span><span class="p">:</span>
+                <span class="n">expressions</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">dfa_states</span><span class="p">:</span>
+            <span class="n">expressions</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_state</span><span class="p">:</span>
+                <span class="n">expressions</span><span class="p">[</span><span class="n">initial</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+            <span class="k">if</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">accept_states</span><span class="p">:</span>
+                <span class="n">expressions</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">final</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">dfa_states</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphabet</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transition</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">expressions</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]:</span>
+                    <span class="n">expressions</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="o">+=</span> <span class="s1">&#39;|</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">expressions</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span>
+
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">dfa_states</span><span class="p">:</span>
+            <span class="n">states</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">states</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">states</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">expressions</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> \
+                            <span class="ow">and</span> <span class="n">expressions</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">xsy</span> <span class="o">=</span> <span class="p">[]</span>
+                        <span class="k">if</span> <span class="n">expressions</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="p">]:</span>
+                            <span class="n">xsy</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parenthesize</span><span class="p">(</span><span class="n">expressions</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="p">]))</span>
+                        <span class="k">if</span> <span class="n">expressions</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">s</span><span class="p">]:</span>
+                            <span class="n">xsy</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parenthesize</span><span class="p">(</span><span class="n">expressions</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">s</span><span class="p">],</span> <span class="kc">True</span><span class="p">))</span>
+                            <span class="n">xsy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">expressions</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">y</span><span class="p">]:</span>
+                            <span class="n">xsy</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parenthesize</span><span class="p">(</span><span class="n">expressions</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">y</span><span class="p">]))</span>
+                        <span class="k">if</span> <span class="n">expressions</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="n">xsy</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;|&#39;</span><span class="p">,</span> <span class="n">expressions</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="ow">or</span> <span class="s1">&#39;()&#39;</span><span class="p">])</span>
+                        <span class="n">expressions</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">xsy</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">expressions</span><span class="p">[</span><span class="n">initial</span><span class="p">,</span> <span class="n">final</span><span class="p">]</span></div>
+
+    <span class="k">def</span> <span class="nf">_parenthesize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">starring</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a list of strings with or without parentheses. This method</span>
+<span class="sd">        is used to simplify the expression returned. By omitting parentheses</span>
+<span class="sd">        or other expression features when unnecessary.</span>
+
+<span class="sd">        :param expr: Expression</span>
+<span class="sd">        :type expr: str</span>
+<span class="sd">        :type starring: bool</span>
+<span class="sd">        :return: List of expressions</span>
+<span class="sd">        :rtype: List[str]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span> <span class="n">starring</span> <span class="ow">and</span> <span class="s1">&#39;|&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">expr</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">expr</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">starring</span> <span class="ow">and</span> <span class="n">expr</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;|()&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;(&#39;</span><span class="p">,</span> <span class="n">expr</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">],</span> <span class="s1">&#39;)&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;(&#39;</span><span class="p">,</span> <span class="n">expr</span><span class="p">,</span> <span class="s1">&#39;)&#39;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -268,6 +363,48 @@
     <span class="n">pta</span><span class="o">.</span><span class="n">states</span> <span class="o">=</span> <span class="n">states</span>
 
     <span class="k">return</span> <span class="n">pta</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># q0 = State(&#39;0&#39;)</span>
+    <span class="c1"># q1 = State(&#39;1&#39;)</span>
+    <span class="c1"># q2 = State(&#39;2&#39;)</span>
+    <span class="c1">#</span>
+    <span class="c1"># dfa = Automaton({&#39;a&#39;, &#39;b&#39;}, start_state=q0)</span>
+    <span class="c1">#</span>
+    <span class="c1">#</span>
+    <span class="c1"># dfa.accept_states.add(q0)</span>
+    <span class="c1">#</span>
+    <span class="c1"># dfa.add_transition(q0, q1, &#39;a&#39;)</span>
+    <span class="c1"># dfa.add_transition(q0, q2, &#39;b&#39;)</span>
+    <span class="c1">#</span>
+    <span class="c1"># dfa.add_transition(q1, q0, &#39;b&#39;)</span>
+    <span class="c1"># dfa.add_transition(q1, q2, &#39;a&#39;)</span>
+    <span class="c1">#</span>
+    <span class="c1"># dfa.add_transition(q2, q0, &#39;a&#39;)</span>
+    <span class="c1"># dfa.add_transition(q2, q1, &#39;b&#39;)</span>
+    <span class="c1">#</span>
+    <span class="c1"># print(dfa)</span>
+    <span class="c1"># print(dfa.to_regex())</span>
+
+    <span class="n">q1</span> <span class="o">=</span> <span class="n">State</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">)</span>
+    <span class="n">q2</span> <span class="o">=</span> <span class="n">State</span><span class="p">(</span><span class="s1">&#39;2&#39;</span><span class="p">)</span>
+
+    <span class="n">dfa</span> <span class="o">=</span> <span class="n">Automaton</span><span class="p">({</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">},</span> <span class="n">start_state</span><span class="o">=</span><span class="n">q1</span><span class="p">)</span>
+
+    <span class="n">dfa</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">})</span>
+    <span class="n">dfa</span><span class="o">.</span><span class="n">accept_states</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">q2</span><span class="p">)</span>
+
+    <span class="n">dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+    <span class="n">dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+
+    <span class="n">dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q2</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+    <span class="n">dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q2</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">dfa</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">dfa</span><span class="o">.</span><span class="n">to_regex</span><span class="p">())</span>
+
 </pre></div>
 
           </div>
