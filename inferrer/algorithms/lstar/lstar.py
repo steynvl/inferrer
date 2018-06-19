@@ -1,14 +1,14 @@
 import copy
 from inferrer import utils, automaton
 from inferrer.algorithms.lstar.oracle import Oracle
-from inferrer.algorithms.algorithm import Algoritm
+from inferrer.algorithms.algorithm import Algorithm
 from typing import Set, Tuple
 
 
-class LSTAR(Algoritm):
+class LSTAR(Algorithm):
     """
     An implementation of Dana Angluin's L* algorithm, which
-    learns regular languages from Queries and Counterexamples.
+    learns regular languages from queries and counterexamples.
 
     The general idea of L* is to:
     Find a consistent observation table (representing a DFA).
@@ -21,8 +21,8 @@ class LSTAR(Algoritm):
 
     def __init__(self, pos_examples: Set[str],
                  neg_examples: Set[str],
-                 oracle: Oracle,
-                 alphabet: Set[str]):
+                 alphabet: Set[str],
+                 oracle: Oracle):
         """
         :param pos_examples: Set of positive example strings
                              from the target language
@@ -31,14 +31,14 @@ class LSTAR(Algoritm):
                              i.e strings that do not belong in
                              the target language.
         :type neg_examples: Set[str]
+        :param alphabet: The alphabet (Sigma) of the target
+                         regular language.
+        :type alphabet: Set[str]
         :param oracle: Minimally adequate teacher (MAT)
         :type oracle: Oracle
-        :param alphabet: Alphabet of the target language.
-        :type alphabet: Set[str]
         """
-        super().__init__(pos_examples, neg_examples)
+        super().__init__(pos_examples, neg_examples, alphabet)
         self._oracle = oracle
-        self._alphabet = alphabet
         self._red = set()
         self._blue = set()
 

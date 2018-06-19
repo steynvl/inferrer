@@ -11,7 +11,7 @@ class TestRPNI(unittest.TestCase):
     def test_rpni_01(self):
         s_plus = {'aaa', 'aaba', 'bba', 'bbaba'}
         s_minus = {'a', 'bb', 'aab', 'aba'}
-        rpi = algorithms.RPNI(s_plus, s_minus)
+        rpi = algorithms.RPNI(s_plus, s_minus, {'a', 'b'})
         dfa = rpi.learn()
         for s in s_plus:
             self.assertTrue(dfa.parse_string(s)[1])
@@ -22,7 +22,7 @@ class TestRPNI(unittest.TestCase):
     def test_rpni_02(self):
         s_plus = {'aa', 'aba', 'bba'}
         s_minus = {'ab', 'abab'}
-        rpni = algorithms.RPNI(s_plus, s_minus)
+        rpni = algorithms.RPNI(s_plus, s_minus, {'a', 'b'})
 
         dfa = rpni.learn()
         for s in s_plus:
@@ -34,7 +34,7 @@ class TestRPNI(unittest.TestCase):
     def test_rpni_03(self):
         s_plus = {'a', 'aa', 'aaa'}
         s_minus = set()
-        rpni = algorithms.RPNI(s_plus, s_minus)
+        rpni = algorithms.RPNI(s_plus, s_minus, {'a'})
 
         dfa = rpni.learn()
         for s in s_plus:
@@ -43,7 +43,7 @@ class TestRPNI(unittest.TestCase):
     def test_rpni_04(self):
         s_plus = {'a' * i for i in range(1, 101)}
 
-        rpni = algorithms.RPNI(s_plus, set())
+        rpni = algorithms.RPNI(s_plus, set(), {'a'})
         dfa = rpni.learn()
 
         self.assertEqual(1, len(dfa.states))
@@ -57,11 +57,11 @@ class TestRPNI(unittest.TestCase):
     def test_rpni_05(self):
         s_plus = set()
         s_minus = set()
-        for i in range(1, 101):
+        for i in range(1, 15):
             s_plus.add('a' * i)
             s_minus.add('b' * i)
 
-        rpni = algorithms.RPNI(s_plus, s_minus)
+        rpni = algorithms.RPNI(s_plus, s_minus, {'a', 'b'})
         dfa = rpni.learn()
 
         self.assertEqual(1, len(dfa.states))
@@ -89,7 +89,7 @@ class TestRPNI(unittest.TestCase):
             s_plus.add('a' * i)
             s_minus.add('' * (i - 1))
 
-        rpni = algorithms.RPNI(s_plus, s_minus)
+        rpni = algorithms.RPNI(s_plus, s_minus, {'a'})
         dfa = rpni.learn()
 
         self.assertSetEqual({automaton.State(''), automaton.State('a')}, dfa.states)
@@ -136,7 +136,7 @@ class TestRPNI(unittest.TestCase):
             s_plus.add(''.join(positive_example))
             s_minus.add(''.join(negative_example))
 
-        rpni = algorithms.RPNI(s_plus, s_minus)
+        rpni = algorithms.RPNI(s_plus, s_minus, {'0', '1'})
         dfa = rpni.learn()
 
         q_lambda = automaton.State('')
@@ -185,7 +185,7 @@ class TestRPNI(unittest.TestCase):
             s_plus.add('1' * i + '0' * random.randint(0, 6))
             s_minus.add('1' * (i - 1) + '0' * random.randint(0, 6))
 
-        rpni = algorithms.RPNI(s_plus, s_minus)
+        rpni = algorithms.RPNI(s_plus, s_minus, {'0', '1'})
         dfa = rpni.learn()
 
         self.assertEqual(10, len(dfa.states))
@@ -218,7 +218,7 @@ class TestRPNI(unittest.TestCase):
             '1001', '10001', '100001'
         }
 
-        rpni = algorithms.RPNI(s_plus, s_minus)
+        rpni = algorithms.RPNI(s_plus, s_minus, {'0', '1'})
         dfa = rpni.learn()
 
         self.assertEqual(4, len(dfa.states))
@@ -247,7 +247,7 @@ class TestRPNI(unittest.TestCase):
             else:
                 s_minus.add(i)
 
-        rpni = algorithms.RPNI(s_plus, s_minus)
+        rpni = algorithms.RPNI(s_plus, s_minus, {'0', '1'})
         dfa = rpni.learn()
 
         for s in s_plus:

@@ -3,12 +3,13 @@ from typing import Set, Tuple, Generator
 
 
 class ObservationTable:
+    """
+    Represents an ObservationTable, which is a 2-dimensional table
+    that gives information about some target language.
+    """
 
     def __init__(self, blue: Set[str], red: Set[str], alphabet: Set[str]):
         """
-        Represents a ObservationTable, which is a 2-dimensional table
-        that gives information about some target language.
-
         :param blue: set containing blue states
         :type blue: set
         :param red: set containing red states

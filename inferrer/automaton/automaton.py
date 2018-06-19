@@ -2,15 +2,16 @@ import copy
 from inferrer import utils
 from inferrer.automaton.state import State
 from collections import defaultdict, OrderedDict
-from typing import Set, Tuple
+from typing import Set, Tuple, List, Generator
 
 
 class Automaton:
+    """
+    Implements a deterministic finite automaton.
+    """
 
     def __init__(self, alphabet: Set[str], start_state: State=State('')):
         """
-        Initiates a deterministic finite automaton
-
         :param alphabet: The alphabet of the regular language
         :type alphabet: set
         :param start_state: the initial state of the automaton
@@ -97,6 +98,28 @@ class Automaton:
 
         return q, q in self.accept_states
 
+    def walk_path(self, q: State, a: str) -> Generator:
+        """
+        Traverses the string a through the automaton
+        starting at state q. This method returns
+        a generator of the states visited while walking
+        through the automaton.
+
+        :param q: State the automaton should starts
+                  in when traversing a.
+        :type q: State
+        :param a: String with symbols from the alphabet.
+        :type a: str
+        :return: Generator of visited states
+        :rtype: Generator[State]
+        """
+        yield q
+        for letter in a:
+            if not self.transition_exists(q, letter):
+                return
+            q = self.transition(q, letter)
+            yield q
+
     def find_transition_to_q(self, q: State) -> Tuple:
         """
         Finds the State r that satisfies
@@ -165,6 +188,78 @@ class Automaton:
         cp._transitions = copy.deepcopy(self._transitions)
 
         return cp
+
+    def to_regex(self) -> str:
+        """
+        Converts a DFA to an equivalent regular expression.
+        Please consult Sipser for an explanation of this algorithm:
+        https://www.amazon.com/Introduction-Theory-Computation-Michael-Sipser/dp/113318779X
+
+        :return: DFA converted to regular expression.
+        :rtype: str
+        """
+        initial = State('__initial__')
+        final = State('__final__')
+        states = sorted(set(self.states).union({initial, final}), reverse=True)
+
+        dfa_states = sorted(self.states, reverse=True)
+
+        expressions = {}
+        for x in states:
+            for y in states:
+                expressions[x, y] = None
+        for x in dfa_states:
+            expressions[x, x] = ''
+            if x == self._start_state:
+                expressions[initial, x] = ''
+            if x in self.accept_states:
+                expressions[x, final] = ''
+        for x in dfa_states:
+            for a in sorted(self._alphabet, reverse=True):
+                y = self.transition(x, a)
+                if expressions[x, y]:
+                    expressions[x, y] += '|{}'.format(a)
+                else:
+                    expressions[x, y] = a
+
+        for s in dfa_states:
+            states.remove(s)
+            for x in states:
+                for y in states:
+                    if expressions[x, s] is not None \
+                            and expressions[s, y] is not None:
+                        xsy = []
+                        if expressions[x, s]:
+                            xsy.extend(self._parenthesize(expressions[x, s]))
+                        if expressions[s, s]:
+                            xsy.extend(self._parenthesize(expressions[s, s], True))
+                            xsy.append('*')
+                        if expressions[s, y]:
+                            xsy.extend(self._parenthesize(expressions[s, y]))
+                        if expressions[x, y] is not None:
+                            xsy.extend(['|', expressions[x, y] or '()'])
+                        expressions[x, y] = ''.join(xsy)
+
+        return expressions[initial, final]
+
+    def _parenthesize(self, expr: str, starring: bool=False) -> List[str]:
+        """
+        Returns a list of strings with or without parentheses. This method
+        is used to simplify the expression returned. By omitting parentheses
+        or other expression features when unnecessary.
+
+        :param expr: Expression
+        :type expr: str
+        :type starring: bool
+        :return: List of expressions
+        :rtype: List[str]
+        """
+        if len(expr) == 1 or (not starring and '|' not in expr):
+            return [expr]
+        elif starring and expr.endswith('|()'):
+            return ['(', expr[:-3], ')']
+        else:
+            return ['(', expr, ')']
 
     def __str__(self):
         """
@@ -236,3 +331,45 @@ def build_pta(s_plus: Set[str], s_minus: Set[str]=set()) -> Automaton:
     pta.states = states
 
     return pta
+
+
+if __name__ == '__main__':
+    # q0 = State('0')
+    # q1 = State('1')
+    # q2 = State('2')
+    #
+    # dfa = Automaton({'a', 'b'}, start_state=q0)
+    #
+    #
+    # dfa.accept_states.add(q0)
+    #
+    # dfa.add_transition(q0, q1, 'a')
+    # dfa.add_transition(q0, q2, 'b')
+    #
+    # dfa.add_transition(q1, q0, 'b')
+    # dfa.add_transition(q1, q2, 'a')
+    #
+    # dfa.add_transition(q2, q0, 'a')
+    # dfa.add_transition(q2, q1, 'b')
+    #
+    # print(dfa)
+    # print(dfa.to_regex())
+
+    q1 = State('1')
+    q2 = State('2')
+
+    dfa = Automaton({'a', 'b'}, start_state=q1)
+
+    dfa.states.update({q1, q2})
+    dfa.accept_states.add(q2)
+
+    dfa.add_transition(q1, q1, 'a')
+    dfa.add_transition(q1, q2, 'b')
+
+    dfa.add_transition(q2, q2, 'a')
+    dfa.add_transition(q2, q2, 'b')
+
+    print(dfa)
+
+    print(dfa.to_regex())
+

@@ -1,17 +1,17 @@
 import functools
 from inferrer import utils, automaton
-from inferrer.algorithms.algorithm import Algoritm
+from inferrer.algorithms.algorithm import Algorithm
 from typing import Set
 
 
-class RPNI(Algoritm):
+class RPNI(Algorithm):
     """
     An implementation of the Regular Positive and Negative Inference (RPNI)
     algorithm. This algorithm tries to make sure that some generalisation
     takes place and, in the best case, returns the correct target automaton.
     """
 
-    def __init__(self, pos_examples: Set[str], neg_examples: Set[str]):
+    def __init__(self, pos_examples: Set[str], neg_examples: Set[str], alphabet: Set[str]):
         """
         :param pos_examples: Set of positive example strings
                              from the target language
@@ -20,10 +20,12 @@ class RPNI(Algoritm):
                              i.e strings that do not belong in
                              the target language.
         :type neg_examples: Set[str]
+        :param alphabet: The alphabet (Sigma) of the target
+                         regular language.
+        :type alphabet: Set[str]
         """
-        super().__init__(pos_examples, neg_examples)
+        super().__init__(pos_examples, neg_examples, alphabet)
         self._samples = pos_examples.union(neg_examples)
-        self._alphabet = utils.determine_alphabet(self._pos_examples)
 
         self._red = {automaton.State('')}
         self._blue = set()

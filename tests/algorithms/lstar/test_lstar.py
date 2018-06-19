@@ -15,8 +15,8 @@ class TestLSTAR(unittest.TestCase):
 
         lstar = algorithms.LSTAR(s_plus,
                                  s_minus,
-                                 oracle,
-                                 utils.determine_alphabet(s_plus.union(s_minus)))
+                                 {'a', 'b'},
+                                 oracle)
         dfa = lstar.learn()
 
         self.assertEqual(5, len(dfa.states))
@@ -36,8 +36,8 @@ class TestLSTAR(unittest.TestCase):
 
         lstar = algorithms.LSTAR(s_plus,
                                  s_minus,
-                                 oracle,
-                                 utils.determine_alphabet(s_plus.union(s_minus)))
+                                 {'a', 'b'},
+                                 oracle)
         dfa = lstar.learn()
 
         self.assertEqual(3, len(dfa.states))
@@ -84,8 +84,8 @@ class TestLSTAR(unittest.TestCase):
         oracle = algorithms.Oracle(s_plus, s_minus)
         lstar = algorithms.LSTAR(s_plus,
                                  s_minus,
-                                 oracle,
-                                 {'a'})
+                                 {'a'},
+                                 oracle)
         dfa = lstar.learn()
 
         self.assertEqual(2, len(dfa.states))
@@ -111,8 +111,8 @@ class TestLSTAR(unittest.TestCase):
         oracle = algorithms.Oracle(s_plus, s_minus)
         lstar = algorithms.LSTAR(s_plus,
                                  s_minus,
-                                 oracle,
-                                 utils.determine_alphabet(s_plus.union(s_minus)))
+                                 {'a'},
+                                 oracle)
         dfa = lstar.learn()
 
         self.assertEqual(3, len(dfa.states))
@@ -141,8 +141,8 @@ class TestLSTAR(unittest.TestCase):
         oracle = algorithms.Oracle(s_plus, s_minus)
         lstar = algorithms.LSTAR(s_plus,
                                  s_minus,
-                                 oracle,
-                                 utils.determine_alphabet(s_plus.union(s_minus)))
+                                 {'0', '1'},
+                                 oracle)
         dfa = lstar.learn()
 
         for s in s_plus:
@@ -167,8 +167,8 @@ class TestLSTAR(unittest.TestCase):
         oracle = algorithms.Oracle(s_plus, s_minus)
         lstar = algorithms.LSTAR(s_plus,
                                  s_minus,
-                                 oracle,
-                                 utils.determine_alphabet(s_plus.union(s_minus)))
+                                 {'0', '1'},
+                                 oracle)
         dfa = lstar.learn()
 
         for s in s_plus:
@@ -194,8 +194,8 @@ class TestLSTAR(unittest.TestCase):
         oracle = algorithms.Oracle(s_plus, s_minus)
         lstar = algorithms.LSTAR(s_plus,
                                  s_minus,
-                                 oracle,
-                                 utils.determine_alphabet(s_plus.union(s_minus)))
+                                 {'0', '1'},
+                                 oracle)
         dfa = lstar.learn()
 
         for s in s_plus:
@@ -223,8 +223,8 @@ class TestLSTAR(unittest.TestCase):
         oracle = algorithms.Oracle(s_plus, s_minus)
         lstar = algorithms.LSTAR(s_plus,
                                  s_minus,
-                                 oracle,
-                                 utils.determine_alphabet(s_plus.union(s_minus)))
+                                 {'0', '1'},
+                                 oracle)
         dfa = lstar.learn()
 
         for s in s_plus:

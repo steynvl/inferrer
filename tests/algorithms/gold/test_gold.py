@@ -25,7 +25,7 @@ class TestGold(unittest.TestCase):
         self.assertTrue(ot.is_consistent())
         self.assertEqual((True, True), ot.is_closed_and_consistent())
 
-        gold = algorithms.Gold({'a', 'b'}, set())
+        gold = algorithms.Gold({'a', 'b'}, set(), {'a', 'b'})
         gold._blue = blue
         gold._red = red
         dfa = gold._build_automaton(ot)
@@ -58,7 +58,7 @@ class TestGold(unittest.TestCase):
     def test_gold_01(self):
         s_plus = {'bb', 'abb', 'bba', 'bbb'}
         s_minus = {'a', 'b', 'aa', 'bab'}
-        gold = algorithms.Gold(s_plus, s_minus)
+        gold = algorithms.Gold(s_plus, s_minus, {'a', 'b'})
 
         expected_table = {
             '': {'': None,
@@ -104,7 +104,7 @@ class TestGold(unittest.TestCase):
     def test_gold_02(self):
         s_plus = {'bb', 'abb', 'bba', 'bbb'}
         s_minus = {'a', 'b', 'aa', 'bab'}
-        gold = algorithms.Gold(s_plus, s_minus)
+        gold = algorithms.Gold(s_plus, s_minus, {'a', 'b'})
 
         dfa = gold.learn()
         for s in s_plus:
@@ -116,7 +116,7 @@ class TestGold(unittest.TestCase):
     def test_gold_03(self):
         s_plus = {'aa', 'aba', 'bba'}
         s_minus = {'ab', 'abab'}
-        gold = algorithms.Gold(s_plus, s_minus)
+        gold = algorithms.Gold(s_plus, s_minus, {'a', 'b'})
 
         dfa = gold.learn()
         for s in s_plus:
@@ -128,7 +128,7 @@ class TestGold(unittest.TestCase):
     def test_gold_04(self):
         s_plus = {'a', 'aa', 'aaa'}
         s_minus = set()
-        gold = algorithms.Gold(s_plus, s_minus)
+        gold = algorithms.Gold(s_plus, s_minus, {'a', 'b'})
 
         dfa = gold.learn()
         for s in s_plus:
