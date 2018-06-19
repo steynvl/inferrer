@@ -3,9 +3,9 @@ from inferrer import automaton
 from typing import Set
 
 
-class Algoritm(abc.ABC):
+class Algorithm(abc.ABC):
 
-    def __init__(self, pos_examples: Set[str], neg_examples: Set[str]):
+    def __init__(self, pos_examples: Set[str], neg_examples: Set[str], alphabet: Set[str]):
         """
         :param pos_examples: Set of positive example strings
                              from the target language.
@@ -14,9 +14,13 @@ class Algoritm(abc.ABC):
                              i.e strings that do not belong in
                              the target language.
         :type neg_examples: Set[str]
+        :param alphabet: The alphabet (Sigma) of the target
+                         regular language.
+        :type alphabet: Set[str]
         """
         self._pos_examples = pos_examples
         self._neg_examples = neg_examples
+        self._alphabet = alphabet
 
     @abc.abstractmethod
     def learn(self) -> automaton.Automaton:
