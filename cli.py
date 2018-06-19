@@ -21,8 +21,6 @@ def main(args):
                                algorithm=args.algorithm)
 
     dfa = learner.learn_grammar()
-    print(dfa)
-    print('---')
     print(dfa.to_regex())
 
 
