@@ -1,0 +1,291 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferrer.algorithms.rpni.rpni &#8212; inferrer 0.1 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for inferrer.algorithms.rpni.rpni</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">from</span> <span class="nn">inferrer</span> <span class="k">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">automaton</span>
+<span class="kn">from</span> <span class="nn">inferrer.algorithms.algorithm</span> <span class="k">import</span> <span class="n">Algorithm</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Set</span>
+
+
+<div class="viewcode-block" id="RPNI"><a class="viewcode-back" href="../../../../inferrer.algorithms.rpni.html#inferrer.algorithms.rpni.rpni.RPNI">[docs]</a><span class="k">class</span> <span class="nc">RPNI</span><span class="p">(</span><span class="n">Algorithm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An implementation of the Regular Positive and Negative Inference (RPNI)</span>
+<span class="sd">    algorithm. This algorithm tries to make sure that some generalisation</span>
+<span class="sd">    takes place and, in the best case, returns the correct target automaton.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos_examples</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">neg_examples</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">alphabet</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param pos_examples: Set of positive example strings</span>
+<span class="sd">                             from the target language</span>
+<span class="sd">        :type pos_examples: Set[str]</span>
+<span class="sd">        :param neg_examples: Set of negative example strings,</span>
+<span class="sd">                             i.e strings that do not belong in</span>
+<span class="sd">                             the target language.</span>
+<span class="sd">        :type neg_examples: Set[str]</span>
+<span class="sd">        :param alphabet: The alphabet (Sigma) of the target</span>
+<span class="sd">                         regular language.</span>
+<span class="sd">        :type alphabet: Set[str]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">pos_examples</span><span class="p">,</span> <span class="n">neg_examples</span><span class="p">,</span> <span class="n">alphabet</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_samples</span> <span class="o">=</span> <span class="n">pos_examples</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">neg_examples</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_red</span> <span class="o">=</span> <span class="p">{</span><span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_blue</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+<div class="viewcode-block" id="RPNI.learn"><a class="viewcode-back" href="../../../../inferrer.algorithms.rpni.html#inferrer.algorithms.rpni.rpni.RPNI.learn">[docs]</a>    <span class="k">def</span> <span class="nf">learn</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">automaton</span><span class="o">.</span><span class="n">Automaton</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Learns the grammar from the sets of positive and negative</span>
+<span class="sd">        example strings. This method returns a DFA that is</span>
+<span class="sd">        consistent with the sample.</span>
+
+<span class="sd">        :return: DFA</span>
+<span class="sd">        :rtype: Automaton</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dfa</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">build_pta</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos_examples</span><span class="p">)</span>
+
+        <span class="n">pref_set</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">prefix_set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos_examples</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alphabet</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_blue</span> <span class="o">=</span> <span class="p">{</span><span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alphabet</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">pref_set</span><span class="p">)}</span>
+
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_blue</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">qb</span> <span class="o">=</span> <span class="n">_choose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_blue</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_blue</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">qb</span><span class="p">)</span>
+
+            <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">qr</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_red</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">functools</span><span class="o">.</span><span class="n">cmp_to_key</span><span class="p">(</span><span class="n">_cmp</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compatible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_merge</span><span class="p">(</span><span class="n">dfa</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">qr</span><span class="p">,</span> <span class="n">qb</span><span class="p">)):</span>
+                    <span class="n">dfa</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_merge</span><span class="p">(</span><span class="n">dfa</span><span class="p">,</span> <span class="n">qr</span><span class="p">,</span> <span class="n">qb</span><span class="p">)</span>
+                    <span class="n">new_blue_states</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+                    <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_red</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alphabet</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">dfa</span><span class="o">.</span><span class="n">transition_exists</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span> <span class="ow">and</span> \
+                                    <span class="n">dfa</span><span class="o">.</span><span class="n">transition</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_red</span><span class="p">:</span>
+                                <span class="n">new_blue_states</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">dfa</span><span class="o">.</span><span class="n">transition</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">a</span><span class="p">))</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_blue</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new_blue_states</span><span class="p">)</span>
+                    <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
+                <span class="n">dfa</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_promote</span><span class="p">(</span><span class="n">qb</span><span class="p">,</span> <span class="n">dfa</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neg_examples</span><span class="p">:</span>
+            <span class="n">q</span><span class="p">,</span> <span class="n">accepted</span> <span class="o">=</span> <span class="n">dfa</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">accepted</span><span class="p">:</span>
+                <span class="n">dfa</span><span class="o">.</span><span class="n">reject_states</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dfa</span><span class="o">.</span><span class="n">minimize</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_promote</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qu</span><span class="p">:</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">,</span> <span class="n">dfa</span><span class="p">:</span> <span class="n">automaton</span><span class="o">.</span><span class="n">Automaton</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">automaton</span><span class="o">.</span><span class="n">Automaton</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a state blue state qu, this method promotes this state</span>
+<span class="sd">        ro red and all the successors in the dfa. The method returns</span>
+<span class="sd">        the updated dfa.</span>
+
+<span class="sd">        :param qu: State with colour blue</span>
+<span class="sd">        :type qu: State</span>
+<span class="sd">        :param dfa: the dfa</span>
+<span class="sd">        :type dfa: Automaton</span>
+<span class="sd">        :return: Updated dfa</span>
+<span class="sd">        :rtype: Automaton</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_red</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">qu</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_blue</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+            <span class="n">dfa</span><span class="o">.</span><span class="n">transition</span><span class="p">(</span><span class="n">qu</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alphabet</span> <span class="k">if</span> <span class="n">dfa</span><span class="o">.</span><span class="n">transition_exists</span><span class="p">(</span><span class="n">qu</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+        <span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_blue</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">qu</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dfa</span>
+
+    <span class="k">def</span> <span class="nf">_compatible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dfa</span><span class="p">:</span> <span class="n">automaton</span><span class="o">.</span><span class="n">Automaton</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determines whether the current automaton can parse any</span>
+<span class="sd">        string in the set of negative example strings.</span>
+<span class="sd">        Returns True if the current automaton cannot parse</span>
+<span class="sd">        any string from the negative examples, returns False</span>
+<span class="sd">        if some counter-example is accepted by the current</span>
+<span class="sd">        automaton.</span>
+
+<span class="sd">        :param dfa: the dfa</span>
+<span class="sd">        :type dfa: Automaton</span>
+<span class="sd">        :return: Boolean indicating whether the dfa is compatible.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">dfa</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="n">w</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_neg_examples</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_merge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dfa</span><span class="p">:</span> <span class="n">automaton</span><span class="o">.</span><span class="n">Automaton</span><span class="p">,</span>
+               <span class="n">q</span><span class="p">:</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">,</span>
+               <span class="n">q_prime</span><span class="p">:</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">automaton</span><span class="o">.</span><span class="n">Automaton</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Takes as arguments a red state q and a blue state q&#39;.</span>
+<span class="sd">        The method first finds the unique pair (qf, a) such</span>
+<span class="sd">        that q&#39; = delta(qf, a).</span>
+<span class="sd">        The method then redirects delta(qf, a) to q. After that</span>
+<span class="sd">        the tree rooted in q&#39; is folded into the rest of the DFA.</span>
+<span class="sd">        The possible intermediate situations of non-determinism</span>
+<span class="sd">        are dealt with during the recursive calls to fold.</span>
+
+<span class="sd">        :param dfa: the automaton to update with a merge</span>
+<span class="sd">        :type dfa: Automaton</span>
+<span class="sd">        :param q: State from the red set</span>
+<span class="sd">        :type q: State</span>
+<span class="sd">        :param q_prime: State from the blue</span>
+<span class="sd">        :type q_prime: State</span>
+<span class="sd">        :return: updated Automaton</span>
+<span class="sd">        :rtype: Automaton</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">qf</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="n">dfa</span><span class="o">.</span><span class="n">find_transition_to_q</span><span class="p">(</span><span class="n">q_prime</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">qf</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">a</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">dfa</span>
+
+        <span class="n">dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">qf</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fold</span><span class="p">(</span><span class="n">dfa</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">q_prime</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_fold</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dfa</span><span class="p">:</span> <span class="n">automaton</span><span class="o">.</span><span class="n">Automaton</span><span class="p">,</span>
+              <span class="n">q</span><span class="p">:</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">,</span>
+              <span class="n">q_prime</span><span class="p">:</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">automaton</span><span class="o">.</span><span class="n">Automaton</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Folds the tree rooted in q&#39; into the rest of the DFA. The</span>
+<span class="sd">        possible intermediate situations of non-determinism</span>
+<span class="sd">        are dealt with during the recursive calls.</span>
+
+<span class="sd">        :param dfa: the automaton to update with a folding of states</span>
+<span class="sd">        :type dfa: Automaton</span>
+<span class="sd">        :param q: State</span>
+<span class="sd">        :type q: State</span>
+<span class="sd">        :param q_prime: State to fold</span>
+<span class="sd">        :type q_prime: State</span>
+<span class="sd">        :return: updated Automaton</span>
+<span class="sd">        :rtype: Automaton</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">q_prime</span> <span class="ow">in</span> <span class="n">dfa</span><span class="o">.</span><span class="n">accept_states</span><span class="p">:</span>
+            <span class="n">dfa</span><span class="o">.</span><span class="n">accept_states</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alphabet</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dfa</span><span class="o">.</span><span class="n">transition_exists</span><span class="p">(</span><span class="n">q_prime</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">dfa</span><span class="o">.</span><span class="n">transition_exists</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
+                    <span class="n">dfa</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fold</span><span class="p">(</span><span class="n">dfa</span><span class="p">,</span> <span class="n">dfa</span><span class="o">.</span><span class="n">transition</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">a</span><span class="p">),</span>
+                                     <span class="n">dfa</span><span class="o">.</span><span class="n">transition</span><span class="p">(</span><span class="n">q_prime</span><span class="p">,</span> <span class="n">a</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">dfa</span><span class="o">.</span><span class="n">transition</span><span class="p">(</span><span class="n">q_prime</span><span class="p">,</span> <span class="n">a</span><span class="p">),</span> <span class="n">a</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">dfa</span></div>
+
+
+<span class="k">def</span> <span class="nf">_choose</span><span class="p">(</span><span class="n">blue</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A deterministic function that chooses one of the</span>
+<span class="sd">    elements in the given blue set. It does so by</span>
+<span class="sd">    choosing the minimal &lt;u, a&gt; in lexicographic order.</span>
+
+<span class="sd">    :param blue: Set of blue states</span>
+<span class="sd">    :type blue: Set[State]</span>
+<span class="sd">    :return: One of the elements in the given blue set</span>
+<span class="sd">    :rtype: State</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">blue</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">functools</span><span class="o">.</span><span class="n">cmp_to_key</span><span class="p">(</span><span class="n">_cmp</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">_cmp</span><span class="p">(</span><span class="n">q1</span><span class="p">:</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">,</span> <span class="n">q2</span><span class="p">:</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compares two states by comparing the</span>
+<span class="sd">    name (string value of the state). If the</span>
+<span class="sd">    two strings have the same length, then the</span>
+<span class="sd">    two strings are compared lexicographically.</span>
+
+<span class="sd">    :param q1: state 1</span>
+<span class="sd">    :type q1: State</span>
+<span class="sd">    :param q2: state 2</span>
+<span class="sd">    :type q2: State</span>
+<span class="sd">    :return: 1 of a is greater than b, 0 if a</span>
+<span class="sd">             is equal to b and -1 if a is less</span>
+<span class="sd">             than b.</span>
+<span class="sd">    :rtype: int</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">q1</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">q2</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">q1</span><span class="o">.</span><span class="n">name</span> <span class="o">&gt;</span> <span class="n">q2</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="n">q1</span><span class="o">.</span><span class="n">name</span> <span class="o">&lt;</span> <span class="n">q2</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">q1</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">q2</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Steyn van Litsenborgh.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
