@@ -21,7 +21,7 @@ $ python3 -m unittest discover
 Since inferrer is a library, you can import and use it in your own code, but the library
 is also exposed via a CLI:
 ```bash
-$ python3 cli.py --help
+$ python3 inferrer_cli.py --help
 ```
 
 Documentation for the library is located in docs/public/index.html.
@@ -36,7 +36,7 @@ strings and a file negative_01.txt, which contains negative example strings.
 
 We are going to try to learn this regular language using the RPNI algorithm:
 ```bash
-python3 cli.py resources/positive_01.txt resources/negative_01.txt rpni
+python3 inferrer_cli.py resources/positive_01.txt resources/negative_01.txt rpni
 ```
 RPNI then builds the following DFA
 
@@ -53,7 +53,7 @@ We want to try and learn the language L, where L is a language over the alphabet
 
 We are going to try to learn this regular language using the RPNI algorithm:
 ```bash
-python3 cli.py resources/positive_02.txt resources/negative_02.txt rpni
+python3 inferrer_cli.py resources/positive_02.txt resources/negative_02.txt rpni
 ```
 RPNI then builds the following DFA
 
@@ -62,7 +62,7 @@ RPNI then builds the following DFA
 which is the correct grammar and thus we have successfully inferred the regular language L.
 This DFA is then converted to the following regular expression:
 ```text
-((10(00)*1|0)(1(00)*1)*(1(00)*01|0)|10(00)*01|11)*
+((ba(aa)*b|a)(b(aa)*b)*(b(aa)*ab|a)|ba(aa)*ab|bb)*
 ```
 
 ## Resources
