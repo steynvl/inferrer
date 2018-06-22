@@ -41,7 +41,7 @@ class TestRPNI(unittest.TestCase):
             self.assertTrue(dfa.parse_string(s)[1])
 
     def test_rpni_04(self):
-        s_plus = {'a' * i for i in range(1, 101)}
+        s_plus = {'a' * i for i in range(50)}
 
         rpni = algorithms.RPNI(s_plus, set(), {'a'})
         dfa = rpni.learn()
@@ -55,16 +55,13 @@ class TestRPNI(unittest.TestCase):
         self.assertTrue(dfa.parse_string('a' * 1000)[1])
 
     def test_rpni_05(self):
-        s_plus = set()
-        s_minus = set()
-        for i in range(1, 15):
-            s_plus.add('a' * i)
-            s_minus.add('b' * i)
+        s_plus = {'a' * i for i in range(1, 51)}
+        s_minus = {''}
 
-        rpni = algorithms.RPNI(s_plus, s_minus, {'a', 'b'})
+        rpni = algorithms.RPNI(s_plus, s_minus, {'a'})
         dfa = rpni.learn()
 
-        self.assertEqual(1, len(dfa.states))
+        self.assertEqual(2, len(dfa.states))
         self.assertEqual(1, len(dfa.accept_states))
 
         for s in s_plus:
@@ -73,9 +70,28 @@ class TestRPNI(unittest.TestCase):
             self.assertFalse(dfa.parse_string(s)[1])
 
         self.assertTrue(dfa.parse_string('a' * 1000)[1])
-        self.assertFalse(dfa.parse_string('b' * 1000)[1])
 
     def test_rpni_06(self):
+        s_plus = set()
+        s_minus = set()
+        for i in self._combinations({'a', 'b'}, 4):
+            if i == '':
+                s_minus.add(i)
+            else:
+                s_plus.add(i)
+
+        rpni = algorithms.RPNI(s_plus, s_minus, {'a', 'b'})
+        dfa = rpni.learn()
+
+        self.assertEqual(2, len(dfa.states))
+        self.assertEqual(1, len(dfa.accept_states))
+
+        for s in s_plus:
+            self.assertTrue(dfa.parse_string(s)[1])
+        for s in s_minus:
+            self.assertFalse(dfa.parse_string(s)[1])
+
+    def test_rpni_07(self):
         """
         try to let RPNI learn the regular language L.
         L is a regular language over the alphabet {a} where
@@ -87,7 +103,7 @@ class TestRPNI(unittest.TestCase):
 
         for i in range(1, 21, 2):
             s_plus.add('a' * i)
-            s_minus.add('' * (i - 1))
+            s_minus.add('a' * (i - 1))
 
         rpni = algorithms.RPNI(s_plus, s_minus, {'a'})
         dfa = rpni.learn()
@@ -116,7 +132,7 @@ class TestRPNI(unittest.TestCase):
         for s in s_minus:
             self.assertFalse(dfa.parse_string(s)[1])
 
-    def test_rpni_07(self):
+    def test_rpni_08(self):
         """
         try to let RPNI learn the regular language L.
         L is a regular language over the alphabet {0, 1} where
@@ -169,7 +185,7 @@ class TestRPNI(unittest.TestCase):
         for s in s_minus:
             self.assertFalse(dfa.parse_string(s)[1])
 
-    def test_rpni_08(self):
+    def test_rpni_09(self):
         """
         try to let RPNI learn the regular language L.
         L is a regular language over the alphabet {0, 1} where
@@ -199,7 +215,7 @@ class TestRPNI(unittest.TestCase):
         for s in s_minus:
             self.assertFalse(dfa.parse_string(s)[1])
 
-    def test_rpni_09(self):
+    def test_rpni_10(self):
         """
         try to let RPNI learn the regular language L.
         L is a regular language over the alphabet {0, 1} where
@@ -230,7 +246,7 @@ class TestRPNI(unittest.TestCase):
         for s in s_minus:
             self.assertFalse(dfa.parse_string(s)[1])
 
-    def test_rpni_10(self):
+    def test_rpni_11(self):
         """
         try to let RPNI learn the regular language L.
         L is a regular language over the alphabet {0, 1} where
@@ -256,13 +272,12 @@ class TestRPNI(unittest.TestCase):
 
         self.assertTrue(dfa.parse_string('110110')[1])
 
-    def test_rpni_11(self):
+    def test_rpni_12(self):
         """
         try to let RPNI learn the regular language L.
         L is a regular language over the alphabet {a, b, c} where
-        every string in L is a even length.
+        every string in L is an even length.
         """
-        random.seed(10012)
         s_plus = set()
         s_minus = set()
 
@@ -280,7 +295,7 @@ class TestRPNI(unittest.TestCase):
         for s in s_minus:
             self.assertFalse(dfa.parse_string(s)[1])
 
-    def test_rpni_12(self):
+    def test_rpni_13(self):
         """
         try to let RPNI learn the regular language L.
         L is a regular language over the alphabet {a, b, c} where
@@ -291,43 +306,6 @@ class TestRPNI(unittest.TestCase):
 
         for i in self._combinations({'a', 'b', 'c'}, 6):
             if len(i) % 2 == 1:
-                s_plus.add(i)
-            else:
-                s_minus.add(i)
-
-        rpni = algorithms.RPNI(s_plus, s_minus, {'a', 'b', 'c'})
-        dfa = rpni.learn()
-
-        for s in s_plus:
-            self.assertTrue(dfa.parse_string(s)[1])
-        for s in s_minus:
-            self.assertFalse(dfa.parse_string(s)[1])
-
-    def test_rpni_13(self):
-        """
-        try to let RPNI learn the regular language L.
-        L is a regular language over the alphabet {a, b} where
-        for every string in L, we have the following property,
-        the characters at an even position should be a, the
-        characters at an odd position can be a or b. The empty
-        string is not accepted by the language.
-        """
-        s_plus = set()
-        s_minus = set()
-
-        for i in self._combinations({'a', 'b'}, 6):
-            if i == '':
-                s_minus.add(i)
-                continue
-
-            cpy = list(i[:])
-            for idx in range(len(i)):
-                if idx % 2 == 1:
-                    cpy[idx] = 'a'
-
-            s_plus.add(''.join(cpy))
-
-            if all([i[q] == 'a' for q in range(1, len(i), 2)]):
                 s_plus.add(i)
             else:
                 s_minus.add(i)
@@ -369,7 +347,7 @@ class TestRPNI(unittest.TestCase):
             else:
                 s_minus.add(i)
 
-        rpni = algorithms.RPNI(s_plus, s_minus, {'a', 'b', 'c'})
+        rpni = algorithms.RPNI(s_plus, s_minus, {'a', 'b'})
         dfa = rpni.learn()
 
         for s in s_plus:
@@ -502,43 +480,20 @@ class TestRPNI(unittest.TestCase):
         for s in s_minus:
             self.assertFalse(dfa.parse_string(s)[1])
 
+    @unittest.SkipTest
     def test_rpni_19(self):
-        """
-        try to let RPNI learn the regular language L.
-        L is a regular language over the alphabet {a, b} where
-        for every string in L does not contain the substring abb
-        """
-        s_plus = set()
-        s_minus = set()
-
-        for i in self._combinations({'a', 'b'}, 6):
-            if 'abb' in i:
-                s_minus.add(i)
-            else:
-                s_plus.add(i)
-
-        rpni = algorithms.RPNI(s_plus, s_minus, {'a', 'b'})
-        dfa = rpni.learn()
-
-        for s in s_plus:
-            self.assertTrue(dfa.parse_string(s)[1])
-        for s in s_minus:
-            self.assertFalse(dfa.parse_string(s)[1])
-
-    def test_rpni_20(self):
         """
         try to let RPNI learn the regular language L.
         L is a regular language over the alphabet {0, 1, .} where
         for every string in L represent a made up IP address format.
         X.X.X where X is either 0 or 1 and the length of X is 1, 2 or 3.
         """
+        random.seed(10012)
         s_plus = set()
         s_minus = set()
-        s_plus_reduce = set()
         s_minus_reduce = set()
 
-        three_nums = list(filter(lambda s: s != '', self._combinations({'0', '1'}, 4)))
-        s_minus.add('')
+        three_nums = list(filter(lambda st: st != '', self._combinations({'0', '1'}, 4)))
 
         first = three_nums[:]
         second = []
@@ -555,21 +510,12 @@ class TestRPNI(unittest.TestCase):
                 else:
                     s_plus.add(string)
 
-        i = 0
-        for s in s_plus:
-            if i == 4:
-                s_plus_reduce.add(s)
-                i = 0
-            i += 1
-
-        i = 0
-        for s in s_minus:
-            if i == 4:
-                s_minus_reduce.add(s)
-                i = 0
-            i += 1
+        s_plus_reduce = set(random.sample(s_plus, 150))
+        neg = set(random.sample(s_minus, 150))
+        s_minus_reduce.update(neg)
 
         s_minus_reduce.update({
+            '',
             '.',
             '0.',
             '1.',
@@ -577,10 +523,216 @@ class TestRPNI(unittest.TestCase):
             '10.',
             '001.',
             '111.',
-            '101.'
+            '101.',
+            '0',
+            '1',
+            '01',
+            '10',
+            '101',
+            '001',
         })
 
-        rpni = algorithms.RPNI(s_plus, s_minus, {'0', '1', '.'})
+        s_plus_reduce.update({
+            '1.00.00',
+            '0.1.001',
+            '0.0.100',
+            '1.1.100',
+            '10.0.101',
+            '00.0.10',
+            '11.0.100',
+            '00.1.101',
+            '1.1.11',
+            '11.1.100',
+            '00.0.00',
+            '0.0.111',
+            '0.01.101',
+            '0.0.01',
+            '0.0.10'
+        })
+
+        rpni = algorithms.RPNI(s_plus_reduce, s_minus_reduce, {'0', '1', '.'})
+        dfa = rpni.learn()
+
+        for s in s_plus:
+            self.assertTrue(dfa.parse_string(s)[1])
+        for s in s_minus:
+            self.assertFalse(dfa.parse_string(s)[1])
+
+    @unittest.SkipTest
+    def test_rpni_20(self):
+        """
+        try to let RPNI learn the regular language L.
+        L is a regular language over the alphabet {0, 1, .} where
+        for every string in L represent a made up IP address format.
+        X.X.X where X is either 0 or 1 and the length of X is 1, 2 or 3.
+        """
+        s_plus = set()
+        s_minus = set()
+
+        valid_length = list(filter(lambda st: st != '', self._combinations({'0', '1'}, 3)))
+        invalid_lengths = list(filter(lambda st: len(st) == 0 or len(st) > 3, self._combinations({'0', '1'}, 6)))
+
+        random.seed(10012)
+        s_minus.update(random.sample(invalid_lengths, 35))
+
+        random.seed(132)
+        first_part = random.sample(invalid_lengths, 15)
+        random.seed(1001)
+        for i in first_part:
+            s_minus.add('{}.'.format(i))
+            s_minus.add('{}..'.format(i))
+            s_minus.add('{}...'.format(i))
+            s_minus.add('{}.{}'.format(i, random.sample(invalid_lengths, 1)[0]))
+
+        random.seed(54328)
+        second_part = random.sample(invalid_lengths, 15)
+        random.seed(2212)
+        for i in second_part:
+            s_minus.add('{}.'.format(i))
+            s_minus.add('{}.{}'.format(i, random.sample(invalid_lengths, 1)[0]))
+            s_minus.add('{}.{}.'.format(i, random.sample(invalid_lengths, 1)[0]))
+
+        first = valid_length[:]
+        second = []
+        for i in first:
+            for j in valid_length:
+                second.append('{}.{}'.format(i, j))
+
+        for i in second:
+            for j in valid_length:
+                s_plus.add('{}.{}'.format(i, j))
+
+        random.seed(90432)
+        s_plus_reduce = set(random.sample(s_plus, 125))
+
+        s_minus.update({
+            '10.10',
+            '1.0',
+            '1.1',
+            '0.0',
+            '101.001',
+            '101.001..10',
+            '0.10.10.',
+            '0.10.10..',
+            '0.10.10...',
+            '0.10.10....',
+            '0.10..10....',
+            '0.10...10....',
+            '1..',
+            '0..',
+            '0...',
+            '1...',
+            '10...101.10',
+            '10...01.10',
+            '10.01..10',
+            '0.1..10',
+            '01.101..10',
+            '01...'
+            '101..101',
+            '.',
+            '101..1.01'
+        })
+
+        rpni = algorithms.RPNI(s_plus_reduce, s_minus, {'0', '1', '.'})
+        dfa = rpni.learn()
+
+        for s in s_plus_reduce:
+            self.assertTrue(dfa.parse_string(s)[1])
+        for s in s_minus:
+            self.assertFalse(dfa.parse_string(s)[1])
+
+        self.assertFalse(dfa.parse_string('10.10')[1])
+
+    def test_rpni_21(self):
+        s_plus = set()
+        s_minus = set()
+
+        reps = set('a' * i for i in range(1, 7))
+        for i in reps:
+            for j in reps:
+                s_plus.add('{}@{}'.format(i, j))
+
+        reps_with_empty = set('a' * i for i in range(7))
+        s_minus.add('@')
+        for i in reps_with_empty:
+            s_minus.add('{}@'.format(i))
+            s_minus.add('@{}'.format(i))
+            s_minus.add('@{}@'.format(i))
+            s_minus.add('@{}@@'.format(i))
+            s_minus.add('@{}@@@'.format(i))
+            for j in reps_with_empty:
+                s_minus.add('@{}@{}'.format(i, j))
+                s_minus.add('{}@{}@'.format(i, j))
+                s_minus.add('{}@{}@@'.format(i, j))
+                s_minus.add('{}@{}@@@'.format(i, j))
+                s_minus.add('{}@{}@@@@'.format(i, j))
+
+                s_minus.add('{}@{}@@{}'.format(i, j, i))
+                s_minus.add('{}@{}@@@{}'.format(i, j, i))
+                s_minus.add('{}@{}@@@@{}'.format(i, j, i))
+
+        s_minus.update(reps_with_empty)
+
+        s_minus.update({
+            'a@a@a@a',
+            'aa@aa@',
+            'aaaa@aaaaa@aaaaa',
+            'a@@a@a'
+            'aa@@a@a'
+            'aa@@aaa@a'
+        })
+
+        rpni = algorithms.RPNI(s_plus, s_minus, {'a', '@'})
+        dfa = rpni.learn()
+
+        for s in s_plus:
+            self.assertTrue(dfa.parse_string(s)[1])
+        for s in s_minus:
+            self.assertFalse(dfa.parse_string(s)[1])
+
+    def test_rpni_22(self):
+        s_plus = set()
+        s_minus = set()
+
+        s_plus.add('4{}'.format('d' * 12))
+        s_plus.add('4{}'.format('d' * 15))
+
+        s_minus.add('d{}'.format('d' * 12))
+        s_minus.add('d{}'.format('d' * 15))
+        s_minus.add('')
+
+        for i in range(20):
+            if i == 12 or i == 15:
+                s_minus.add('d' * i)
+                continue
+            s_minus.add('4{}'.format('d' * i))
+            s_minus.add('d' * i)
+
+            neg = '{}4'.format('d' * i)
+            neg1 = 'd' * (13 - len(neg))
+            neg2 = 'd' * (16 - len(neg))
+            s_minus.add(neg1)
+            s_minus.add(neg2)
+
+        rpni = algorithms.RPNI(s_plus, s_minus, {'4', 'd'})
+        dfa = rpni.learn()
+
+        for s in s_plus:
+            self.assertTrue(dfa.parse_string(s)[1])
+        for s in s_minus:
+            self.assertFalse(dfa.parse_string(s)[1])
+
+    def test_rpni_23(self):
+        s_plus = set()
+        s_minus = set()
+
+        for i in self._combinations({'a', '1', '#'}, 6):
+            if 'a' in i and '1' in i and '#' in i:
+                s_plus.add(i)
+            else:
+                s_minus.add(i)
+
+        rpni = algorithms.RPNI(s_plus, s_minus, {'a', '1', '#'})
         dfa = rpni.learn()
 
         for s in s_plus:
@@ -594,6 +746,10 @@ class TestRPNI(unittest.TestCase):
             for p in itertools.product(s, repeat=rep):
                 yield ''.join(p)
 
+    @staticmethod
+    def _combinations_with_length(s: Set[str], repeat: int) -> Generator:
+        for p in itertools.product(s, repeat=repeat):
+            yield ''.join(p)
 
 if __name__ == '__main__':
     unittest.main()
