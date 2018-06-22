@@ -23,6 +23,9 @@ def main(args):
     dfa = learner.learn_grammar()
     print(dfa.to_regex())
 
+    if args.show_dfa:
+        dfa.show()
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='This is the CLI tool for the '
@@ -46,5 +49,9 @@ if __name__ == '__main__':
                         help='The algorithm that should be used to learn the grammar.'
                              ' The options are: gold, rpni, lstar')
 
-    args = parser.parse_args()
-    sys.exit(main(args))
+    parser.add_argument('--show-dfa', action='store_true',
+                        help='If this argument is given, the DFA learned by the '
+                             'specified algorithm will be shown.')
+
+    options = parser.parse_args()
+    sys.exit(main(options))

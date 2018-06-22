@@ -1,3 +1,5 @@
+import graphviz
+import tempfile
 import copy
 from inferrer import utils
 from inferrer.automaton.state import State
@@ -216,6 +218,8 @@ class Automaton:
                 expressions[x, final] = ''
         for x in dfa_states:
             for a in sorted(self._alphabet, reverse=True):
+                if not self.transition_exists(x, a):
+                    continue
                 y = self.transition(x, a)
                 if expressions[x, y]:
                     expressions[x, y] += '|{}'.format(a)
@@ -260,6 +264,38 @@ class Automaton:
             return ['(', expr[:-3], ')']
         else:
             return ['(', expr, ')']
+
+    def show(self):
+        """
+        Graphs the DFA using graphviz, the DFA will
+        immediately be shown in a PDF file when this
+        method is called.
+        """
+        digraph = graphviz.Digraph('dfa')
+        digraph.graph_attr['rankdir'] = 'LR'
+
+        edges = defaultdict(lambda: defaultdict(list))
+
+        for state in self.states:
+            shape = 'doublecircle' if state in self.accept_states else 'circle'
+            digraph.node(name=self._set_node_name(state), shape=shape, constraint='false')
+            if state in self._transitions:
+                for letter, to_state in self._transitions[state].items():
+                    edges[state][to_state].append(letter)
+
+        for from_state in edges:
+            for to_state, letters in edges[from_state].items():
+                digraph.edge(self._set_node_name(from_state),
+                             self._set_node_name(to_state),
+                             ', '.join(letters))
+
+        digraph.node('', shape='plaintext', constraint='true')
+        digraph.edge('', 'start')
+
+        digraph.view(tempfile.mkstemp('.gv')[1], cleanup=True)
+
+    def _set_node_name(self, q: State) -> str:
+        return 'start' if q.name == '' else q.name
 
     def __str__(self):
         """
