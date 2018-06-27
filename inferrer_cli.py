@@ -37,12 +37,12 @@ if __name__ == '__main__':
 
     parser.add_argument('positive_examples', type=str, metavar='positive-examples',
                         help='Path to the file containing positive example strings, '
-                             'i.e. string that belong in the target language separated '
+                             'i.e. strings that belong in the target language separated '
                              'by newlines.')
 
     parser.add_argument('negative_examples', type=str, metavar='negative-examples',
                         help='Path to the file containing negative example strings, '
-                             'i.e. string that do not belong in the target language'
+                             'i.e. strings that do not belong in the target language'
                              ' separated by newlines.')
 
     parser.add_argument('algorithm', type=str,
