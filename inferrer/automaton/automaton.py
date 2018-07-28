@@ -1,3 +1,4 @@
+import queue
 import graphviz
 import tempfile
 import copy
@@ -175,6 +176,30 @@ class Automaton:
 
         return minimized_dfa
 
+    def _rename_states(self):
+        """
+        Renames all the states in the dfa.
+        """
+        dfa = Automaton(self._alphabet)
+
+        q = queue.Queue()
+        q.put(self._start_state)
+
+        visited = {self._start_state}
+
+        dfa._start_state = State('q0')
+
+        while not q.empty():
+            v = q.get()
+
+            for a in self._alphabet:
+                if v in self._transitions and a in self._transitions[v]:
+                    to_state = self.transition(v, a)
+
+                    if to_state not in visited:
+                        q.put(to_state)
+                        visited.add(to_state)
+
     def copy(self):
         """
         Performs a deep copy of this instance.
@@ -276,21 +301,28 @@ class Automaton:
 
         edges = defaultdict(lambda: defaultdict(list))
 
+        node_count = 1
+        name_map = {}
         for state in self.states:
             shape = 'doublecircle' if state in self.accept_states else 'circle'
-            digraph.node(name=self._set_node_name(state), shape=shape, constraint='false')
+            digraph.node(name=self._set_node_name(state, node_count), shape=shape, constraint='false')
+
+            name_map[state.name] = self._set_node_name(state, node_count)
+            if state.name != '':
+                node_count += 1
+
             if state in self._transitions:
                 for letter, to_state in self._transitions[state].items():
                     edges[state][to_state].append(letter)
 
         for from_state in edges:
             for to_state, letters in edges[from_state].items():
-                digraph.edge(self._set_node_name(from_state),
-                             self._set_node_name(to_state),
+                digraph.edge(name_map[from_state.name],
+                             name_map[to_state.name],
                              ', '.join(letters))
 
         digraph.node('', shape='plaintext', constraint='true')
-        digraph.edge('', 'start')
+        digraph.edge('', 'q0')
 
         return digraph
 
@@ -303,8 +335,8 @@ class Automaton:
         self.create_graphviz_object().view(tempfile.mkstemp('gv')[1], cleanup=True)
 
     @staticmethod
-    def _set_node_name(q: State) -> str:
-        return 'start' if q.name == '' else q.name
+    def _set_node_name(q: State, node_count: int) -> str:
+        return 'q0' if q.name == '' else 'q{}'.format(node_count)
 
     def __str__(self):
         """

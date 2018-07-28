@@ -249,20 +249,20 @@ class TestRPNI(unittest.TestCase):
     def test_rpni_11(self):
         """
         try to let RPNI learn the regular language L.
-        L is a regular language over the alphabet {0, 1} where
-        each string contains an even number of 0's and an even
-        number of 1's.
+        L is a regular language over the alphabet {a, b} where
+        each string contains an even number of a's and an even
+        number of b's.
         """
         s_plus = set()
         s_minus = set()
 
-        for i in self._combinations({'0', '1'}, 6):
-            if i.count('0') % 2 == 0 and i.count('1') % 2 == 0:
+        for i in self._combinations({'a', 'b'}, 6):
+            if i.count('a') % 2 == 0 and i.count('b') % 2 == 0:
                 s_plus.add(i)
             else:
                 s_minus.add(i)
 
-        rpni = algorithms.RPNI(s_plus, s_minus, {'0', '1'})
+        rpni = algorithms.RPNI(s_plus, s_minus, {'a', 'b'})
         dfa = rpni.learn()
 
         for s in s_plus:
@@ -270,7 +270,10 @@ class TestRPNI(unittest.TestCase):
         for s in s_minus:
             self.assertFalse(dfa.parse_string(s)[1])
 
-        self.assertTrue(dfa.parse_string('110110')[1])
+        self.assertTrue(dfa.parse_string('aabaab')[1])
+
+        for i in s_minus:
+            print(i)
 
     def test_rpni_12(self):
         """
@@ -750,6 +753,7 @@ class TestRPNI(unittest.TestCase):
     def _combinations_with_length(s: Set[str], repeat: int) -> Generator:
         for p in itertools.product(s, repeat=repeat):
             yield ''.join(p)
+
 
 if __name__ == '__main__':
     unittest.main()
