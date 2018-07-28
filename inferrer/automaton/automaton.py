@@ -1,3 +1,6 @@
+import queue
+import graphviz
+import tempfile
 import copy
 from inferrer import utils
 from inferrer.automaton.state import State
@@ -173,6 +176,30 @@ class Automaton:
 
         return minimized_dfa
 
+    def _rename_states(self):
+        """
+        Renames all the states in the dfa.
+        """
+        dfa = Automaton(self._alphabet)
+
+        q = queue.Queue()
+        q.put(self._start_state)
+
+        visited = {self._start_state}
+
+        dfa._start_state = State('q0')
+
+        while not q.empty():
+            v = q.get()
+
+            for a in self._alphabet:
+                if v in self._transitions and a in self._transitions[v]:
+                    to_state = self.transition(v, a)
+
+                    if to_state not in visited:
+                        q.put(to_state)
+                        visited.add(to_state)
+
     def copy(self):
         """
         Performs a deep copy of this instance.
@@ -216,6 +243,8 @@ class Automaton:
                 expressions[x, final] = ''
         for x in dfa_states:
             for a in sorted(self._alphabet, reverse=True):
+                if not self.transition_exists(x, a):
+                    continue
                 y = self.transition(x, a)
                 if expressions[x, y]:
                     expressions[x, y] += '|{}'.format(a)
@@ -242,7 +271,8 @@ class Automaton:
 
         return expressions[initial, final]
 
-    def _parenthesize(self, expr: str, starring: bool=False) -> List[str]:
+    @staticmethod
+    def _parenthesize(expr: str, starring: bool=False) -> List[str]:
         """
         Returns a list of strings with or without parentheses. This method
         is used to simplify the expression returned. By omitting parentheses
@@ -260,6 +290,53 @@ class Automaton:
             return ['(', expr[:-3], ')']
         else:
             return ['(', expr, ')']
+
+    def create_graphviz_object(self) -> graphviz.Digraph:
+        """
+        Creates a Graphviz object representing the
+        DFA of the current instance.
+        """
+        digraph = graphviz.Digraph('dfa')
+        digraph.graph_attr['rankdir'] = 'LR'
+
+        edges = defaultdict(lambda: defaultdict(list))
+
+        node_count = 1
+        name_map = {}
+        for state in self.states:
+            shape = 'doublecircle' if state in self.accept_states else 'circle'
+            digraph.node(name=self._set_node_name(state, node_count), shape=shape, constraint='false')
+
+            name_map[state.name] = self._set_node_name(state, node_count)
+            if state.name != '':
+                node_count += 1
+
+            if state in self._transitions:
+                for letter, to_state in self._transitions[state].items():
+                    edges[state][to_state].append(letter)
+
+        for from_state in edges:
+            for to_state, letters in edges[from_state].items():
+                digraph.edge(name_map[from_state.name],
+                             name_map[to_state.name],
+                             ', '.join(letters))
+
+        digraph.node('', shape='plaintext', constraint='true')
+        digraph.edge('', 'q0')
+
+        return digraph
+
+    def show(self):
+        """
+        Graphs the DFA using graphviz, the DFA will
+        immediately be shown in a PDF file when this
+        method is called.
+        """
+        self.create_graphviz_object().view(tempfile.mkstemp('gv')[1], cleanup=True)
+
+    @staticmethod
+    def _set_node_name(q: State, node_count: int) -> str:
+        return 'q0' if q.name == '' else 'q{}'.format(node_count)
 
     def __str__(self):
         """
@@ -331,45 +408,3 @@ def build_pta(s_plus: Set[str], s_minus: Set[str]=set()) -> Automaton:
     pta.states = states
 
     return pta
-
-
-if __name__ == '__main__':
-    # q0 = State('0')
-    # q1 = State('1')
-    # q2 = State('2')
-    #
-    # dfa = Automaton({'a', 'b'}, start_state=q0)
-    #
-    #
-    # dfa.accept_states.add(q0)
-    #
-    # dfa.add_transition(q0, q1, 'a')
-    # dfa.add_transition(q0, q2, 'b')
-    #
-    # dfa.add_transition(q1, q0, 'b')
-    # dfa.add_transition(q1, q2, 'a')
-    #
-    # dfa.add_transition(q2, q0, 'a')
-    # dfa.add_transition(q2, q1, 'b')
-    #
-    # print(dfa)
-    # print(dfa.to_regex())
-
-    q1 = State('1')
-    q2 = State('2')
-
-    dfa = Automaton({'a', 'b'}, start_state=q1)
-
-    dfa.states.update({q1, q2})
-    dfa.accept_states.add(q2)
-
-    dfa.add_transition(q1, q1, 'a')
-    dfa.add_transition(q1, q2, 'b')
-
-    dfa.add_transition(q2, q2, 'a')
-    dfa.add_transition(q2, q2, 'b')
-
-    print(dfa)
-
-    print(dfa.to_regex())
-

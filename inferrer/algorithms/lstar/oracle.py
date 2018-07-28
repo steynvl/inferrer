@@ -21,7 +21,6 @@ class Oracle:
         """
         self._s_plus = s_plus
         self._s_minus = s_minus
-        self._nr_of_eq = 0
 
     def membership_query(self, s: str) -> int:
         """
@@ -58,10 +57,6 @@ class Oracle:
                  first index will just be the empty string.
         :rtype: Tuple[str, bool]
         """
-        if self._nr_of_eq < len(self._s_minus):
-            self._nr_of_eq += 1
-            return sorted(self._s_minus, reverse=True)[self._nr_of_eq - 1], False
-
         for negative_string in sorted(self._s_minus, reverse=True):
             if dfa.parse_string(negative_string)[1]:
                 return negative_string, False

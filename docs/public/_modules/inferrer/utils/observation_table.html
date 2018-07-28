@@ -31,6 +31,7 @@
             
   <h1>Source code for inferrer.utils.observation_table</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Generator</span>
 
 
@@ -270,7 +271,24 @@
         <span class="k">for</span> <span class="n">u</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ot</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">col</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="k">yield</span> <span class="n">u</span><span class="p">,</span> <span class="n">e</span></div></div>
+                    <span class="k">yield</span> <span class="n">u</span><span class="p">,</span> <span class="n">e</span></div>
+
+<div class="viewcode-block" id="ObservationTable.copy"><a class="viewcode-back" href="../../../inferrer.utils.html#inferrer.utils.observation_table.ObservationTable.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Performs a deep copy of the instance.</span>
+
+<span class="sd">        :return: A deep copy of the observation table.</span>
+<span class="sd">        :rtype: ObservationTable</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ot</span> <span class="o">=</span> <span class="n">ObservationTable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_blue</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+                              <span class="bp">self</span><span class="o">.</span><span class="n">_red</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span>
+                              <span class="bp">self</span><span class="o">.</span><span class="n">_alphabet</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+
+        <span class="n">ot</span><span class="o">.</span><span class="n">ot</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ot</span><span class="p">)</span>
+        <span class="n">ot</span><span class="o">.</span><span class="n">exp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exp</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">ot</span><span class="o">.</span><span class="n">sta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sta</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">ot</span></div></div>
 </pre></div>
 
           </div>

@@ -10,18 +10,29 @@ library implements
 * Dana Angluin's L* algorithm.
 
 ## Setup
-It is assumed that you have [Python 3](https://www.python.org/downloads/release/python-352/) installed on your system.
+If you do not have pipenv installed on your system, then run the following:
+```bash
+pip install --user pipenv 
+```
 
-Clone the repository and then run the unit tests.
+If you want inferrer to show you the DFA that was inferred by the different algorithms, then
+you need to install [Graphviz](https://www.graphviz.org/) on your system. The following 
+will work on Ubuntu
+```bash
+sudo apt-get install graphviz
+```
+
+Clone the repository, install the dependencies and then run the unit tests
 ```bash
 $ git clone https://git.cs.sun.ac.za/18965237/inferrer
 $ cd inferrer
-$ python3 -m unittest discover
+$ pipenv install
+$ pipenv run python -m unittest discover
 ```
 Since inferrer is a library, you can import and use it in your own code, but the library
 is also exposed via a CLI:
 ```bash
-$ python3 inferrer_cli.py --help
+$ pipenv run python inferrer_cli.py --help
 ```
 
 Documentation for the library is located in docs/public/index.html.
@@ -36,7 +47,7 @@ strings and a file negative_01.txt, which contains negative example strings.
 
 We are going to try to learn this regular language using the RPNI algorithm:
 ```bash
-python3 inferrer_cli.py resources/positive_01.txt resources/negative_01.txt rpni
+pipenv run python inferrer_cli.py resources/positive_01.txt resources/negative_01.txt rpni
 ```
 RPNI then builds the following DFA
 
@@ -53,7 +64,7 @@ We want to try and learn the language L, where L is a language over the alphabet
 
 We are going to try to learn this regular language using the RPNI algorithm:
 ```bash
-python3 inferrer_cli.py resources/positive_02.txt resources/negative_02.txt rpni
+pipenv run python inferrer_cli.py resources/positive_02.txt resources/negative_02.txt rpni
 ```
 RPNI then builds the following DFA
 

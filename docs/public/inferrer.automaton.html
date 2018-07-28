@@ -80,6 +80,13 @@ transition table.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="inferrer.automaton.automaton.Automaton.create_graphviz_object">
+<code class="descname">create_graphviz_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; graphviz.dot.Digraph<a class="reference internal" href="_modules/inferrer/automaton/automaton.html#Automaton.create_graphviz_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.automaton.Automaton.create_graphviz_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a Graphviz object representing the
+DFA of the current instance.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="inferrer.automaton.automaton.Automaton.find_transition_to_q">
 <code class="descname">find_transition_to_q</code><span class="sig-paren">(</span><em>q: inferrer.automaton.state.State</em><span class="sig-paren">)</span> &#x2192; Tuple<a class="reference internal" href="_modules/inferrer/automaton/automaton.html#Automaton.find_transition_to_q"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.automaton.Automaton.find_transition_to_q" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds the State r that satisfies
@@ -138,6 +145,14 @@ the automaton accepted the input string.</td>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferrer.automaton.automaton.Automaton.show">
+<code class="descname">show</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/automaton/automaton.html#Automaton.show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.automaton.Automaton.show" title="Permalink to this definition">¶</a></dt>
+<dd><p>Graphs the DFA using graphviz, the DFA will
+immediately be shown in a PDF file when this
+method is called.</p>
 </dd></dl>
 
 <dl class="method">

@@ -1,4 +1,5 @@
 import collections
+import copy
 from typing import Set, Tuple, Generator
 
 
@@ -239,3 +240,20 @@ class ObservationTable:
             for e, val in col.items():
                 if val is None:
                     yield u, e
+
+    def copy(self):
+        """
+        Performs a deep copy of the instance.
+
+        :return: A deep copy of the observation table.
+        :rtype: ObservationTable
+        """
+        ot = ObservationTable(self._blue.copy(),
+                              self._red.copy(),
+                              self._alphabet.copy())
+
+        ot.ot = copy.deepcopy(self.ot)
+        ot.exp = self.exp.copy()
+        ot.sta = self.sta.copy()
+
+        return ot
