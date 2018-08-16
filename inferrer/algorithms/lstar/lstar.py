@@ -42,7 +42,7 @@ class LSTAR(Algorithm):
         self._red = set()
         self._blue = set()
 
-    def learn(self) -> automaton.Automaton:
+    def learn(self) -> automaton.DFA:
         """
         Efficiently learns an initially unknown regular language
         from a minimally adequate Teacher (Oracle).
@@ -210,7 +210,7 @@ class LSTAR(Algorithm):
 
         return ot
 
-    def _build_automaton(self, ot: utils.ObservationTable) -> automaton.Automaton:
+    def _build_automaton(self, ot: utils.ObservationTable) -> automaton.DFA:
         """
         Builds an automaton from the observation table.
 
@@ -219,7 +219,7 @@ class LSTAR(Algorithm):
         :return: The dfa built from the observation table.
         :rtype: Automaton
         """
-        dfa = automaton.Automaton(self._alphabet)
+        dfa = automaton.DFA(self._alphabet)
 
         for u in self._red:
             for v in ot.ot.keys():

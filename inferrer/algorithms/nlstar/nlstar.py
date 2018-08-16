@@ -28,6 +28,16 @@ class NLSTAR:
                 if not is_consistent:
                     self._make_table_consistent()
 
+                is_closed, is_consistent = self._ot.is_closed_and_consistent()
+
+            # dfa = self._build_automaton(ot)
+            # answer, satisfied = self._oracle.equivalence_query(dfa)
+            #
+            # if satisfied:
+            #     break
+            #
+            # ot = self._useq(ot, answer)
+
     def _close_table(self):
         for row in self._ot.upper_rows:
             for a in self._alphabet:

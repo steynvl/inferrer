@@ -36,7 +36,7 @@ class Oracle:
         """
         return 1 if s in self._s_plus else 0
 
-    def equivalence_query(self, dfa: automaton.Automaton) -> Tuple[str, bool]:
+    def equivalence_query(self, dfa: automaton.DFA) -> Tuple[str, bool]:
         """
         Answers a Equivalence Query (EQ) made by the learner L*.
         The learner provides the Oracle with some hypothesis.

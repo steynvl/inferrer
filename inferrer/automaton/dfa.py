@@ -8,7 +8,7 @@ from collections import defaultdict, OrderedDict
 from typing import Set, Tuple, List, Generator
 
 
-class Automaton:
+class DFA:
     """
     Implements a deterministic finite automaton.
     """
@@ -150,9 +150,9 @@ class Automaton:
         initial state and alphabet.
 
         :return: minimized dfa
-        :rtype: Automaton
+        :rtype: DFA
         """
-        minimized_dfa = Automaton(self._alphabet)
+        minimized_dfa = DFA(self._alphabet)
 
         stack = [State('')]
         visited_states = {State('')}
@@ -180,7 +180,7 @@ class Automaton:
         """
         Renames all the states in the dfa.
         """
-        dfa = Automaton(self._alphabet)
+        dfa = DFA(self._alphabet)
 
         q = queue.Queue()
         q.put(self._start_state)
@@ -205,9 +205,9 @@ class Automaton:
         Performs a deep copy of this instance.
 
         :return: A copied automaton
-        :rtype: Automaton
+        :rtype: DFA
         """
-        cp = Automaton(self._alphabet)
+        cp = DFA(self._alphabet)
 
         cp.states = self.states.copy()
         cp.accept_states = self.accept_states.copy()
@@ -364,7 +364,7 @@ class Automaton:
         return '\n'.join(rep)
 
 
-def build_pta(s_plus: Set[str], s_minus: Set[str]=set()) -> Automaton:
+def build_pta(s_plus: Set[str], s_minus: Set[str]=set()) -> DFA:
     """
     Function that builds a prefix tree acceptor from the example strings
     S = S+ union S-
@@ -374,12 +374,12 @@ def build_pta(s_plus: Set[str], s_minus: Set[str]=set()) -> Automaton:
     :param s_minus: Set containing negative examples of the target language
     :type s_minus: set
     :return: An automaton representing a prefix tree acceptor
-    :rtype: Automaton
+    :rtype: DFA
     """
     samples = s_plus.union(s_minus)
 
     alphabet = utils.determine_alphabet(samples)
-    pta = Automaton(alphabet)
+    pta = DFA(alphabet)
 
     for letter in alphabet:
         pta.add_transition(State(''), State(letter), letter)

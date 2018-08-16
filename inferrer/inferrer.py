@@ -69,7 +69,7 @@ class Learner:
 
         self._algorithm = algorithm
 
-    def learn_grammar(self) -> automaton.Automaton:
+    def learn_grammar(self) -> automaton.DFA:
         """
         Learns the regular language using the positive and negative
         example strings. The algorithm specified when instantiating

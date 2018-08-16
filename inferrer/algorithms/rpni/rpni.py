@@ -30,7 +30,7 @@ class RPNI(Algorithm):
         self._red = {automaton.State('')}
         self._blue = set()
 
-    def learn(self) -> automaton.Automaton:
+    def learn(self) -> automaton.DFA:
         """
         Learns the grammar from the sets of positive and negative
         example strings. This method returns a DFA that is
@@ -72,7 +72,7 @@ class RPNI(Algorithm):
 
         return dfa.minimize()
 
-    def _promote(self, qu: automaton.State, dfa: automaton.Automaton) -> automaton.Automaton:
+    def _promote(self, qu: automaton.State, dfa: automaton.DFA) -> automaton.DFA:
         """
         Given a state blue state qu, this method promotes this state
         ro red and all the successors in the dfa. The method returns
@@ -94,7 +94,7 @@ class RPNI(Algorithm):
 
         return dfa
 
-    def _compatible(self, dfa: automaton.Automaton) -> bool:
+    def _compatible(self, dfa: automaton.DFA) -> bool:
         """
         Determines whether the current automaton can parse any
         string in the set of negative example strings.
@@ -110,9 +110,9 @@ class RPNI(Algorithm):
         """
         return not any(dfa.parse_string(w)[1] for w in self._neg_examples)
 
-    def _merge(self, dfa: automaton.Automaton,
+    def _merge(self, dfa: automaton.DFA,
                q: automaton.State,
-               q_prime: automaton.State) -> automaton.Automaton:
+               q_prime: automaton.State) -> automaton.DFA:
         """
         Takes as arguments a red state q and a blue state q'.
         The method first finds the unique pair (qf, a) such
@@ -140,9 +140,9 @@ class RPNI(Algorithm):
 
         return self._fold(dfa, q, q_prime)
 
-    def _fold(self, dfa: automaton.Automaton,
+    def _fold(self, dfa: automaton.DFA,
               q: automaton.State,
-              q_prime: automaton.State) -> automaton.Automaton:
+              q_prime: automaton.State) -> automaton.DFA:
         """
         Folds the tree rooted in q' into the rest of the DFA. The
         possible intermediate situations of non-determinism

@@ -28,7 +28,7 @@ class Gold(Algorithm):
         self._red = {''}
         self._blue = set()
 
-    def learn(self) -> automaton.Automaton:
+    def learn(self) -> automaton.DFA:
         """
         Learns the grammar from the sets of positive and negative
         example strings. This method returns the minimal DFA
@@ -138,7 +138,7 @@ class Gold(Algorithm):
 
         return ot, False
 
-    def _build_automaton(self, ot: utils.ObservationTable) -> automaton.Automaton:
+    def _build_automaton(self, ot: utils.ObservationTable) -> automaton.DFA:
         """
         Builds an automaton from the observation table.
 
@@ -146,7 +146,7 @@ class Gold(Algorithm):
         :return: Automaton built from the observation table
         :rtype: Automaton
         """
-        dfa = automaton.Automaton(self._alphabet)
+        dfa = automaton.DFA(self._alphabet)
 
         states = {
             automaton.State(i) for i in self._red
@@ -176,7 +176,7 @@ class Gold(Algorithm):
         return dfa
 
     @staticmethod
-    def _is_consistent(dfa: automaton.Automaton, ot: utils.ObservationTable) -> bool:
+    def _is_consistent(dfa: automaton.DFA, ot: utils.ObservationTable) -> bool:
         """
         Determines whether the automaton is consistent with the
         observation table ot.

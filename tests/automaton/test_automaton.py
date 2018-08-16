@@ -6,7 +6,7 @@ from inferrer import automaton
 class TestAutomaton(unittest.TestCase):
 
     def test_automaton_01(self):
-        dfa = automaton.Automaton({'a', 'b'})
+        dfa = automaton.DFA({'a', 'b'})
 
         self.assertTrue(automaton.State('') in dfa.states)
         dfa.add_transition(automaton.State(''), automaton.State('a'), 'a')
@@ -24,7 +24,7 @@ class TestAutomaton(unittest.TestCase):
         start_state = automaton.State('')
         q1 = automaton.State('1')
         q2 = automaton.State('2')
-        dfa = automaton.Automaton({'a', 'b'}, start_state)
+        dfa = automaton.DFA({'a', 'b'}, start_state)
 
         dfa.add_transition(start_state, start_state, 'a')
         dfa.add_transition(start_state, q1, 'b')
@@ -104,7 +104,7 @@ class TestAutomaton(unittest.TestCase):
 
     def test_minimize_01(self):
         alphabet = {'a', 'b', 'c'}
-        dfa = automaton.Automaton(alphabet)
+        dfa = automaton.DFA(alphabet)
 
         dfa.add_transition(automaton.State(''), automaton.State('2'), 'a')
 
