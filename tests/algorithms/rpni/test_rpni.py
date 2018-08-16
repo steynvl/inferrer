@@ -272,9 +272,6 @@ class TestRPNI(unittest.TestCase):
 
         self.assertTrue(dfa.parse_string('aabaab')[1])
 
-        for i in s_minus:
-            print(i)
-
     def test_rpni_12(self):
         """
         try to let RPNI learn the regular language L.
