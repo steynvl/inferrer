@@ -13,6 +13,10 @@ class Row:
     def prefix(self):
         return self.__prefix
 
+    @prefix.setter
+    def prefix(self, prefix):
+        self.__prefix = prefix
+
     @property
     def columns(self):
         return self.__columns
@@ -46,31 +50,50 @@ class Row:
                 yield row
 
     def is_composed(self, rows):
-        for rep in range(1, len(rows) + 1):
-            for p in itertools.combinations(rows, rep):
-                if Row.join(list(p)).columns_are_equal(self):
+        for rep in range(2, len(rows) + 1):
+            for p in itertools.permutations(rows, rep):
+                joined_row = Row.join(list(p))
+                if joined_row.columns == self.columns:
                     return True
         return False
 
     @staticmethod
     def join(rows: list):
-        joined_row = Row('')
+        new_prefix = [rows[0].prefix]
+        joined_row = Row(rows[0].prefix)
         joined_row.columns = copy.deepcopy(rows[0].columns)
-        if len(rows) == 0:
-            raise ValueError('Can\'t join an empty list!')
-        elif len(rows) == 1:
-            return joined_row
 
         for i in range(1, len(rows)):
             row = rows[i]
+            new_prefix.append(row.prefix)
 
             for suffix in joined_row.columns.keys():
                 joined_row.columns[suffix] = joined_row.columns[suffix] or row.columns[suffix]
 
+        joined_row.prefix = ''.join(new_prefix)
+
         return joined_row
+
+    def __hash__(self):
+        return hash(self.prefix)
 
     def __eq__(self, other):
         return self.prefix == other.prefix
 
-    def __hash__(self):
-        return hash(self.prefix)
+    def __lt__(self, other):
+        return self.prefix < other.prefix
+
+    def __gt__(self, other):
+        return self.prefix > other.prefix
+
+    def __le__(self, other):
+        return self.prefix <= other.prefix
+
+    def __ge__(self, other):
+        return self.prefix >= other.prefix
+
+    def __ne__(self, other):
+        return self.prefix != other.prefix
+
+    def __str__(self):
+        return self.prefix

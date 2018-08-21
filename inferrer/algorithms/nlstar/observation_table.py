@@ -46,10 +46,39 @@ class ObservationTable:
     def suffixes(self):
         return self.__suffixes
 
+    @suffixes.setter
+    def suffixes(self, suffixes):
+        self.__suffixes = suffixes
+
+    @upper_rows.setter
+    def upper_rows(self, rows):
+        self.__upper_rows = rows
+
+    @lower_rows.setter
+    def lower_rows(self, rows):
+        self.__lower_rows = rows
+
+    @primes.setter
+    def primes(self, rows):
+        self.__primes = rows
+
+    @upper_primes.setter
+    def upper_primes(self, rows):
+        self.__upper_primes = rows
+
+    @rows.setter
+    def rows(self, rows):
+        self.__rows = rows
+
     def initialize(self):
         row = Row('')
         self.rows.add(row)
         self.upper_rows.add(row)
+
+        for symbol in self._alphabet:
+            row = Row(symbol)
+            self.rows.add(row)
+            self.lower_rows.add(row)
 
         self.add_suffix('')
 
@@ -74,6 +103,9 @@ class ObservationTable:
         for row in self.lower_rows:
             covered_rows = [r_prime for r_prime in self.upper_primes if r_prime.covered_by(row)]
 
+            if len(covered_rows) == 0:
+                continue
+
             if not Row.join(covered_rows).columns_are_equal(row):
                 return False
 
@@ -84,7 +116,7 @@ class ObservationTable:
             for r2 in r1.covered_rows(self.upper_rows):
                 for a in self._alphabet:
 
-                    if not Row(r1.preifx + a).covered_by(Row(r2.prefix + a)):
+                    if not Row(r1.prefix + a).covered_by(Row(r2.prefix + a)):
                         return False
         return True
 
@@ -95,6 +127,25 @@ class ObservationTable:
                 row.columns[suffix] = self._oracle.membership_query(row.prefix + suffix)
 
     def update_meta_data(self):
+        self.primes.clear()
+        self.upper_primes.clear()
+
         for row in self.rows:
-            candidates = list(filter(lambda r: r != row, self.rows))
-            row.prime = not row.is_composed(candidates)
+
+            candidates = list(filter(lambda r: r != row and not row.covered_by(r), self.rows))
+
+            if row in self.upper_rows or not row.is_composed(candidates):
+                row.prime = True
+                self.primes.add(row)
+                if row in self.upper_rows:
+                    self.upper_primes.add(row)
+
+    def get_epsilon_row(self):
+        for row in self.upper_rows:
+            if row.prefix == '':
+                return row
+
+    def get_row_by_prefix(self, prefix):
+        for row in self.rows:
+            if row.prefix == prefix:
+                return row
