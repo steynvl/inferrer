@@ -12,6 +12,8 @@ class FSA(abc.ABC):
     abstract class is dfa.py and nfa.py.
     """
     def __init__(self, alphabet: Set[str]):
+        if '' in alphabet:
+            raise ValueError('The empty string is not allowed in the alphabet!')
         self.__alphabet = alphabet
 
     @property

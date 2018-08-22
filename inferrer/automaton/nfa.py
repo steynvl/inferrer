@@ -3,7 +3,7 @@ from inferrer.automaton.fsa import FSA
 from inferrer.automaton.state import State
 from inferrer.automaton.dfa import DFA
 from collections import defaultdict, OrderedDict
-from typing import Set, List
+from typing import Set, List, Tuple
 import copy
 
 
@@ -36,15 +36,48 @@ class NFA(FSA):
         :param a: letter in alphabet
         :type a: str
         """
-        if a not in self.alphabet:
+        if a not in self.alphabet and a != '':
             raise ValueError('\'{}\' is not in the alphabet of the nfa!'.format(a))
 
         from_map = self._transitions[q1]
 
         if a not in from_map:
-            from_map[a] = []
+            from_map[a] = set()
 
-        from_map[a].append(q2)
+        from_map[a].add(q2)
+
+    def parse_string(self, s: str) -> Tuple[State, bool]:
+        """
+        Parses each character of the input string through
+        the nfa.
+
+        :param s: The string to parse (s element of alphabet*)
+        :type s: str
+        :return: The state after reading the string s and whether
+                 the nfa accepted the input string.
+        :rtype: tuple(State, bool)
+        """
+        for start_state in self._start_states:
+            stack = [(start_state, 0)]
+
+            while len(stack) > 0:
+                state, index = stack.pop()
+
+                if index == len(s):
+                    if state in self._accept_states:
+                        return (state, True)
+                    else:
+                        continue
+
+                symbols = self._transitions[state]
+                for symbol, to_states in symbols.items():
+                    for to_state in to_states:
+                        if symbol == '':
+                            stack.append((to_state, index))
+                        elif symbol == s[index]:
+                            stack.append((to_state, index + 1))
+
+        return (next(iter(self._start_states)), False)
 
     def add_state(self, state: State):
         """
@@ -151,6 +184,17 @@ class NFA(FSA):
 
             if any([s in cpy._accept_states for s in r]):
                 accept_prime.add(r)
+
+        dfa = DFA(self.alphabet, State(''.join(map(lambda q: q.name, q0_prime))))
+
+        dfa.states = {State(''.join(map(lambda q: q.name, q_prime)))}
+        dfa.accept_states = {State(''.join(map(lambda q: q.name, state))) for state in accept_prime}
+
+        for q, a in transitions.items():
+            to_state = transitions[q][a]
+            dfa._transitions[q][a] = State(''.join(map(lambda s: s.name, to_state)))
+
+        return dfa.minimize()
 
     @staticmethod
     def _epsilon_closure(nfa, q: State):

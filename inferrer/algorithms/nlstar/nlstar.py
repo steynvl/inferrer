@@ -43,10 +43,6 @@ class NLSTAR:
             print(new_expiriments)
 
             self._ot.add_new_suffixes(new_expiriments)
-            print('<<<')
-            for row in self._ot.rows:
-                print(row)
-            print('<<<')
             self._ot.update_meta_data()
 
         return self._build_hypothesis()
