@@ -44,9 +44,7 @@ class Row:
 
     def covered_rows(self, rows):
         for row in rows:
-            if row == self:
-                continue
-            if self.covered_by(row):
+            if self != row and self.covered_by(row):
                 yield row
 
     def is_composed(self, rows):

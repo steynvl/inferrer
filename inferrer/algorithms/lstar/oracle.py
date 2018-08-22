@@ -21,6 +21,7 @@ class Oracle:
         """
         self._s_plus = s_plus
         self._s_minus = s_minus
+        self._i = 0
 
     def membership_query(self, s: str) -> int:
         """
@@ -61,3 +62,8 @@ class Oracle:
             if dfa.parse_string(negative_string)[1]:
                 return negative_string, False
         return '', True
+        # if self._i == 0:
+        #     self._i += 1
+        #     return 'a' * 6, False
+        # else:
+        #     return '', True

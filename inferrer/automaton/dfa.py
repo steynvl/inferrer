@@ -4,11 +4,12 @@ import tempfile
 import copy
 from inferrer import utils
 from inferrer.automaton.state import State
+from inferrer.automaton.fsa import FSA
 from collections import defaultdict, OrderedDict
 from typing import Set, Tuple, List, Generator
 
 
-class DFA:
+class DFA(FSA):
     """
     Implements a deterministic finite automaton.
     """
@@ -17,13 +18,12 @@ class DFA:
         """
         :param alphabet: The alphabet of the regular language
         :type alphabet: set
-        :param start_state: the initial state of the automaton
+        :param start_state: the initial state of the dfa
         :type start_state: State
         """
+        super().__init__(alphabet)
 
         self._start_state = start_state
-
-        self._alphabet = alphabet
 
         self.states = {self._start_state}
 
@@ -32,6 +32,25 @@ class DFA:
         self.reject_states = set()
 
         self._transitions = defaultdict(OrderedDict)
+
+    def parse_string(self, s: str) -> Tuple[State, bool]:
+        """
+        Parses each character of the input string through
+        the dfa.
+
+        :param s: The string to parse (s element of alphabet*)
+        :type s: str
+        :return: The state after reading the string s and whether
+                 the dfa accepted the input string.
+        :rtype: tuple(State, bool)
+        """
+        q = self._start_state
+        for letter in s:
+            if not self.transition_exists(q, letter):
+                return q, False
+            q = self.transition(q, letter)
+
+        return q, q in self.accept_states
 
     def add_transition(self, q1: State, q2: State, a: str):
         """
@@ -45,8 +64,8 @@ class DFA:
         :param a: letter in alphabet
         :type a: str
         """
-        if a not in self._alphabet:
-            raise ValueError('\'{}\' is not in the alphabet of the automaton!'.format(a))
+        if a not in self.alphabet:
+            raise ValueError('\'{}\' is not in the alphabet of the dfa!'.format(a))
 
         self.states.update({q1, q2})
         self._transitions[q1][a] = q2
@@ -82,33 +101,14 @@ class DFA:
         """
         return self._transitions[q1][a]
 
-    def parse_string(self, s: str) -> Tuple[State, bool]:
-        """
-        Parses each character of the input string through
-        the automaton.
-
-        :param s: The string to parse (s element of alphabet*)
-        :type s: str
-        :return: The state after reading the string s and whether
-                 the automaton accepted the input string.
-        :rtype: tuple(State, bool)
-        """
-        q = self._start_state
-        for letter in s:
-            if not self.transition_exists(q, letter):
-                return q, False
-            q = self.transition(q, letter)
-
-        return q, q in self.accept_states
-
     def walk_path(self, q: State, a: str) -> Generator:
         """
-        Traverses the string a through the automaton
+        Traverses the string a through the dfa
         starting at state q. This method returns
         a generator of the states visited while walking
-        through the automaton.
+        through the dfa.
 
-        :param q: State the automaton should starts
+        :param q: State the dfa should starts
                   in when traversing a.
         :type q: State
         :param a: String with symbols from the alphabet.
@@ -142,7 +142,7 @@ class DFA:
 
     def minimize(self):
         """
-        Minimizes the automaton by removing all
+        Minimizes the dfa by removing all
         states (and transitions) that cannot be
         reached from the initial state. This is
         done by performing an iterative dept-first
@@ -152,7 +152,7 @@ class DFA:
         :return: minimized dfa
         :rtype: DFA
         """
-        minimized_dfa = DFA(self._alphabet)
+        minimized_dfa = DFA(self.alphabet)
 
         stack = [State('')]
         visited_states = {State('')}
@@ -161,7 +161,7 @@ class DFA:
 
             minimized_dfa.states.add(state)
 
-            for a in self._alphabet:
+            for a in self.alphabet:
                 if state in self._transitions and a in self._transitions[state]:
                     to_state = self.transition(state, a)
                     minimized_dfa.add_transition(state, to_state, a)
@@ -180,7 +180,7 @@ class DFA:
         """
         Renames all the states in the dfa.
         """
-        dfa = DFA(self._alphabet)
+        dfa = DFA(self.alphabet)
 
         q = queue.Queue()
         q.put(self._start_state)
@@ -192,7 +192,7 @@ class DFA:
         while not q.empty():
             v = q.get()
 
-            for a in self._alphabet:
+            for a in self.alphabet:
                 if v in self._transitions and a in self._transitions[v]:
                     to_state = self.transition(v, a)
 
@@ -204,10 +204,10 @@ class DFA:
         """
         Performs a deep copy of this instance.
 
-        :return: A copied automaton
+        :return: A copied dfa
         :rtype: DFA
         """
-        cp = DFA(self._alphabet)
+        cp = DFA(self.alphabet)
 
         cp.states = self.states.copy()
         cp.accept_states = self.accept_states.copy()
@@ -242,8 +242,8 @@ class DFA:
             if x in self.accept_states:
                 expressions[x, final] = ''
         for x in dfa_states:
-            for a in sorted(self._alphabet, reverse=True):
-                if not self.transition_exists(x, a):
+            for a in sorted(self.alphabet, reverse=True):
+                if not self.alphabet(x, a):
                     continue
                 y = self.transition(x, a)
                 if expressions[x, y]:
@@ -348,7 +348,7 @@ class DFA:
         """
         rep = [
             'Initial state:    = {}'.format(self._start_state),
-            'Alphabet:         = {}'.format(self._alphabet),
+            'Alphabet:         = {}'.format(self.alphabet),
             'States:           = {}'.format(set(map(str, self.states))),
             'Accepting states: = {}'.format(set(map(str, self.accept_states))),
             'Rejecting states: = {}'.format(set(map(str, self.reject_states))),
@@ -373,7 +373,7 @@ def build_pta(s_plus: Set[str], s_minus: Set[str]=set()) -> DFA:
     :type s_plus: set
     :param s_minus: Set containing negative examples of the target language
     :type s_minus: set
-    :return: An automaton representing a prefix tree acceptor
+    :return: An dfa representing a prefix tree acceptor
     :rtype: DFA
     """
     samples = s_plus.union(s_minus)

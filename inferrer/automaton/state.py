@@ -2,7 +2,8 @@ class State:
 
     def __init__(self, name: str):
         """
-        Represents a State in an automaton.
+        Represents a State in a
+        finite state acceptor.
 
         :param name: label of the state
         :type name: str
