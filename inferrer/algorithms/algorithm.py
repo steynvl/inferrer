@@ -23,7 +23,7 @@ class Algorithm(abc.ABC):
         self._alphabet = alphabet
 
     @abc.abstractmethod
-    def learn(self) -> automaton.DFA:
+    def learn(self) -> automaton.FSA:
         """
         Attempts to learn the grammar of the target
         regular language by using the sets of positive

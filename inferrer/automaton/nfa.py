@@ -170,7 +170,7 @@ class NFA(FSA):
         q_prime = set()
         accept_prime = set()
         transitions = {}
-        q0_prime = self._epsilon_closure(nfa,
+        q0_prime = self._epsilon_closure(cpy,
                                          next(iter(cpy._start_states)))
 
         for r in q_prime:
@@ -236,9 +236,3 @@ class NFA(FSA):
             rep.append('')
 
         return '\n'.join(rep)
-
-if __name__ == '__main__':
-    nfa = NFA(set())
-    a = {'a', 'b', 'c'}
-    for i in set(nfa._power_set(a)):
-        print(i)
