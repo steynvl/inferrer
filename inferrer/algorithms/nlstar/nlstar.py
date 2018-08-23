@@ -1,10 +1,9 @@
 from inferrer.algorithms.lstar.oracle import Oracle
-from typing import Set
-
 from inferrer.algorithms.nlstar.observation_table import ObservationTable
 from inferrer.algorithms.nlstar.row import Row
 from inferrer.automaton import State
 from inferrer.automaton.nfa import NFA
+from typing import Set
 
 
 class NLSTAR:
@@ -36,16 +35,14 @@ class NLSTAR:
             if satisfied:
                 break
 
-            new_expiriments = set()
-            for i in range(len(answer)):
-                new_expiriments.add(answer[:i])
-            new_expiriments.add(answer)
-            print(new_expiriments)
-
-            self._ot.add_new_suffixes(new_expiriments)
-            self._ot.update_meta_data()
+            self._use_eq(answer)
 
         return self._build_hypothesis()
+
+    def _use_eq(self, eq):
+        new_experiments = {eq[:i] for i in range(len(eq) + 1)}
+        self._ot.add_new_suffixes(new_experiments)
+        self._ot.update_meta_data()
 
     def _close_table(self):
         for row in self._ot.upper_rows:
@@ -95,7 +92,7 @@ class NLSTAR:
             if row.columns['']:
                 nfa.add_accepting_state(state)
 
-        for u in self._ot.upper_rows:
+        for u in self._ot.rows:
             state = State(u.prefix)
             if state not in nfa.get_states():
                 continue
@@ -112,103 +109,3 @@ class NLSTAR:
                         nfa.add_transition(state, r, a)
 
         return nfa
-
-
-if __name__ == '__main__':
-    # ot = ObservationTable({'a', 'b'}, Oracle(set(), set()))
-    # row1 = Row('')
-    # row2 = Row('a')
-    # row3 = Row('ab')
-    # row4 = Row('abb')
-    # row5 = Row('b')
-    # row6 = Row('aa')
-    #
-    # row7 = Row('aba')
-    # row8 = Row('abbb')
-    # row9 = Row('abba')
-    #
-    # ot.suffixes = {'', 'aaa', 'aa', 'a'}
-    #
-    # ot.rows = {row1, row2, row3, row4, row5, row6, row7, row8, row9}
-    #
-    # ot.upper_rows = {row1, row2, row3, row4}
-    # ot.lower_rows = {row5, row6, row7, row8, row9}
-    #
-    # ot.primes = {row1, row2, row3, row4, row5, row8, row9}
-    # ot.upper_primes = {row1, row2, row3, row4}
-    #
-    # row1.columns = { '': 0, 'aaa': 1, 'aa': 0, 'a': 0 }
-    # row2.columns = { '': 0, 'aaa': 1, 'aa': 1, 'a': 0 }
-    #
-    # row3.columns = { '': 0, 'aaa': 1, 'aa': 0, 'a': 1 }
-    # row4.columns = { '': 1, 'aaa': 1, 'aa': 0, 'a': 0 }
-    #
-    # row5.columns = { '': 0, 'aaa': 1, 'aa': 0, 'a': 0 }
-    # row6.columns = { '': 0, 'aaa': 1, 'aa': 1, 'a': 1 }
-    # row7.columns = { '': 1, 'aaa': 1, 'aa': 1, 'a': 0 }
-    # row8.columns = { '': 0, 'aaa': 1, 'aa': 0, 'a': 0 }
-    # row9.columns = { '': 0, 'aaa': 1, 'aa': 1, 'a': 0 }
-
-    # ot = ObservationTable({'a', 'b'}, Oracle(set(), set()))
-    # row1 = Row('')
-    # row2 = Row('a')
-    # row3 = Row('ab')
-    # row4 = Row('b')
-    # row5 = Row('aa')
-    # row6 = Row('abb')
-    # row7 = Row('aba')
-    #
-    # ot.suffixes = {'', 'aaa', 'aa', 'a'}
-    #
-    # ot.rows = {row1, row2, row3, row4, row5, row6, row7}
-    #
-    # ot.upper_rows = {row1, row2, row3}
-    # ot.lower_rows = {row4, row5, row6, row7}
-    #
-    # ot.primes = {row1, row2, row3, row4, row6}
-    # ot.upper_primes = {row1, row2, row3}
-    #
-    # row1.columns = {'': 0, 'aaa': 1, 'aa': 0, 'a': 0}
-    # row2.columns = {'': 0, 'aaa': 1, 'aa': 1, 'a': 0}
-    #
-    # row3.columns = {'': 0, 'aaa': 1, 'aa': 0, 'a': 1}
-    # row4.columns = {'': 0, 'aaa': 1, 'aa': 0, 'a': 0}
-    #
-    # row5.columns = {'': 0, 'aaa': 1, 'aa': 1, 'a': 1}
-    # row6.columns = {'': 1, 'aaa': 1, 'aa': 0, 'a': 0}
-    # row7.columns = {'': 1, 'aaa': 1, 'aa': 1, 'a': 0}
-
-    # ot.update_meta_data()
-    #
-    # nlstar = NLSTAR({'a', 'b'}, Oracle(set(), set()))
-    #
-    # nlstar._ot = ot
-    # print(nlstar._build_hypothesis())
-    #
-    # print(len(nlstar._ot.primes))
-    #
-    # for prime in nlstar._ot.primes:
-    #     print(prime.prefix)
-    #
-    # composed_rows = ot.primes.symmetric_difference(ot.rows)
-    #
-    # print('----')
-    # print(len(composed_rows))
-    # for composed in composed_rows:
-    #     print(composed)
-
-    import random
-    random.seed(10012)
-    s_plus = set()
-    s_minus = set()
-
-    for i in range(1, 21, 2):
-        s_plus.add('a' * i)
-        s_minus.add('a' * (i - 1))
-
-    oracle = Oracle(s_plus, s_minus)
-
-    nlstar = NLSTAR({'a'}, oracle)
-    dfa = nlstar.learn()
-
-    print(dfa)

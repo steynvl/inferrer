@@ -65,7 +65,7 @@ class NFA(FSA):
 
                 if index == len(s):
                     if state in self._accept_states:
-                        return (state, True)
+                        return state, True
                     else:
                         continue
 
@@ -77,7 +77,7 @@ class NFA(FSA):
                         elif symbol == s[index]:
                             stack.append((to_state, index + 1))
 
-        return (next(iter(self._start_states)), False)
+        return next(iter(self._start_states)), False
 
     def add_state(self, state: State):
         """
@@ -167,7 +167,7 @@ class NFA(FSA):
         else:
             cpy = self
 
-        q_prime = set()
+        q_prime = self._power_set(self._states)
         accept_prime = set()
         transitions = {}
         q0_prime = self._epsilon_closure(cpy,
@@ -210,7 +210,8 @@ class NFA(FSA):
                     stack.append(to_state)
         return closure_set
 
-    def _power_set(self, q):
+    @staticmethod
+    def _power_set(q):
         return chain.from_iterable(combinations(q, r) for r in range(len(q) + 1))
 
     def __str__(self):
@@ -222,7 +223,7 @@ class NFA(FSA):
         :rtype: str
         """
         rep = [
-            'Initial states:    = {}'.format(', '.join(map(str, self._start_states))),
+            'Initial states:    = {}'.format(set(map(lambda s: s.name, self._start_states))),
             'Alphabet:          = {}'.format(self.alphabet),
             'States:            = {}'.format(set(map(str, self._states))),
             'Accepting states:  = {}'.format(set(map(str, self._accept_states))),

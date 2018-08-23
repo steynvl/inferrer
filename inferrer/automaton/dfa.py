@@ -243,7 +243,7 @@ class DFA(FSA):
                 expressions[x, final] = ''
         for x in dfa_states:
             for a in sorted(self.alphabet, reverse=True):
-                if not self.alphabet(x, a):
+                if not self.transition_exists(x, a):
                     continue
                 y = self.transition(x, a)
                 if expressions[x, y]:

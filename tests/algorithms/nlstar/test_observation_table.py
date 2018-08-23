@@ -46,7 +46,6 @@ class TestObservationTable(unittest.TestCase):
         for i in ['aa', 'aba']:
             self.assertTrue(i in map(lambda r: r.prefix, composed_rows))
 
-
     def test_ot_02(self):
         ot = ObservationTable({'a', 'b'}, Oracle(set(), set()))
         row1 = Row('')

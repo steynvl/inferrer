@@ -545,7 +545,6 @@ class TestLSTAR(unittest.TestCase):
         for s in s_minus:
             self.assertFalse(dfa.parse_string(s)[1])
 
-
     @staticmethod
     def _combinations(s: Set[str], repeat: int) -> Generator:
         for rep in range(repeat + 1):

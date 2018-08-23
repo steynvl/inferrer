@@ -137,5 +137,6 @@ class TestNFA(unittest.TestCase):
             for p in itertools.product(s, repeat=rep):
                 yield ''.join(p)
 
+
 if __name__ == '__main__':
     unittest.main()
