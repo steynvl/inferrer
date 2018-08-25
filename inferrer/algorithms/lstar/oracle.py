@@ -21,6 +21,7 @@ class Oracle:
         """
         self._s_plus = s_plus
         self._s_minus = s_minus
+        self._marked = set()
 
     def membership_query(self, s: str) -> int:
         """
@@ -57,7 +58,23 @@ class Oracle:
                  first index will just be the empty string.
         :rtype: Tuple[str, bool]
         """
+        # print('EQ start', len(dfa._states))
+        # print(dfa)
+        # print(sorted(self._s_plus, reverse=True))
+        for positive_string in sorted(self._s_plus, reverse=True):
+            if positive_string not in self._marked and not dfa.parse_string(positive_string)[1]:
+                self._marked.add(positive_string)
+                # if positive_string == '1111111':
+                # print('X' * 100)
+                # print(dfa)
+                # print(dfa.parse_string('1111111')[0], ' <<<')
+                # print(dfa.parse_string('1111111')[1])
+                # print('False - positive string')
+                return positive_string, False
         for negative_string in sorted(self._s_minus, reverse=True):
-            if dfa.parse_string(negative_string)[1]:
+            if negative_string not in self._marked and dfa.parse_string(negative_string)[1]:
+                self._marked.add(negative_string)
+                # print('False - negative string')
                 return negative_string, False
+        # print('correct hypothesis')
         return '', True

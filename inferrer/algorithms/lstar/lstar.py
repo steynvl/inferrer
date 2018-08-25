@@ -15,7 +15,7 @@ class LSTAR(Algorithm):
     Submit is as an equivalence query.
     Use the counter-example to update the table.
     Submit membership queries to make the table closed and complete.
-    Iterate until the Oracle, tells us the correct language has been
+    Iterate until the Oracle tells us the correct language has been
     reached.
     """
 
@@ -71,8 +71,8 @@ class LSTAR(Algorithm):
 
             ot = self._useq(ot, answer)
 
-        return dfa
 
+        return dfa
     def _initialise(self) -> utils.ObservationTable:
         """
         Initialises an observation table. This consists of

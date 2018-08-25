@@ -44,16 +44,174 @@ class TestLSTAR(unittest.TestCase):
 
         ot.update_meta_data()
 
-        nlstar = algorithms.NLSTAR({'a', 'b'}, Oracle(set(), set()))
+        nlstar = algorithms.NLSTAR(set(),
+                                   set(),
+                                   {'a', 'b'},
+                                   Oracle(set(), set()))
         nlstar._ot = ot
 
         nfa = nlstar._build_hypothesis()
+        self.assertTrue(True)
 
-    def test_lstar_01(self):
+    def test_closed_and_consistent_01(self):
+        ot = ObservationTable({'a', 'b'}, Oracle(set(), set()))
+
+        row1 = Row('')
+        row2 = Row('b')
+        row3 = Row('a')
+
+        ot.suffixes = {'', 'aaa', 'aa', 'a'}
+        ot.rows = {row1, row2, row3}
+        ot.upper_rows = {row1}
+        ot.lower_rows = {row2, row3}
+
+        row1.columns = {'': 0, 'aaa': 1, 'aa': 0, 'a': 0}
+        row2.columns = {'': 0, 'aaa': 1, 'aa': 0, 'a': 0}
+        row3.columns = {'': 0, 'aaa': 1, 'aa': 1, 'a': 0}
+
+        ot.update_meta_data()
+
+        self.assertEqual(3, len(ot.primes))
+        self.assertEqual(0, len(ot.rows.symmetric_difference(ot.primes)))
+
+        nlstar = algorithms.NLSTAR(set(),
+                                   set(),
+                                   {'a', 'b'},
+                                   Oracle(set(), set()))
+        nlstar._ot = ot
+
+        self.assertFalse(ot.is_closed())
+        self.assertTrue(ot.is_consistent())
+
+    def test_closed_and_consistent_02(self):
+        ot = ObservationTable({'a', 'b'}, Oracle(set(), set()))
+
+        row1 = Row('')
+        row2 = Row('b')
+        row3 = Row('a')
+
+        ot.suffixes = {'', 'aaa', 'aa', 'a'}
+        ot.rows = {row1, row2, row3}
+        ot.upper_rows = {row1}
+        ot.lower_rows = {row2, row3}
+
+        row1.columns = {'': 0, 'aaa': 1, 'aa': 0, 'a': 0}
+        row2.columns = {'': 0, 'aaa': 1, 'aa': 0, 'a': 0}
+        row3.columns = {'': 0, 'aaa': 1, 'aa': 1, 'a': 0}
+
+        ot.update_meta_data()
+
+        self.assertEqual(3, len(ot.primes))
+        self.assertEqual(0, len(ot.rows.symmetric_difference(ot.primes)))
+
+        nlstar = algorithms.NLSTAR(set(),
+                                   set(),
+                                   {'a', 'b'},
+                                   Oracle(set(), set()))
+        nlstar._ot = ot
+
+        self.assertFalse(ot.is_closed())
+        self.assertTrue(ot.is_consistent())
+
+        nlstar._close_table()
+
+        self.assertEqual(5, len(nlstar._ot.rows))
+
+    def test_closed_and_consistent_03(self):
+        ot = ObservationTable({'a', 'b'}, Oracle(set(), set()))
+
+        row1 = Row('')
+        row2 = Row('a')
+        row3 = Row('b')
+        row4 = Row('ab')
+        row5 = Row('aa')
+
+        ot.suffixes = {'', 'aaa', 'aa', 'a'}
+        ot.rows = {row1, row2, row3, row4, row5}
+        ot.upper_rows = {row1, row2}
+        ot.lower_rows = {row3, row4, row5}
+
+        row1.columns = {'': 0, 'aaa': 1, 'aa': 0, 'a': 0}
+        row2.columns = {'': 0, 'aaa': 1, 'aa': 1, 'a': 0}
+        row3.columns = {'': 0, 'aaa': 1, 'aa': 0, 'a': 0}
+        row4.columns = {'': 0, 'aaa': 1, 'aa': 0, 'a': 1}
+        row5.columns = {'': 0, 'aaa': 1, 'aa': 1, 'a': 1}
+
+        ot.update_meta_data()
+
+        self.assertEqual(4, len(ot.primes))
+        self.assertEqual(1, len(ot.rows.symmetric_difference(ot.primes)))
+
+        nlstar = algorithms.NLSTAR(set(),
+                                   set(),
+                                   {'a', 'b'},
+                                   Oracle(set(), set()))
+        nlstar._ot = ot
+
+        self.assertFalse(nlstar._ot.is_closed())
+        self.assertTrue(nlstar._ot.is_consistent())
+
+        nlstar._close_table()
+
+        nlstar._ot.update_meta_data()
+
+        self.assertEqual(7, len(nlstar._ot.rows))
+
+    def test_closed_and_consistent_04(self):
+        ot = ObservationTable({'a', 'b'}, Oracle(set(), set()))
+
+        row1 = Row('')
+        row2 = Row('a')
+        row3 = Row('ab')
+        row4 = Row('b')
+        row5 = Row('aa')
+        row6 = Row('abb')
+        row7 = Row('aba')
+
+        ot.suffixes = {'', 'aaa', 'aa', 'a'}
+        ot.rows = {row1, row2, row3, row4, row5, row6, row7}
+        ot.upper_rows = {row1, row2, row3}
+        ot.lower_rows = {row4, row5, row6, row7}
+
+        row1.columns = {'': 0, 'aaa': 1, 'aa': 0, 'a': 0}
+        row2.columns = {'': 0, 'aaa': 1, 'aa': 1, 'a': 0}
+        row3.columns = {'': 0, 'aaa': 1, 'aa': 0, 'a': 1}
+        row4.columns = {'': 0, 'aaa': 1, 'aa': 0, 'a': 0}
+        row5.columns = {'': 0, 'aaa': 1, 'aa': 1, 'a': 1}
+        row6.columns = {'': 1, 'aaa': 1, 'aa': 0, 'a': 0}
+        row7.columns = {'': 1, 'aaa': 1, 'aa': 1, 'a': 0}
+
+        ot.update_meta_data()
+
+        self.assertEqual(5, len(ot.primes))
+        self.assertEqual(2, len(ot.rows.symmetric_difference(ot.primes)))
+
+        nlstar = algorithms.NLSTAR(set(),
+                                   set(),
+                                   {'a', 'b'},
+                                   Oracle(set(), set()))
+        nlstar._ot = ot
+
+
+
+        self.assertFalse(nlstar._ot.is_closed())
+        self.assertTrue(nlstar._ot.is_consistent())
+
+        nlstar._close_table()
+
+        nlstar._ot.update_meta_data()
+
+        self.assertEqual(9, len(nlstar._ot.rows))
+        self.assertEqual(7, len(nlstar._ot.primes))
+
+    def test_nlstar_01(self):
         s_plus = {'a' * i for i in range(25)}
 
         oracle = algorithms.Oracle(s_plus, set())
-        nlstar = algorithms.NLSTAR({'a'}, oracle)
+        nlstar = algorithms.NLSTAR(s_plus,
+                                   set(),
+                                   {'a'},
+                                   oracle)
         nfa = nlstar.learn()
 
         self.assertEqual(1, len(nfa._states))
@@ -71,7 +229,10 @@ class TestLSTAR(unittest.TestCase):
         s_minus = {''}
 
         oracle = algorithms.Oracle(s_plus, s_minus)
-        nlstar = algorithms.NLSTAR({'a'}, oracle)
+        nlstar = algorithms.NLSTAR(s_plus,
+                                   s_minus,
+                                   {'a'},
+                                   oracle)
         nfa = nlstar.learn()
 
         self.assertEqual(2, len(nfa._states))
@@ -87,7 +248,10 @@ class TestLSTAR(unittest.TestCase):
                 s_plus.add(i)
 
         oracle = algorithms.Oracle(s_plus, s_minus)
-        nlstar = algorithms.NLSTAR({'a', 'b'}, oracle)
+        nlstar = algorithms.NLSTAR(s_plus,
+                                   s_minus,
+                                   {'a', 'b'},
+                                   oracle)
         nfa = nlstar.learn()
 
         self.assertEqual(2, len(nfa._states))
@@ -112,7 +276,10 @@ class TestLSTAR(unittest.TestCase):
             s_minus.add('a' * (i - 1))
 
         oracle = algorithms.Oracle(s_plus, s_minus)
-        nlstar = algorithms.NLSTAR({'a'}, oracle)
+        nlstar = algorithms.NLSTAR(s_plus,
+                                   s_minus,
+                                   {'a'},
+                                   oracle)
         nfa = nlstar.learn()
 
         self.assertEqual(2, len(nfa._states))
@@ -124,6 +291,32 @@ class TestLSTAR(unittest.TestCase):
             self.assertFalse(nfa.parse_string(s)[1])
 
     def test_nlstar_05(self):
+        """
+        try to let NL* learn the regular language A.
+        A is a regular language over the alphabet {a, b, c} where
+        each string contains an even number of 1s
+        """
+        random.seed(10012)
+        s_plus = set()
+        s_minus = {''}
+        for i in self._combinations({'a', 'b'}, 6):
+            if i.count('a') % 2 == 1:
+                s_plus.add(i)
+            else:
+                s_minus.add(i)
+
+
+        oracle = algorithms.Oracle(s_plus, s_minus)
+        nlstar = algorithms.NLSTAR(s_plus,
+                                   s_minus,
+                                   {'a', 'b'},
+                                   oracle)
+        nfa = nlstar.learn()
+
+        for s in s_minus:
+            self.assertFalse(nfa.parse_string(s)[1])
+
+    def test_nlstar_06(self):
         """
         try to let NL* learn the regular language A.
         A is a regular language over the alphabet {0, 1} where
@@ -139,32 +332,38 @@ class TestLSTAR(unittest.TestCase):
                 s_minus.add(i)
 
         oracle = algorithms.Oracle(s_plus, s_minus)
-        nlstar = algorithms.NLSTAR({'0', '1'}, oracle)
+        nlstar = algorithms.NLSTAR(s_plus,
+                                   s_minus,
+                                   {'0', '1'},
+                                   oracle)
         nfa = nlstar.learn()
 
         for s in s_minus:
             self.assertFalse(nfa.parse_string(s)[1])
 
-    def test_nlstar_06(self):
+    def test_nlstar_07(self):
         """
         try to let NL* learn the regular language A.
         A is a regular language over the alphabet {0, 1} where
-        each string contains 101 as a substring.
+        each string contains an even number of 0's and an even
+        number of 1's.
         """
+        random.seed(10012)
         s_plus = set()
-        s_minus = {''}
-        for i in self._combinations({'0', '1'}, 10):
-            if len(i) < 3:
-                continue
-            if '101' in i:
+        s_minus = set()
+
+        for i in self._combinations({'0', '1'}, 8):
+            if i.count('0') % 2 == 0 and i.count('1') % 2 == 0:
                 s_plus.add(i)
             else:
                 s_minus.add(i)
 
         oracle = algorithms.Oracle(s_plus, s_minus)
-        nlstar = algorithms.NLSTAR({'0', '1'}, oracle)
+        nlstar = algorithms.NLSTAR(s_plus,
+                                   s_minus,
+                                   {'0', '1'},
+                                   oracle)
         nfa = nlstar.learn()
-
         for s in s_minus:
             self.assertFalse(nfa.parse_string(s)[1])
 
