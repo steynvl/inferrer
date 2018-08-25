@@ -182,9 +182,10 @@ class ObservationTable:
         :type suffixes: Set[str]
         """
         for suffix in suffixes:
-            self.suffixes.add(suffix)
-            for row in self.rows:
-                row.columns[suffix] = self._oracle.membership_query(row.prefix + suffix)
+            if suffix not in self.suffixes:
+                self.suffixes.add(suffix)
+                for row in self.rows:
+                    row.columns[suffix] = self._oracle.membership_query(row.prefix + suffix)
 
     def update_meta_data(self):
         """

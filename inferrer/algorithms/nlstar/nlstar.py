@@ -45,7 +45,14 @@ class NLSTAR(Algorithm):
         self._ot = ObservationTable(self._alphabet, oracle)
         self._hypothesis = None
 
-    def learn(self):
+    def learn(self) -> NFA:
+        """
+        Infers an initially unknown regular language
+        from a minimally adequate Teacher (Oracle).
+
+        :return: The nfa accepting the target language.
+        :rtype: NFA
+        """
         self._ot.initialize()
 
         while True:
@@ -69,14 +76,28 @@ class NLSTAR(Algorithm):
 
             self._use_eq(answer)
 
-        return self._build_hypothesis()
+        return nfa
 
-    def _use_eq(self, eq):
+    def _use_eq(self, eq: str):
+        """
+        When the Oracle is not happy with our
+        hypothesis and returns a counterexample,
+        this method adds the new suffixes to the
+        observation table and updates all the rows.
+
+        :param eq: Counterexample returned
+                   by the oracle.
+        :type eq: str
+        """
         new_experiments = {eq[:i] for i in range(len(eq) + 1)}
         self._ot.add_new_suffixes(new_experiments)
         self._ot.update_meta_data()
 
     def _close_table(self):
+        """
+        Attempts to close the observation table
+        by adding a new row to the table.
+        """
         for row in self._ot.upper_rows:
             for a in self._alphabet:
                 ua = self._ot.get_row_by_prefix(row.prefix + a)
@@ -97,6 +118,11 @@ class NLSTAR(Algorithm):
                     return
 
     def _make_table_consistent(self):
+        """
+        Attempts to make the observation table
+        consistent by adding a new column (experiment)
+        to the table.
+        """
         for r1 in self._ot.upper_rows:
             for r2 in r1.covered_rows(self._ot.upper_rows):
                 for a in self._alphabet:
@@ -111,6 +137,14 @@ class NLSTAR(Algorithm):
                             self._ot.update_meta_data()
 
     def _build_hypothesis(self) -> NFA:
+        """
+        Builds a NFA from the observation table,
+        which we will use when making an
+        equivalence query to the Oracle.
+
+        :return: The "hypothesis" NFA.
+        :rtype: NFA
+        """
         nfa = NFA(self._alphabet)
         epsilon_row = self._ot.get_epsilon_row()
 

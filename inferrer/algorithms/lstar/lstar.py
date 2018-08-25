@@ -48,7 +48,7 @@ class LSTAR(Algorithm):
         from a minimally adequate Teacher (Oracle).
 
         :return: The dfa accepting the target language.
-        :rtype: Automaton
+        :rtype: DFA
         """
         ot = self._initialise()
 
@@ -71,8 +71,8 @@ class LSTAR(Algorithm):
 
             ot = self._useq(ot, answer)
 
-
         return dfa
+
     def _initialise(self) -> utils.ObservationTable:
         """
         Initialises an observation table. This consists of
@@ -217,7 +217,7 @@ class LSTAR(Algorithm):
         :param ot: The data to build the dfa from.
         :type ot: ObservationTable
         :return: The dfa built from the observation table.
-        :rtype: Automaton
+        :rtype: DFA
         """
         dfa = automaton.DFA(self._alphabet)
 
