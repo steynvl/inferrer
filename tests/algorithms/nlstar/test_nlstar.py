@@ -51,7 +51,29 @@ class TestLSTAR(unittest.TestCase):
         nlstar._ot = ot
 
         nfa = nlstar._build_hypothesis()
-        self.assertTrue(True)
+        self.assertEqual(4, len(nfa._states))
+        self.assertEqual(1, len(nfa._accept_states))
+
+        s_plus = set()
+        s_minus = set()
+
+        so_long = []
+
+        for i in self._combinations({'a', 'b'}, 6):
+            so_long.append(i)
+
+        for i in self._combinations({'a', 'b'}, 2):
+            if len(i) != 2:
+                continue
+
+            for pre in so_long:
+                s_plus.add('{}a{}'.format(pre, i))
+                s_minus.add('{}b{}'.format(pre, i))
+
+        for s in s_plus:
+            self.assertTrue(nfa.parse_string(s)[1])
+        for s in s_minus:
+            self.assertFalse(nfa.parse_string(s)[1])
 
     def test_closed_and_consistent_01(self):
         ot = ObservationTable({'a', 'b'}, Oracle(set(), set()))
@@ -191,8 +213,6 @@ class TestLSTAR(unittest.TestCase):
                                    Oracle(set(), set()))
         nlstar._ot = ot
 
-
-
         self.assertFalse(nlstar._ot.is_closed())
         self.assertTrue(nlstar._ot.is_consistent())
 
@@ -201,7 +221,6 @@ class TestLSTAR(unittest.TestCase):
         nlstar._ot.update_meta_data()
 
         self.assertEqual(9, len(nlstar._ot.rows))
-        self.assertEqual(7, len(nlstar._ot.primes))
 
     def test_nlstar_01(self):
         s_plus = {'a' * i for i in range(25)}
@@ -306,7 +325,6 @@ class TestLSTAR(unittest.TestCase):
             else:
                 s_minus.add(i)
 
-
         oracle = algorithms.Oracle(s_plus, s_minus)
         nlstar = algorithms.NLSTAR(s_plus,
                                    s_minus,
@@ -383,9 +401,6 @@ class TestLSTAR(unittest.TestCase):
             else:
                 s_minus.add(i)
 
-        print(s_plus)
-        print(s_minus)
-
         oracle = algorithms.Oracle(s_plus, s_minus)
         nlstar = algorithms.NLSTAR(s_plus,
                                    s_minus,
@@ -426,23 +441,48 @@ class TestLSTAR(unittest.TestCase):
             self.assertFalse(nfa.parse_string(s)[1])
 
     def test_nlstar_10(self):
-        N = 2
-
+        """
+        try to let NL* learn the regular language A.
+        A is a regular language over the alphabet {0, 1} where
+        each string contains an even number of 0's and an even
+        number of 1's.
+        """
+        random.seed(10012)
         s_plus = set()
         s_minus = set()
 
-        so_long = []
+        for i in self._combinations({'0', '1'}, 13):
+            if i.count('0') % 2 == 0 and i.count('1') % 2 == 0:
+                s_plus.add(i)
+            else:
+                s_minus.add(i)
 
-        for i in self._combinations({'a', 'b'}, 6):
-            so_long.append(i)
+        oracle = algorithms.Oracle(s_plus, s_minus)
+        nlstar = algorithms.NLSTAR(s_plus,
+                                   s_minus,
+                                   {'0', '1'},
+                                   oracle)
+        nfa = nlstar.learn()
 
-        for i in self._combinations({'a', 'b'}, N):
-            if len(i) != 2:
-                continue
+        for s in s_plus:
+            self.assertTrue(nfa.parse_string(s)[1])
+        for s in s_minus:
+            self.assertFalse(nfa.parse_string(s)[1])
 
-            for pre in so_long:
-                s_plus.add('{}a{}'.format(pre, i))
-                s_minus.add('{}b{}'.format(pre, i))
+    def test_nlstar_11(self):
+        """
+        try to let NL* learn the regular language L.
+        L is a regular language over the alphabet {a, b} where
+        for every string in L contains exactly two a's.
+        """
+        s_plus = set()
+        s_minus = set()
+
+        for i in self._combinations({'a', 'b'}, 11):
+            if i.count('a') == 2:
+                s_plus.add(i)
+            else:
+                s_minus.add(i)
 
         oracle = algorithms.Oracle(s_plus, s_minus)
         nlstar = algorithms.NLSTAR(s_plus,
@@ -455,7 +495,6 @@ class TestLSTAR(unittest.TestCase):
             self.assertTrue(nfa.parse_string(s)[1])
         for s in s_minus:
             self.assertFalse(nfa.parse_string(s)[1])
-
 
     @staticmethod
     def _combinations(s: Set[str], repeat: int) -> Generator:

@@ -57,7 +57,6 @@ class NLSTAR(Algorithm):
 
         while True:
             is_closed, is_consistent = self._ot.is_closed_and_consistent()
-            print('1 = (is_closed, is_consistent) = ({}, {})'.format(is_closed, is_consistent))
 
             while not is_closed or not is_consistent:
 
@@ -68,11 +67,9 @@ class NLSTAR(Algorithm):
                     self._make_table_consistent()
 
                 is_closed, is_consistent = self._ot.is_closed_and_consistent()
-                print('2 = (is_closed, is_consistent) = ({}, {})'.format(is_closed, is_consistent))
 
             nfa = self._build_hypothesis()
             answer, satisfied = self._oracle.equivalence_query(nfa)
-            print('(answer, satisfied) = ({}, {})'.format(answer, satisfied))
 
             if satisfied:
                 break
