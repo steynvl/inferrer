@@ -57,6 +57,7 @@ class NLSTAR(Algorithm):
 
         while True:
             is_closed, is_consistent = self._ot.is_closed_and_consistent()
+            print('1 = (is_closed, is_consistent) = ({}, {})'.format(is_closed, is_consistent))
 
             while not is_closed or not is_consistent:
 
@@ -67,9 +68,11 @@ class NLSTAR(Algorithm):
                     self._make_table_consistent()
 
                 is_closed, is_consistent = self._ot.is_closed_and_consistent()
+                print('2 = (is_closed, is_consistent) = ({}, {})'.format(is_closed, is_consistent))
 
             nfa = self._build_hypothesis()
             answer, satisfied = self._oracle.equivalence_query(nfa)
+            print('(answer, satisfied) = ({}, {})'.format(answer, satisfied))
 
             if satisfied:
                 break
@@ -89,8 +92,8 @@ class NLSTAR(Algorithm):
                    by the oracle.
         :type eq: str
         """
-        new_experiments = {eq[:i] for i in range(len(eq) + 1)}
-        self._ot.add_new_suffixes(new_experiments)
+        new_suffixes = {eq[i:] for i in range(len(eq) + 1)}
+        self._ot.add_new_suffixes(new_suffixes)
         self._ot.update_meta_data()
 
     def _close_table(self):
@@ -98,24 +101,23 @@ class NLSTAR(Algorithm):
         Attempts to close the observation table
         by adding a new row to the table.
         """
-        for row in self._ot.upper_rows:
-            for a in self._alphabet:
-                ua = self._ot.get_row_by_prefix(row.prefix + a)
+        for row in self._ot.lower_rows:
+            covered = [r_prime for r_prime in self._ot.upper_primes if r_prime.covered_by(row)]
 
-                if ua in self._ot.primes and ua not in self._ot.upper_primes:
-                    self._ot.upper_rows.add(ua)
-                    self._ot.lower_rows.remove(ua)
-                    self._ot.upper_primes.add(ua)
+            if len(covered) == 0 or not Row.join(covered).columns_are_equal(row):
+                self._ot.upper_rows.add(row)
+                self._ot.lower_rows.remove(row)
+                self._ot.upper_primes.add(row)
 
-                    for symbol in self._alphabet:
-                        new_row = Row(ua.prefix + symbol)
-                        self._ot.rows.add(new_row)
-                        self._ot.lower_rows.add(new_row)
+                for symbol in self._alphabet:
+                    new_row = Row(row.prefix + symbol)
+                    self._ot.rows.add(new_row)
+                    self._ot.lower_rows.add(new_row)
 
-                        self._ot.add_columns_to_row(new_row)
+                    self._ot.add_columns_to_row(new_row)
 
-                    self._ot.update_meta_data()
-                    return
+                self._ot.update_meta_data()
+                return
 
     def _make_table_consistent(self):
         """
@@ -127,14 +129,15 @@ class NLSTAR(Algorithm):
             for r2 in r1.covered_rows(self._ot.upper_rows):
                 for a in self._alphabet:
                     for v in self._ot.suffixes:
-                        u_prime = Row(r1 + a)
-                        u = Row(r2 + a)
+                        u_prime = self._ot.get_row_by_prefix(r1.prefix + a)
+                        u = self._ot.get_row_by_prefix(r2.prefix + a)
 
                         if not u.columns[v] and u_prime.columns[v]:
                             new_suffixes = {sym + v for sym in self._alphabet}
 
                             self._ot.add_new_suffixes(new_suffixes)
                             self._ot.update_meta_data()
+                            return
 
     def _build_hypothesis(self) -> NFA:
         """

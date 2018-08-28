@@ -35,7 +35,9 @@ class Oracle:
         :return: 1 if s is in the target language, else 0
         :rtype: int
         """
+        # return len(s) % 2 == 0
         return 1 if s in self._s_plus else 0
+
 
     def equivalence_query(self, dfa: automaton.DFA) -> Tuple[str, bool]:
         """
@@ -61,7 +63,10 @@ class Oracle:
         # print('EQ start', len(dfa._states))
         # print(dfa)
         # print(sorted(self._s_plus, reverse=True))
-        for positive_string in sorted(self._s_plus, reverse=True):
+        # if 'aaa' not in self._marked:
+        #     self._marked.add('aaa')
+        #     return 'aaa', False
+        for positive_string in sorted(self._s_plus):
             if positive_string not in self._marked and not dfa.parse_string(positive_string)[1]:
                 self._marked.add(positive_string)
                 # if positive_string == '1111111':
@@ -71,7 +76,7 @@ class Oracle:
                 # print(dfa.parse_string('1111111')[1])
                 # print('False - positive string')
                 return positive_string, False
-        for negative_string in sorted(self._s_minus, reverse=True):
+        for negative_string in sorted(self._s_minus):
             if negative_string not in self._marked and dfa.parse_string(negative_string)[1]:
                 self._marked.add(negative_string)
                 # print('False - negative string')

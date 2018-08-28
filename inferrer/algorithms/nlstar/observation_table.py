@@ -145,15 +145,13 @@ class ObservationTable:
         of the upper part.
 
         :return: Whether the table is closed.
-        :rtype: bool
+        :rtype: Tuple[bool, Row]
         """
         for row in self.lower_rows:
-            covered_rows = [r_prime for r_prime in self.upper_primes if r_prime.covered_by(row)]
+            covered = [r_prime for r_prime in self.upper_primes if r_prime.covered_by(row)]
 
-            if len(covered_rows) == 0:
-                continue
-
-            if not Row.join(covered_rows).columns_are_equal(row):
+            if len(covered) == 0 or \
+                    not Row.join(covered).columns_are_equal(row):
                 return False
 
         return True
@@ -169,8 +167,10 @@ class ObservationTable:
         for r1 in self.upper_rows:
             for r2 in r1.covered_rows(self.upper_rows):
                 for a in self._alphabet:
+                    row1_succ = self.get_row_by_prefix(r1.prefix + a)
+                    row2_succ = self.get_row_by_prefix(r2.prefix + a)
 
-                    if not Row(r1.prefix + a).covered_by(Row(r2.prefix + a)):
+                    if not row1_succ.covered_by(row2_succ):
                         return False
         return True
 

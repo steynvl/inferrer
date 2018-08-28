@@ -61,9 +61,9 @@ class TestLSTAR(unittest.TestCase):
         row3 = Row('a')
 
         ot.suffixes = {'', 'aaa', 'aa', 'a'}
-        ot.rows = {row1, row2, row3}
-        ot.upper_rows = {row1}
-        ot.lower_rows = {row2, row3}
+        ot.rows = [row1, row2, row3]
+        ot.upper_rows = [row1]
+        ot.lower_rows = [row2, row3]
 
         row1.columns = {'': 0, 'aaa': 1, 'aa': 0, 'a': 0}
         row2.columns = {'': 0, 'aaa': 1, 'aa': 0, 'a': 0}
@@ -72,7 +72,6 @@ class TestLSTAR(unittest.TestCase):
         ot.update_meta_data()
 
         self.assertEqual(3, len(ot.primes))
-        self.assertEqual(0, len(ot.rows.symmetric_difference(ot.primes)))
 
         nlstar = algorithms.NLSTAR(set(),
                                    set(),
@@ -294,13 +293,15 @@ class TestLSTAR(unittest.TestCase):
         """
         try to let NL* learn the regular language A.
         A is a regular language over the alphabet {a, b, c} where
-        each string contains an even number of 1s
+        each string contains an even number of a's
         """
         random.seed(10012)
         s_plus = set()
-        s_minus = {''}
-        for i in self._combinations({'a', 'b'}, 6):
-            if i.count('a') % 2 == 1:
+        s_minus = set()
+        for i in self._combinations({'a', 'b', 'c'}, 6):
+            if i == '':
+                continue
+            if i.count('a') % 2 == 0:
                 s_plus.add(i)
             else:
                 s_minus.add(i)
@@ -309,7 +310,7 @@ class TestLSTAR(unittest.TestCase):
         oracle = algorithms.Oracle(s_plus, s_minus)
         nlstar = algorithms.NLSTAR(s_plus,
                                    s_minus,
-                                   {'a', 'b'},
+                                   {'a', 'b', 'c'},
                                    oracle)
         nfa = nlstar.learn()
 
@@ -345,15 +346,14 @@ class TestLSTAR(unittest.TestCase):
         """
         try to let NL* learn the regular language A.
         A is a regular language over the alphabet {0, 1} where
-        each string contains an even number of 0's and an even
-        number of 1's.
+        each string contains an even number of 1's
         """
         random.seed(10012)
         s_plus = set()
         s_minus = set()
 
-        for i in self._combinations({'0', '1'}, 8):
-            if i.count('0') % 2 == 0 and i.count('1') % 2 == 0:
+        for i in self._combinations({'0', '1'}, 7):
+            if i.count('1') % 2 == 0:
                 s_plus.add(i)
             else:
                 s_minus.add(i)
@@ -364,8 +364,98 @@ class TestLSTAR(unittest.TestCase):
                                    {'0', '1'},
                                    oracle)
         nfa = nlstar.learn()
+
         for s in s_minus:
             self.assertFalse(nfa.parse_string(s)[1])
+
+    def test_nlstar_08(self):
+        """
+        try to let NL* learn the regular language L.
+        L is a regular language over the alphabet {a, b} where
+        every string in L is an odd length
+        """
+        s_plus = set()
+        s_minus = set()
+
+        for i in self._combinations({'a', 'b'}, 6):
+            if len(i) % 2 == 1:
+                s_plus.add(i)
+            else:
+                s_minus.add(i)
+
+        print(s_plus)
+        print(s_minus)
+
+        oracle = algorithms.Oracle(s_plus, s_minus)
+        nlstar = algorithms.NLSTAR(s_plus,
+                                   s_minus,
+                                   {'a', 'b'},
+                                   oracle)
+        nfa = nlstar.learn()
+
+        for s in s_plus:
+            self.assertTrue(nfa.parse_string(s)[1])
+        for s in s_minus:
+            self.assertFalse(nfa.parse_string(s)[1])
+
+    def test_nlstar_09(self):
+        """
+        try to let NL* learn the regular language L.
+        L is a regular language over the alphabet {a, b} where
+        every string in L is an odd length.
+        """
+        s_plus = set()
+        s_minus = set()
+
+        for i in self._combinations({'a', 'b'}, 6):
+            if len(i) % 2 == 1:
+                s_plus.add(i)
+            else:
+                s_minus.add(i)
+
+        oracle = algorithms.Oracle(s_plus, s_minus)
+        nlstar = algorithms.NLSTAR(s_plus,
+                                   s_minus,
+                                   {'a', 'b'},
+                                   oracle)
+        nfa = nlstar.learn()
+
+        for s in s_plus:
+            self.assertTrue(nfa.parse_string(s)[1])
+        for s in s_minus:
+            self.assertFalse(nfa.parse_string(s)[1])
+
+    def test_nlstar_10(self):
+        N = 2
+
+        s_plus = set()
+        s_minus = set()
+
+        so_long = []
+
+        for i in self._combinations({'a', 'b'}, 6):
+            so_long.append(i)
+
+        for i in self._combinations({'a', 'b'}, N):
+            if len(i) != 2:
+                continue
+
+            for pre in so_long:
+                s_plus.add('{}a{}'.format(pre, i))
+                s_minus.add('{}b{}'.format(pre, i))
+
+        oracle = algorithms.Oracle(s_plus, s_minus)
+        nlstar = algorithms.NLSTAR(s_plus,
+                                   s_minus,
+                                   {'a', 'b'},
+                                   oracle)
+        nfa = nlstar.learn()
+
+        for s in s_plus:
+            self.assertTrue(nfa.parse_string(s)[1])
+        for s in s_minus:
+            self.assertFalse(nfa.parse_string(s)[1])
+
 
     @staticmethod
     def _combinations(s: Set[str], repeat: int) -> Generator:
