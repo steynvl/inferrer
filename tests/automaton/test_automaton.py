@@ -132,7 +132,7 @@ class TestAutomaton(unittest.TestCase):
         dfa.accept_states.update({automaton.State(''), automaton.State('6')})
         dfa.reject_states.update({automaton.State('3'), automaton.State('4'), automaton.State('7')})
 
-        minimized_dfa = dfa.minimize()
+        minimized_dfa = dfa.remove_dead_states()
 
         self.assertEqual(4, len(minimized_dfa.states))
         self.assertSetEqual({automaton.State('')}, minimized_dfa.accept_states)

@@ -3,20 +3,19 @@ import itertools
 import random
 from collections import OrderedDict
 from typing import Set, Generator
-from inferrer import automaton, algorithms
-
+from inferrer import automaton, algorithms, oracle
 
 class TestLSTAR(unittest.TestCase):
 
     def test_lstar_01(self):
         s_plus = {'', 'a', 'b', 'ab', 'aba'}
         s_minus = {'abb'}
-        oracle = algorithms.Oracle(s_plus, s_minus)
+        teacher = oracle.PassiveOracle(s_plus, s_minus)
 
         lstar = algorithms.LSTAR(s_plus,
                                  s_minus,
                                  {'a', 'b'},
-                                 oracle)
+                                 teacher)
         dfa = lstar.learn()
 
         self.assertEqual(5, len(dfa.states))
@@ -32,12 +31,12 @@ class TestLSTAR(unittest.TestCase):
         s_plus = {'', 'a', 'b', 'ab', 'aa', 'aba', 'aab', 'abab'}
         s_minus = {'abb'}
 
-        oracle = algorithms.Oracle(s_plus, s_minus)
+        teacher = oracle.PassiveOracle(s_plus, s_minus)
 
         lstar = algorithms.LSTAR(s_plus,
                                  s_minus,
                                  {'a', 'b'},
-                                 oracle)
+                                 teacher)
         dfa = lstar.learn()
 
         self.assertEqual(3, len(dfa.states))
@@ -74,11 +73,11 @@ class TestLSTAR(unittest.TestCase):
     def test_lstar_03(self):
         s_plus = {'a' * i for i in range(25)}
 
-        oracle = algorithms.Oracle(s_plus, set())
+        teacher = oracle.PassiveOracle(s_plus, set())
         lstar = algorithms.LSTAR(s_plus,
                                  set(),
                                  {'a'},
-                                 oracle)
+                                 teacher)
         dfa = lstar.learn()
 
         self.assertEqual(1, len(dfa.states))
@@ -95,11 +94,11 @@ class TestLSTAR(unittest.TestCase):
         s_plus = {'a', 'aa', 'aaa', 'aaaa', 'aaaaaaaa'}
         s_minus = {''}
 
-        oracle = algorithms.Oracle(s_plus, s_minus)
+        teacher = oracle.PassiveOracle(s_plus, s_minus)
         lstar = algorithms.LSTAR(s_plus,
                                  s_minus,
                                  {'a'},
-                                 oracle)
+                                 teacher)
         dfa = lstar.learn()
 
         self.assertEqual(2, len(dfa.states))
@@ -115,11 +114,11 @@ class TestLSTAR(unittest.TestCase):
             else:
                 s_plus.add(i)
 
-        oracle = algorithms.Oracle(s_plus, s_minus)
+        teacher = oracle.PassiveOracle(s_plus, s_minus)
         lstar = algorithms.LSTAR(s_plus,
                                  s_minus,
                                  {'a', 'b'},
-                                 oracle)
+                                 teacher)
         dfa = lstar.learn()
 
         self.assertEqual(2, len(dfa.states))
@@ -143,11 +142,11 @@ class TestLSTAR(unittest.TestCase):
             s_plus.add('a' * i)
             s_minus.add('a' * (i - 1))
 
-        oracle = algorithms.Oracle(s_plus, s_minus)
+        teacher = oracle.PassiveOracle(s_plus, s_minus)
         lstar = algorithms.LSTAR(s_plus,
                                  s_minus,
                                  {'a'},
-                                 oracle)
+                                  teacher)
         dfa = lstar.learn()
 
         self.assertEqual(2, len(dfa.states))
@@ -173,11 +172,11 @@ class TestLSTAR(unittest.TestCase):
             else:
                 s_minus.add(i)
 
-        oracle = algorithms.Oracle(s_plus, s_minus)
+        teacher = oracle.PassiveOracle(s_plus, s_minus)
         lstar = algorithms.LSTAR(s_plus,
                                  s_minus,
                                  {'0', '1'},
-                                 oracle)
+                                 teacher)
         dfa = lstar.learn()
 
         for s in s_plus:
@@ -201,11 +200,11 @@ class TestLSTAR(unittest.TestCase):
             else:
                 s_minus.add(i)
 
-        oracle = algorithms.Oracle(s_plus, s_minus)
+        teacher = oracle.PassiveOracle(s_plus, s_minus)
         lstar = algorithms.LSTAR(s_plus,
                                  s_minus,
                                  {'0', '1'},
-                                 oracle)
+                                 teacher)
         dfa = lstar.learn()
 
         for s in s_minus:
@@ -225,11 +224,11 @@ class TestLSTAR(unittest.TestCase):
             else:
                 s_plus.add(i)
 
-        oracle = algorithms.Oracle(s_plus, s_minus)
+        teacher = oracle.PassiveOracle(s_plus, s_minus)
         lstar = algorithms.LSTAR(s_plus,
                                  s_minus,
                                  {'0', '1'},
-                                 oracle)
+                                 teacher)
         dfa = lstar.learn()
 
         for s in s_minus:
@@ -252,11 +251,11 @@ class TestLSTAR(unittest.TestCase):
             else:
                 s_minus.add(i)
 
-        oracle = algorithms.Oracle(s_plus, s_minus)
+        teacher = oracle.PassiveOracle(s_plus, s_minus)
         lstar = algorithms.LSTAR(s_plus,
                                  s_minus,
                                  {'0', '1'},
-                                 oracle)
+                                 teacher)
         dfa = lstar.learn()
 
         for s in s_minus:
@@ -277,11 +276,11 @@ class TestLSTAR(unittest.TestCase):
             else:
                 s_minus.add(i)
 
-        oracle = algorithms.Oracle(s_plus, s_minus)
+        teacher = oracle.PassiveOracle(s_plus, s_minus)
         lstar = algorithms.LSTAR(s_plus,
                                  s_minus,
                                  {'a', 'b', 'c'},
-                                 oracle)
+                                 teacher)
 
         dfa = lstar.learn()
 
@@ -319,11 +318,11 @@ class TestLSTAR(unittest.TestCase):
             else:
                 s_minus.add(i)
 
-        oracle = algorithms.Oracle(s_plus, s_minus)
+        teacher = oracle.PassiveOracle(s_plus, s_minus)
         lstar = algorithms.LSTAR(s_plus,
                                  s_minus,
                                  {'a', 'b'},
-                                 oracle)
+                                 teacher)
 
         dfa = lstar.learn()
 
@@ -358,11 +357,11 @@ class TestLSTAR(unittest.TestCase):
             s_minus.add(''.join(cpy_2))
             s_minus.add(''.join(cpy_3))
 
-        oracle = algorithms.Oracle(s_plus, s_minus)
+        teacher = oracle.PassiveOracle(s_plus, s_minus)
         lstar = algorithms.LSTAR(s_plus,
                                  s_minus,
                                  {'a', 'b', 'c'},
-                                 oracle)
+                                 teacher)
         dfa = lstar.learn()
 
         for s in s_minus:
@@ -383,11 +382,11 @@ class TestLSTAR(unittest.TestCase):
             else:
                 s_minus.add(i)
 
-        oracle = algorithms.Oracle(s_plus, s_minus)
+        teacher = oracle.PassiveOracle(s_plus, s_minus)
         lstar = algorithms.LSTAR(s_plus,
                                  s_minus,
                                  {'a', 'b'},
-                                 oracle)
+                                 teacher)
         dfa = lstar.learn()
 
         for s in s_minus:
@@ -466,11 +465,11 @@ class TestLSTAR(unittest.TestCase):
             '101..1.01'
         })
 
-        oracle = algorithms.Oracle(s_plus, s_minus)
+        teacher = oracle.PassiveOracle(s_plus, s_minus)
         lstar = algorithms.LSTAR(s_plus,
                                  s_minus,
                                  {'0', '1', '.'},
-                                 oracle)
+                                 teacher)
         dfa = lstar.learn()
 
         for s in s_minus:
@@ -515,11 +514,11 @@ class TestLSTAR(unittest.TestCase):
             'aa@@aaa@a'
         })
 
-        oracle = algorithms.Oracle(s_plus, s_minus)
+        teacher = oracle.PassiveOracle(s_plus, s_minus)
         lstar = algorithms.LSTAR(s_plus,
                                  s_minus,
                                  {'a', '@'},
-                                 oracle)
+                                 teacher)
         dfa = lstar.learn()
 
         for s in s_minus:
@@ -535,11 +534,11 @@ class TestLSTAR(unittest.TestCase):
             else:
                 s_minus.add(i)
 
-        oracle = algorithms.Oracle(s_plus, s_minus)
+        teacher = oracle.PassiveOracle(s_plus, s_minus)
         lstar = algorithms.LSTAR(s_plus,
                                  s_minus,
                                  {'a', '1', '#'},
-                                 oracle)
+                                 teacher)
         dfa = lstar.learn()
 
         for s in s_minus:

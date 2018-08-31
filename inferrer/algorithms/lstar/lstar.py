@@ -1,6 +1,6 @@
 import copy
 from inferrer import utils, automaton
-from inferrer.algorithms.lstar.oracle import Oracle
+from inferrer.oracle.oracle import Oracle
 from inferrer.algorithms.algorithm import Algorithm
 from typing import Set, Tuple
 
@@ -241,4 +241,4 @@ class LSTAR(Algorithm):
                     if ot.get_row(u.name + a) == ot.get_row(w.name):
                         dfa.add_transition(u, w, a)
 
-        return dfa.minimize()
+        return dfa.remove_dead_states()

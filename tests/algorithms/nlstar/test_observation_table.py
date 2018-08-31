@@ -1,5 +1,5 @@
 import unittest
-from inferrer.algorithms import Oracle
+from inferrer import oracle
 from inferrer.algorithms.nlstar.observation_table import ObservationTable
 from inferrer.algorithms.nlstar.row import Row
 
@@ -7,7 +7,7 @@ from inferrer.algorithms.nlstar.row import Row
 class TestObservationTable(unittest.TestCase):
 
     def test_ot_01(self):
-        ot = ObservationTable({'a', 'b'}, Oracle(set(), set()))
+        ot = ObservationTable({'a', 'b'}, oracle.PassiveOracle(set(), set()))
         row1 = Row('')
         row2 = Row('a')
         row3 = Row('ab')
@@ -47,7 +47,7 @@ class TestObservationTable(unittest.TestCase):
             self.assertTrue(i in map(lambda r: r.prefix, composed_rows))
 
     def test_ot_02(self):
-        ot = ObservationTable({'a', 'b'}, Oracle(set(), set()))
+        ot = ObservationTable({'a', 'b'}, oracle.PassiveOracle(set(), set()))
         row1 = Row('')
         row2 = Row('a')
         row3 = Row('ab')

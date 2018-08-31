@@ -46,6 +46,21 @@ class NFA(FSA):
 
         from_map[a].add(q2)
 
+    def transition_exists(self, q1: State, a: str) -> bool:
+        """
+        Checks whether the transition
+        delta(q1, a) is defined.
+
+        :param q1: from state
+        :type q1: automaton.State
+        :param a: letter in alphabet
+        :type a: str
+        :return: True if it exists
+        :rtype: bool
+        """
+        return q1 in self._transitions and \
+               a in self._transitions[q1]
+
     def parse_string(self, s: str) -> Tuple[State, bool]:
         """
         Parses each character of the input string through
@@ -167,34 +182,45 @@ class NFA(FSA):
         else:
             cpy = self
 
-        q_prime = self._power_set(self._states)
+        q_prime = set()
+        power_set_to_states = {}
+        for q in self._power_set(self._states):
+            new_state = State(''.join(sorted(map(str, q))))
+            q_prime.add(new_state)
+            power_set_to_states[new_state] = set(q)
+
         accept_prime = set()
-        transitions = {}
+        transitions = defaultdict(OrderedDict)
         q0_prime = self._epsilon_closure(cpy,
                                          next(iter(cpy._start_states)))
 
         for r in q_prime:
             for a in cpy.alphabet:
                 transitions[r][a] = set()
-                for state in r:
+                for state in power_set_to_states[r]:
 
-                    for ts in cpy.transition(state, a):
-                        for to_state in self._epsilon_closure(cpy, ts):
-                            transitions[r][a].add(to_state)
+                    if cpy.transition_exists(state, a):
+                        for ts in cpy.transition(state, a):
+                            for to_state in self._epsilon_closure(cpy, ts):
+                                transitions[r][a].add(to_state)
 
-            if any([s in cpy._accept_states for s in r]):
+            if any([s in cpy._accept_states for s in power_set_to_states[r]]):
                 accept_prime.add(r)
 
-        dfa = DFA(self.alphabet, State(''.join(map(lambda q: q.name, q0_prime))))
 
-        dfa.states = {State(''.join(map(lambda q: q.name, q_prime)))}
-        dfa.accept_states = {State(''.join(map(lambda q: q.name, state))) for state in accept_prime}
+        start_state = State(''.join(sorted(map(str, q0_prime))))
+        dfa = DFA(self.alphabet, start_state)
 
-        for q, a in transitions.items():
-            to_state = transitions[q][a]
-            dfa._transitions[q][a] = State(''.join(map(lambda s: s.name, to_state)))
+        dfa.states = q_prime.copy()
 
-        return dfa.minimize()
+        dfa.accept_states = accept_prime.copy()
+
+        for q, trans in transitions.items():
+            for symbol, to_states in trans.items():
+                to_state = State(''.join(sorted(map(str, to_states))))
+                dfa.add_transition(q, to_state, symbol)
+
+        return dfa.remove_dead_states()
 
     @staticmethod
     def _epsilon_closure(nfa, q: State):
@@ -204,10 +230,11 @@ class NFA(FSA):
         while len(stack) > 0:
             state = stack.pop()
 
-            for to_state in nfa.transition(state, ''):
-                if to_state not in closure_set:
-                    closure_set.add(to_state)
-                    stack.append(to_state)
+            if nfa.transition_exists(state, ''):
+                for to_state in nfa.transition(state, ''):
+                    if to_state not in closure_set:
+                        closure_set.add(to_state)
+                        stack.append(to_state)
         return closure_set
 
     @staticmethod

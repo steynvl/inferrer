@@ -140,7 +140,7 @@ class DFA(FSA):
                     return qf, letter
         return None, None
 
-    def minimize(self):
+    def remove_dead_states(self):
         """
         Minimizes the dfa by removing all
         states (and transitions) that cannot be
@@ -152,10 +152,9 @@ class DFA(FSA):
         :return: minimized dfa
         :rtype: DFA
         """
-        minimized_dfa = DFA(self.alphabet)
-
-        stack = [State('')]
-        visited_states = {State('')}
+        minimized_dfa = DFA(self.alphabet, self._start_state)
+        stack = [self._start_state]
+        visited_states = {self._start_state}
         while stack:
             state = stack.pop()
 
@@ -306,7 +305,6 @@ class DFA(FSA):
         for state in self.states:
             shape = 'doublecircle' if state in self.accept_states else 'circle'
             digraph.node(name=self._set_node_name(state, node_count), shape=shape, constraint='false')
-
             name_map[state.name] = self._set_node_name(state, node_count)
             if state.name != '':
                 node_count += 1

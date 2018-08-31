@@ -70,7 +70,7 @@ class RPNI(Algorithm):
             if not accepted:
                 dfa.reject_states.add(q)
 
-        return dfa.minimize()
+        return dfa.remove_dead_states()
 
     def _promote(self, qu: automaton.State, dfa: automaton.DFA) -> automaton.DFA:
         """

@@ -1,5 +1,6 @@
 import abc
-from typing import Set
+from inferrer import automaton
+from typing import Set, Tuple
 
 
 class FSA(abc.ABC):
@@ -19,3 +20,17 @@ class FSA(abc.ABC):
     @property
     def alphabet(self):
         return self.__alphabet
+
+    @abc.abstractmethod
+    def parse_string(self, s: str) -> Tuple[automaton.State, bool]:
+        """
+        Parses each character of the input string through
+        the finite state acceptor.
+
+        :param s: The string to parse (s element of alphabet*)
+        :type s: str
+        :return: The state after reading the string s and whether
+                 the fsa accepted the input string.
+        :rtype: tuple(State, bool)
+        """
+        pass

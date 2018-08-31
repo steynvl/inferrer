@@ -2,8 +2,7 @@ import unittest
 import itertools
 import random
 from typing import Set, Generator
-from inferrer import algorithms
-from inferrer.algorithms import Oracle
+from inferrer import algorithms, oracle
 from inferrer.algorithms.nlstar.observation_table import ObservationTable
 from inferrer.algorithms.nlstar.row import Row
 
@@ -11,7 +10,7 @@ from inferrer.algorithms.nlstar.row import Row
 class TestLSTAR(unittest.TestCase):
 
     def test_build_hypothesis_01(self):
-        ot = ObservationTable({'a', 'b'}, Oracle(set(), set()))
+        ot = ObservationTable({'a', 'b'}, oracle.PassiveOracle(set(), set()))
         row1 = Row('')
         row2 = Row('a')
         row3 = Row('ab')
@@ -47,7 +46,7 @@ class TestLSTAR(unittest.TestCase):
         nlstar = algorithms.NLSTAR(set(),
                                    set(),
                                    {'a', 'b'},
-                                   Oracle(set(), set()))
+                                   oracle.PassiveOracle(set(), set()))
         nlstar._ot = ot
 
         nfa = nlstar._build_hypothesis()
@@ -76,7 +75,7 @@ class TestLSTAR(unittest.TestCase):
             self.assertFalse(nfa.parse_string(s)[1])
 
     def test_closed_and_consistent_01(self):
-        ot = ObservationTable({'a', 'b'}, Oracle(set(), set()))
+        ot = ObservationTable({'a', 'b'}, oracle.PassiveOracle(set(), set()))
 
         row1 = Row('')
         row2 = Row('b')
@@ -98,14 +97,14 @@ class TestLSTAR(unittest.TestCase):
         nlstar = algorithms.NLSTAR(set(),
                                    set(),
                                    {'a', 'b'},
-                                   Oracle(set(), set()))
+                                   oracle.PassiveOracle(set(), set()))
         nlstar._ot = ot
 
         self.assertFalse(ot.is_closed())
         self.assertTrue(ot.is_consistent())
 
     def test_closed_and_consistent_02(self):
-        ot = ObservationTable({'a', 'b'}, Oracle(set(), set()))
+        ot = ObservationTable({'a', 'b'}, oracle.PassiveOracle(set(), set()))
 
         row1 = Row('')
         row2 = Row('b')
@@ -128,7 +127,7 @@ class TestLSTAR(unittest.TestCase):
         nlstar = algorithms.NLSTAR(set(),
                                    set(),
                                    {'a', 'b'},
-                                   Oracle(set(), set()))
+                                   oracle.PassiveOracle(set(), set()))
         nlstar._ot = ot
 
         self.assertFalse(ot.is_closed())
@@ -139,7 +138,7 @@ class TestLSTAR(unittest.TestCase):
         self.assertEqual(5, len(nlstar._ot.rows))
 
     def test_closed_and_consistent_03(self):
-        ot = ObservationTable({'a', 'b'}, Oracle(set(), set()))
+        ot = ObservationTable({'a', 'b'}, oracle.PassiveOracle(set(), set()))
 
         row1 = Row('')
         row2 = Row('a')
@@ -166,7 +165,7 @@ class TestLSTAR(unittest.TestCase):
         nlstar = algorithms.NLSTAR(set(),
                                    set(),
                                    {'a', 'b'},
-                                   Oracle(set(), set()))
+                                   oracle.PassiveOracle(set(), set()))
         nlstar._ot = ot
 
         self.assertFalse(nlstar._ot.is_closed())
@@ -179,7 +178,7 @@ class TestLSTAR(unittest.TestCase):
         self.assertEqual(7, len(nlstar._ot.rows))
 
     def test_closed_and_consistent_04(self):
-        ot = ObservationTable({'a', 'b'}, Oracle(set(), set()))
+        ot = ObservationTable({'a', 'b'}, oracle.PassiveOracle(set(), set()))
 
         row1 = Row('')
         row2 = Row('a')
@@ -210,7 +209,7 @@ class TestLSTAR(unittest.TestCase):
         nlstar = algorithms.NLSTAR(set(),
                                    set(),
                                    {'a', 'b'},
-                                   Oracle(set(), set()))
+                                   oracle.PassiveOracle(set(), set()))
         nlstar._ot = ot
 
         self.assertFalse(nlstar._ot.is_closed())
@@ -225,11 +224,11 @@ class TestLSTAR(unittest.TestCase):
     def test_nlstar_01(self):
         s_plus = {'a' * i for i in range(25)}
 
-        oracle = algorithms.Oracle(s_plus, set())
+        teacher = oracle.PassiveOracle(s_plus, set())
         nlstar = algorithms.NLSTAR(s_plus,
                                    set(),
                                    {'a'},
-                                   oracle)
+                                   teacher)
         nfa = nlstar.learn()
 
         self.assertEqual(1, len(nfa._states))
@@ -246,11 +245,11 @@ class TestLSTAR(unittest.TestCase):
         s_plus = {'a', 'aa', 'aaa', 'aaaa', 'aaaaaaaa'}
         s_minus = {''}
 
-        oracle = algorithms.Oracle(s_plus, s_minus)
+        teacher = oracle.PassiveOracle(s_plus, s_minus)
         nlstar = algorithms.NLSTAR(s_plus,
                                    s_minus,
                                    {'a'},
-                                   oracle)
+                                   teacher)
         nfa = nlstar.learn()
 
         self.assertEqual(2, len(nfa._states))
@@ -265,11 +264,11 @@ class TestLSTAR(unittest.TestCase):
             else:
                 s_plus.add(i)
 
-        oracle = algorithms.Oracle(s_plus, s_minus)
+        teacher = oracle.PassiveOracle(s_plus, s_minus)
         nlstar = algorithms.NLSTAR(s_plus,
                                    s_minus,
                                    {'a', 'b'},
-                                   oracle)
+                                   teacher)
         nfa = nlstar.learn()
 
         self.assertEqual(2, len(nfa._states))
@@ -293,11 +292,11 @@ class TestLSTAR(unittest.TestCase):
             s_plus.add('a' * i)
             s_minus.add('a' * (i - 1))
 
-        oracle = algorithms.Oracle(s_plus, s_minus)
+        teacher = oracle.PassiveOracle(s_plus, s_minus)
         nlstar = algorithms.NLSTAR(s_plus,
                                    s_minus,
                                    {'a'},
-                                   oracle)
+                                   teacher)
         nfa = nlstar.learn()
 
         self.assertEqual(2, len(nfa._states))
@@ -325,11 +324,11 @@ class TestLSTAR(unittest.TestCase):
             else:
                 s_minus.add(i)
 
-        oracle = algorithms.Oracle(s_plus, s_minus)
+        teacher = oracle.PassiveOracle(s_plus, s_minus)
         nlstar = algorithms.NLSTAR(s_plus,
                                    s_minus,
                                    {'a', 'b', 'c'},
-                                   oracle)
+                                   teacher)
         nfa = nlstar.learn()
 
         for s in s_minus:
@@ -350,11 +349,11 @@ class TestLSTAR(unittest.TestCase):
             else:
                 s_minus.add(i)
 
-        oracle = algorithms.Oracle(s_plus, s_minus)
+        teacher = oracle.PassiveOracle(s_plus, s_minus)
         nlstar = algorithms.NLSTAR(s_plus,
                                    s_minus,
                                    {'0', '1'},
-                                   oracle)
+                                   teacher)
         nfa = nlstar.learn()
 
         for s in s_minus:
@@ -376,11 +375,11 @@ class TestLSTAR(unittest.TestCase):
             else:
                 s_minus.add(i)
 
-        oracle = algorithms.Oracle(s_plus, s_minus)
+        teacher = oracle.PassiveOracle(s_plus, s_minus)
         nlstar = algorithms.NLSTAR(s_plus,
                                    s_minus,
                                    {'0', '1'},
-                                   oracle)
+                                   teacher)
         nfa = nlstar.learn()
 
         for s in s_minus:
@@ -401,11 +400,11 @@ class TestLSTAR(unittest.TestCase):
             else:
                 s_minus.add(i)
 
-        oracle = algorithms.Oracle(s_plus, s_minus)
+        teacher = oracle.PassiveOracle(s_plus, s_minus)
         nlstar = algorithms.NLSTAR(s_plus,
                                    s_minus,
                                    {'a', 'b'},
-                                   oracle)
+                                   teacher)
         nfa = nlstar.learn()
 
         for s in s_plus:
@@ -428,11 +427,11 @@ class TestLSTAR(unittest.TestCase):
             else:
                 s_minus.add(i)
 
-        oracle = algorithms.Oracle(s_plus, s_minus)
+        teacher = oracle.PassiveOracle(s_plus, s_minus)
         nlstar = algorithms.NLSTAR(s_plus,
                                    s_minus,
                                    {'a', 'b'},
-                                   oracle)
+                                   teacher)
         nfa = nlstar.learn()
 
         for s in s_plus:
@@ -457,11 +456,11 @@ class TestLSTAR(unittest.TestCase):
             else:
                 s_minus.add(i)
 
-        oracle = algorithms.Oracle(s_plus, s_minus)
+        teacher = oracle.PassiveOracle(s_plus, s_minus)
         nlstar = algorithms.NLSTAR(s_plus,
                                    s_minus,
                                    {'0', '1'},
-                                   oracle)
+                                   teacher)
         nfa = nlstar.learn()
 
         for s in s_plus:
@@ -484,11 +483,11 @@ class TestLSTAR(unittest.TestCase):
             else:
                 s_minus.add(i)
 
-        oracle = algorithms.Oracle(s_plus, s_minus)
+        teacher = oracle.PassiveOracle(s_plus, s_minus)
         nlstar = algorithms.NLSTAR(s_plus,
                                    s_minus,
                                    {'a', 'b'},
-                                   oracle)
+                                   teacher)
         nfa = nlstar.learn()
 
         for s in s_plus:

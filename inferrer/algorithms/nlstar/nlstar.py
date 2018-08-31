@@ -1,5 +1,5 @@
 from inferrer.algorithms.algorithm import Algorithm
-from inferrer.algorithms.lstar.oracle import Oracle
+from inferrer.oracle.oracle import Oracle
 from inferrer.algorithms.nlstar.observation_table import ObservationTable
 from inferrer.algorithms.nlstar.row import Row
 from inferrer.automaton import State
