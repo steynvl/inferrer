@@ -1,4 +1,4 @@
-from inferrer import utils, automaton, algorithms
+from inferrer import utils, automaton, algorithms, oracle
 from typing import Set
 
 
@@ -58,8 +58,8 @@ class Learner:
             'gold' : algorithms.Gold(pos_examples, neg_examples, self._alphabet),
             'rpni' : algorithms.RPNI(pos_examples, neg_examples, self._alphabet),
             'lstar': algorithms.LSTAR(pos_examples, neg_examples, self._alphabet,
-                                      algorithms.Oracle(pos_examples,
-                                                        neg_examples))
+                                      oracle.PassiveOracle(pos_examples,
+                                                           neg_examples))
         }
 
         if algorithm not in self._learners:

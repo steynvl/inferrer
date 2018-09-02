@@ -5,8 +5,9 @@ import copy
 from inferrer import utils
 from inferrer.automaton.state import State
 from inferrer.automaton.fsa import FSA
-from collections import defaultdict, OrderedDict
+from collections import defaultdict, OrderedDict, deque
 from typing import Set, Tuple, List, Generator
+
 
 
 class DFA(FSA):
@@ -140,6 +141,97 @@ class DFA(FSA):
                     return qf, letter
         return None, None
 
+    def find_transitions_to_q_with_letter(self, q: State, a: str) -> Set[State]:
+        """
+        Finds the State(s) r that satisfies
+        delta(r, a) = a, where a is a symbol
+        in the alphabet.
+
+        :param q: Target state
+        :type q: automaton.State
+        :param a: Symbol
+        :type a: str
+        :return: The set of states
+        :rtype: Set[State]
+        """
+        states = set()
+        for qf in self._transitions.keys():
+            for letter, to_state in self._transitions[qf].items():
+                if to_state == q and letter == a:
+                    states.add(qf)
+        return states
+
+    def minimize(self):
+        """
+        Minimizes the algorithm using Hopcroft's algorithm.
+        Please consult the following paper
+        https://pdfs.semanticscholar.org/e622/10eea9d53bc36af50675017a830c967fea3f.pdf
+        for explanation of this algorithm.
+
+        :return: Minimized dfa
+        :rtype: DFA
+        """
+        p = self._hopcroft()
+
+        start = [state_set for state_set in p if self._start_state in state_set]
+        assert len(start) == 1
+
+        minimized_dfa = DFA(self.alphabet, State(''.join(map(str, start[0]))))
+        for state_set in p:
+            for a in self.alphabet:
+                for state in state_set:
+                    if self.transition_exists(state, a):
+                        to_state = self.transition(state, a)
+                        to = [s for s in p if to_state in s]
+                        assert len(to) == 1
+
+                        to_state_set = to[0]
+                        minimized_dfa.add_transition(State(''.join(map(str, state_set))),
+                                                     State(''.join(map(str, to_state_set))),
+                                                     a)
+                        break
+
+            if any(s in self.accept_states for s in state_set):
+                minimized_dfa.accept_states.add(State(''.join(map(str, state_set))))
+
+        return minimized_dfa
+
+    def _hopcroft(self):
+        qf = self.states - self.accept_states
+        if len(self.accept_states) < len(self.states - self.accept_states):
+            p = [qf, self.accept_states]
+            l = deque([self.accept_states])
+        else:
+            p = [self.accept_states, qf]
+            l = deque([qf])
+
+        while len(l) > 0:
+            s = l.popleft()
+            for a in self.alphabet:
+                for b in p.copy():
+                    b1, b2 = self._split(b, s, a)
+                    p.remove(b)
+                    if len(b1) > 0:
+                        p.append(b1)
+                    if len(b2) > 0:
+                        p.append(b2)
+
+                    if len(b1) < len(b2):
+                        if len(b1) > 0:
+                            l.append(b1)
+                    else:
+                        if len(b2) > 0:
+                            l.append(b2)
+        return p
+
+    def _split(self, b_prime, b, a):
+        ba = set()
+        for state in b:
+            ba.update(self.find_transitions_to_q_with_letter(state, a))
+
+        ba_comp = ba.symmetric_difference(self.states)
+        return b_prime.intersection(ba), b_prime.intersection(ba_comp)
+
     def remove_dead_states(self):
         """
         Minimizes the dfa by removing all
@@ -152,28 +244,28 @@ class DFA(FSA):
         :return: minimized dfa
         :rtype: DFA
         """
-        minimized_dfa = DFA(self.alphabet, self._start_state)
+        new_dfa = DFA(self.alphabet, self._start_state)
         stack = [self._start_state]
         visited_states = {self._start_state}
         while stack:
             state = stack.pop()
 
-            minimized_dfa.states.add(state)
+            new_dfa.states.add(state)
 
             for a in self.alphabet:
                 if state in self._transitions and a in self._transitions[state]:
                     to_state = self.transition(state, a)
-                    minimized_dfa.add_transition(state, to_state, a)
+                    new_dfa.add_transition(state, to_state, a)
                     if to_state not in visited_states:
                         stack.append(to_state)
                         visited_states.add(to_state)
 
             if state in self.accept_states:
-                minimized_dfa.accept_states.add(state)
+                new_dfa.accept_states.add(state)
             elif state in self.reject_states:
-                minimized_dfa.reject_states.add(state)
+                new_dfa.reject_states.add(state)
 
-        return minimized_dfa
+        return new_dfa
 
     def _rename_states(self):
         """
@@ -334,7 +426,7 @@ class DFA(FSA):
 
     @staticmethod
     def _set_node_name(q: State, node_count: int) -> str:
-        return 'q0' if q.name == '' else 'q{}'.format(node_count)
+        return 'q0' if q.name == '' or q.name == '0' else 'q{}'.format(node_count)
 
     def __str__(self):
         """

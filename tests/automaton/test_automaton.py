@@ -102,7 +102,7 @@ class TestAutomaton(unittest.TestCase):
         for s in negative_examples:
             self.assertFalse(pta.parse_string(s)[1])
 
-    def test_minimize_01(self):
+    def test_remove_dead_states_01(self):
         alphabet = {'a', 'b', 'c'}
         dfa = automaton.DFA(alphabet)
 
@@ -170,6 +170,78 @@ class TestAutomaton(unittest.TestCase):
                 self.assertEqual(expected_transition_table[k][a],
                                  transitions[k][a])
 
+    def test_minimize_01(self):
+        alphabet = {'0', '1'}
+
+        q0 = automaton.State('0')
+        q1 = automaton.State('1')
+        q2 = automaton.State('2')
+        q3 = automaton.State('3')
+        q4 = automaton.State('4')
+        q5 = automaton.State('5')
+
+        dfa = automaton.DFA(alphabet, q0)
+
+        dfa.add_transition(q0, q3, '0')
+        dfa.add_transition(q0, q1, '1')
+
+        dfa.add_transition(q1, q2, '0')
+        dfa.add_transition(q1, q5, '1')
+
+        dfa.add_transition(q2, q2, '0')
+        dfa.add_transition(q2, q5, '1')
+
+        dfa.add_transition(q3, q4, '1')
+        dfa.add_transition(q3, q0, '0')
+
+        dfa.add_transition(q4, q2, '0')
+        dfa.add_transition(q4, q5, '1')
+
+        dfa.add_transition(q5, q5, '0')
+        dfa.add_transition(q5, q5, '1')
+
+        dfa.accept_states.update({q1, q2, q4})
+        minimized_dfa = dfa.minimize()
+
+        self.assertEqual(3, len(minimized_dfa.states))
+        self.assertEqual(1, len(minimized_dfa.accept_states))
+
+    def test_minimize_02(self):
+        alphabet = {'0', '1'}
+
+        qa = automaton.State('a')
+        qb = automaton.State('b')
+        qc = automaton.State('c')
+        qd = automaton.State('d')
+        qe = automaton.State('e')
+        qf = automaton.State('f')
+
+        dfa = automaton.DFA(alphabet, qa)
+
+        dfa.add_transition(qa, qb, '0')
+        dfa.add_transition(qa, qc, '1')
+
+        dfa.add_transition(qb, qa, '0')
+        dfa.add_transition(qb, qd, '1')
+
+        dfa.add_transition(qc, qe, '0')
+        dfa.add_transition(qc, qf, '1')
+
+        dfa.add_transition(qd, qe, '0')
+        dfa.add_transition(qd, qf, '1')
+
+        dfa.add_transition(qe, qe, '0')
+        dfa.add_transition(qe, qf, '1')
+
+        dfa.add_transition(qf, qf, '0')
+        dfa.add_transition(qf, qf, '1')
+
+        dfa.accept_states.update({qc, qd, qe})
+
+        minimized_dfa = dfa.minimize()
+
+        self.assertEqual(3, len(minimized_dfa.states))
+        self.assertEqual(1, len(minimized_dfa.accept_states))
 
 if __name__ == '__main__':
     unittest.main()
