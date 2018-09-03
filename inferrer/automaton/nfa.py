@@ -2,7 +2,7 @@ from itertools import chain, combinations
 from inferrer.automaton.fsa import FSA
 from inferrer.automaton.state import State
 from inferrer.automaton.dfa import DFA
-from collections import defaultdict, OrderedDict
+from collections import defaultdict, OrderedDict, deque
 from typing import Set, List, Tuple
 import copy
 
@@ -144,6 +144,54 @@ class NFA(FSA):
         """
         return self._transitions[q1][a]
 
+    def rename_states(self):
+        """
+        Renames all the states in the nfa
+
+        :return: Original NFA with states renamed.
+        :rtype: NFA
+        """
+        alphabet = sorted([''] + list(self.alphabet))
+        nfa = NFA(self.alphabet)
+
+        old_to_new = {}
+        cnt = 0
+        for s in self._start_states:
+            new_state = State(str(cnt))
+            nfa.add_start_state(new_state)
+            old_to_new[s] = new_state
+            cnt += 1
+
+        queue = deque([s for s in self._start_states])
+        visited = {s for s in self._start_states}
+
+        while len(queue) > 0:
+            state = queue.popleft()
+
+            for a in alphabet:
+                if state in self._transitions and a in self._transitions[state]:
+                    for to_states in self._transitions[state].values():
+                        for to_state in to_states:
+                            if to_state not in visited:
+                                queue.append(to_state)
+                                visited.add(to_state)
+
+                                old_to_new[to_state] = State(str(cnt))
+                                cnt += 1
+
+        for old, new in old_to_new.items():
+            old_transitions = self._transitions[old]
+
+            for sym, states in old_transitions.items():
+                for state in states:
+                    nfa.add_transition(new, old_to_new[state], sym)
+                    nfa.add_state(new)
+
+            if old in self._accept_states:
+                nfa.add_accepting_state(new)
+
+        return nfa
+
     def copy(self):
         """
         Performs a deep copy of the instance.
@@ -172,6 +220,7 @@ class NFA(FSA):
         :return: the equivalent dfa
         :rtype: DFA
         """
+
         if len(self._start_states) > 1:
             cpy = self.copy()
             new_q = State('__q0__')
@@ -180,11 +229,11 @@ class NFA(FSA):
                 cpy.add_transition(new_q, q, '')
             cpy._start_states = {new_q}
         else:
-            cpy = self
+            cpy = self.copy()
 
         q_prime = set()
         power_set_to_states = {}
-        for q in self._power_set(self._states):
+        for q in cpy._power_set(cpy._states):
             new_state = State(''.join(sorted(map(str, q))))
             q_prime.add(new_state)
             power_set_to_states[new_state] = set(q)
@@ -207,6 +256,14 @@ class NFA(FSA):
             if any([s in cpy._accept_states for s in power_set_to_states[r]]):
                 accept_prime.add(r)
 
+        # print('*' * 1000)
+        # for from_states in transitions.keys():
+        #     for sym, to_states in transitions[from_states].items():
+        #         print('delta({}, {}) = {}'.format(from_states,
+        #                                           sym,
+        #                                           ' AND '.join(map(str, to_states))))
+        # print(','.join(map(str, cpy._accept_states)))
+        # print('*' * 1000)
 
         start_state = State(''.join(sorted(map(str, q0_prime))))
         dfa = DFA(self.alphabet, start_state)
@@ -215,12 +272,13 @@ class NFA(FSA):
 
         dfa.accept_states = accept_prime.copy()
 
-        for q, trans in transitions.items():
-            for symbol, to_states in trans.items():
+        for from_state in transitions.keys():
+            for symbol, to_states in transitions[from_state].items():
                 to_state = State(''.join(sorted(map(str, to_states))))
-                dfa.add_transition(q, to_state, symbol)
+                dfa.add_transition(from_state, to_state, symbol)
 
-        return dfa.remove_dead_states()
+
+        return dfa.rename_states().minimize()
 
     @staticmethod
     def _epsilon_closure(nfa, q: State):
@@ -235,6 +293,7 @@ class NFA(FSA):
                     if to_state not in closure_set:
                         closure_set.add(to_state)
                         stack.append(to_state)
+
         return closure_set
 
     @staticmethod

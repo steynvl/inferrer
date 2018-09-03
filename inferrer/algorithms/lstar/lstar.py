@@ -241,4 +241,4 @@ class LSTAR(Algorithm):
                     if ot.get_row(u.name + a) == ot.get_row(w.name):
                         dfa.add_transition(u, w, a)
 
-        return dfa.remove_dead_states()
+        return dfa.remove_dead_states().minimize()

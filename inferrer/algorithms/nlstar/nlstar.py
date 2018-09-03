@@ -68,15 +68,16 @@ class NLSTAR(Algorithm):
 
                 is_closed, is_consistent = self._ot.is_closed_and_consistent()
 
-            nfa = self._build_hypothesis()
-            answer, satisfied = self._oracle.equivalence_query(nfa)
+            hypothesis = self._build_hypothesis()
+
+            answer, satisfied = self._oracle.equivalence_query(hypothesis)
 
             if satisfied:
                 break
 
             self._use_eq(answer)
 
-        return nfa
+        return hypothesis
 
     def _use_eq(self, eq: str):
         """
@@ -148,6 +149,15 @@ class NLSTAR(Algorithm):
         nfa = NFA(self._alphabet)
         epsilon_row = self._ot.get_epsilon_row()
 
+        # print('-' * 1000)
+        # for r in self._ot.suffixes:
+        #     print(r)
+        # print('-' * 1000)
+
+        # for row in self._ot.rows:
+        #     for col in row.columns:
+        #         print('row[{}][{}] = {}'.format(row, col, row.columns[col]))
+
         for row in self._ot.upper_primes:
             state = State(row.prefix)
             nfa.add_state(state)
@@ -174,4 +184,4 @@ class NLSTAR(Algorithm):
                     if row.covered_by(ua_row):
                         nfa.add_transition(state, r, a)
 
-        return nfa
+        return nfa.rename_states()

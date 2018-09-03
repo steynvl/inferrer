@@ -1,4 +1,3 @@
-import queue
 import graphviz
 import tempfile
 import copy
@@ -163,10 +162,10 @@ class DFA(FSA):
 
     def minimize(self):
         """
-        Minimizes the algorithm using Hopcroft's algorithm.
+        Minimizes the dfa using Hopcroft's algorithm.
         Please consult the following paper
         https://pdfs.semanticscholar.org/e622/10eea9d53bc36af50675017a830c967fea3f.pdf
-        for explanation of this algorithm.
+        for an explanation of this algorithm.
 
         :return: Minimized dfa
         :rtype: DFA
@@ -194,7 +193,7 @@ class DFA(FSA):
             if any(s in self.accept_states for s in state_set):
                 minimized_dfa.accept_states.add(State(''.join(map(str, state_set))))
 
-        return minimized_dfa
+        return minimized_dfa.rename_states()
 
     def _hopcroft(self):
         qf = self.states - self.accept_states
@@ -267,29 +266,45 @@ class DFA(FSA):
 
         return new_dfa
 
-    def _rename_states(self):
+    def rename_states(self):
         """
         Renames all the states in the dfa.
+
+        :return: Original DFA with states renamed.
+        :rtype: DFA
         """
-        dfa = DFA(self.alphabet)
+        alphabet = sorted(self.alphabet)
+        dfa = DFA(self.alphabet, State('0'))
 
-        q = queue.Queue()
-        q.put(self._start_state)
-
+        queue = deque([self._start_state])
         visited = {self._start_state}
+        cnt = 1
+        old_to_new = {self._start_state: State('0')}
 
-        dfa._start_state = State('q0')
+        while len(queue) > 0:
+            state = queue.popleft()
 
-        while not q.empty():
-            v = q.get()
-
-            for a in self.alphabet:
-                if v in self._transitions and a in self._transitions[v]:
-                    to_state = self.transition(v, a)
+            for a in alphabet:
+                if state in self._transitions and a in self._transitions[state]:
+                    to_state = self.transition(state, a)
 
                     if to_state not in visited:
-                        q.put(to_state)
+                        queue.append(to_state)
                         visited.add(to_state)
+
+                        old_to_new[to_state] = State(str(cnt))
+                        cnt += 1
+
+        for old, new in old_to_new.items():
+            old_transitions = self._transitions[old]
+
+            for sym, state in old_transitions.items():
+                dfa.add_transition(new, old_to_new[state], sym)
+
+            if old in self.accept_states:
+                dfa.accept_states.add(new)
+
+        return dfa
 
     def copy(self):
         """
@@ -298,7 +313,7 @@ class DFA(FSA):
         :return: A copied dfa
         :rtype: DFA
         """
-        cp = DFA(self.alphabet)
+        cp = DFA(self.alphabet, start_state=self._start_state)
 
         cp.states = self.states.copy()
         cp.accept_states = self.accept_states.copy()
@@ -392,14 +407,9 @@ class DFA(FSA):
 
         edges = defaultdict(lambda: defaultdict(list))
 
-        node_count = 1
-        name_map = {}
         for state in self.states:
             shape = 'doublecircle' if state in self.accept_states else 'circle'
-            digraph.node(name=self._set_node_name(state, node_count), shape=shape, constraint='false')
-            name_map[state.name] = self._set_node_name(state, node_count)
-            if state.name != '':
-                node_count += 1
+            digraph.node(name='q{}'.format(state.name), shape=shape, constraint='false')
 
             if state in self._transitions:
                 for letter, to_state in self._transitions[state].items():
@@ -407,12 +417,12 @@ class DFA(FSA):
 
         for from_state in edges:
             for to_state, letters in edges[from_state].items():
-                digraph.edge(name_map[from_state.name],
-                             name_map[to_state.name],
+                digraph.edge('q{}'.format(from_state.name),
+                             'q{}'.format(to_state.name),
                              ', '.join(letters))
 
         digraph.node('', shape='plaintext', constraint='true')
-        digraph.edge('', 'q0')
+        digraph.edge('', 'q{}'.format(self._start_state.name))
 
         return digraph
 
@@ -424,9 +434,33 @@ class DFA(FSA):
         """
         self.create_graphviz_object().view(tempfile.mkstemp('gv')[1], cleanup=True)
 
-    @staticmethod
-    def _set_node_name(q: State, node_count: int) -> str:
-        return 'q0' if q.name == '' or q.name == '0' else 'q{}'.format(node_count)
+    def __eq__(self, other):
+        """
+        Checks whether two DFA's are equivalent.
+
+        :param other: dfa to compare to instance
+        :type other: DFA
+        :return: Whether the dfa is equal to
+                 the current instance.
+        :rtype: bool
+        """
+        tests = self._start_state == other._start_state and \
+            self.states == other.states and \
+            self.accept_states == other.accept_states
+
+        if not tests:
+            return False
+
+        if sorted(self._transitions.keys()) != sorted(other._transitions.keys()):
+            return False
+
+        for k in self._transitions.keys():
+            if sorted(self._transitions[k].keys()) != sorted(other._transitions[k].keys()):
+                return False
+
+            if sorted(self._transitions[k].values()) != sorted(other._transitions[k].values()):
+                return False
+        return True
 
     def __str__(self):
         """

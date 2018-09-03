@@ -7,7 +7,7 @@ from inferrer.algorithms.nlstar.observation_table import ObservationTable
 from inferrer.algorithms.nlstar.row import Row
 
 
-class TestLSTAR(unittest.TestCase):
+class TestPassiveNLSTAR(unittest.TestCase):
 
     def test_build_hypothesis_01(self):
         ot = ObservationTable({'a', 'b'}, oracle.PassiveOracle(set(), set()))

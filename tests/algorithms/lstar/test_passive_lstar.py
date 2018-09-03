@@ -5,7 +5,8 @@ from collections import OrderedDict
 from typing import Set, Generator
 from inferrer import automaton, algorithms, oracle
 
-class TestLSTAR(unittest.TestCase):
+
+class TestPassiveLSTAR(unittest.TestCase):
 
     def test_lstar_01(self):
         s_plus = {'', 'a', 'b', 'ab', 'aba'}
@@ -20,7 +21,6 @@ class TestLSTAR(unittest.TestCase):
 
         self.assertEqual(5, len(dfa.states))
         self.assertEqual(4, len(dfa.accept_states))
-        self.assertEqual(1, len(dfa.reject_states))
 
         for s in s_plus:
             self.assertTrue(dfa.parse_string(s)[1])
@@ -41,20 +41,19 @@ class TestLSTAR(unittest.TestCase):
 
         self.assertEqual(3, len(dfa.states))
         self.assertEqual(2, len(dfa.accept_states))
-        self.assertEqual(1, len(dfa.reject_states))
 
         expected_transitions = OrderedDict({
-            automaton.State(''): OrderedDict({
-                'a': automaton.State(''),
-                'b': automaton.State('ab'),
+            automaton.State('0'): OrderedDict({
+                'a': automaton.State('0'),
+                'b': automaton.State('1'),
             }),
-            automaton.State('ab'): OrderedDict({
-                'a': automaton.State(''),
-                'b': automaton.State('abb'),
+            automaton.State('1'): OrderedDict({
+                'a': automaton.State('0'),
+                'b': automaton.State('2'),
             }),
-            automaton.State('abb'): OrderedDict({
-                'a': automaton.State('abb'),
-                'b': automaton.State('abb'),
+            automaton.State('2'): OrderedDict({
+                'a': automaton.State('2'),
+                'b': automaton.State('2'),
             })
         })
         self.assertSetEqual(set(map(str, expected_transitions.keys())),
@@ -103,7 +102,6 @@ class TestLSTAR(unittest.TestCase):
 
         self.assertEqual(2, len(dfa.states))
         self.assertEqual(1, len(dfa.accept_states))
-        self.assertEqual(1, len(dfa.reject_states))
 
     def test_lstar_05(self):
         s_plus = set()

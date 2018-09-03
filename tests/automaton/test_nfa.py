@@ -152,6 +152,7 @@ class TestNFA(unittest.TestCase):
         nfa.add_start_state(q0)
 
         dfa = nfa.to_dfa()
+
         self.assertEqual(3, len(dfa.states))
         self.assertEqual(1, len(dfa.accept_states))
 
@@ -179,6 +180,7 @@ class TestNFA(unittest.TestCase):
         nfa.add_start_state(q1)
 
         dfa = nfa.to_dfa()
+
         self.assertEqual(4, len(dfa.states))
         self.assertEqual(3, len(dfa.accept_states))
 
@@ -221,6 +223,40 @@ class TestNFA(unittest.TestCase):
         dfa = nfa.to_dfa()
         self.assertEqual(8, len(dfa.states))
         self.assertEqual(4, len(dfa.accept_states))
+
+    def test_nfa_to_dfa_04(self):
+        nfa = automaton.NFA({'a', 'b'})
+
+        q0 = automaton.State('0')
+        q1 = automaton.State('1')
+        q2 = automaton.State('2')
+        q3 = automaton.State('3')
+
+        nfa.add_state(q0)
+        nfa.add_state(q1)
+        nfa.add_state(q2)
+        nfa.add_state(q3)
+
+        nfa.add_transition(q0, q1, '')
+
+        nfa.add_transition(q1, q2, '')
+        nfa.add_transition(q1, q3, 'a')
+
+        nfa.add_transition(q2, q1, 'a')
+
+        nfa.add_transition(q3, q3, 'b')
+        nfa.add_transition(q3, q2, 'a')
+        nfa.add_transition(q3, q2, 'b')
+
+        nfa.add_accepting_state(q2)
+
+        nfa.add_start_state(q0)
+        nfa.add_start_state(q1)
+
+        dfa = nfa.to_dfa().minimize()
+
+        self.assertEqual(4, len(dfa.states))
+        self.assertEqual(3, len(dfa.accept_states))
 
     @staticmethod
     def _combinations(s: Set[str], repeat: int) -> Generator:
