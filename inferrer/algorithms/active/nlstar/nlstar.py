@@ -1,13 +1,13 @@
-from inferrer.algorithms.algorithm import Algorithm
+from inferrer.algorithms.active.active_learner import ActiveLearner
 from inferrer.oracle.oracle import Oracle
-from inferrer.algorithms.nlstar.observation_table import ObservationTable
-from inferrer.algorithms.nlstar.row import Row
+from inferrer.algorithms.active.nlstar.observation_table import ObservationTable
+from inferrer.algorithms.active.nlstar.row import Row
 from inferrer.automaton import State
 from inferrer.automaton.nfa import NFA
 from typing import Set
 
 
-class NLSTAR(Algorithm):
+class NLSTAR(ActiveLearner):
     """
     An implementation of the NL* algorithm, which extends
     Angluin-Style learning to the learning of an NFA.
@@ -21,25 +21,15 @@ class NLSTAR(Algorithm):
     reached.
     """
 
-    def __init__(self, pos_examples: Set[str],
-                 neg_examples: Set[str],
-                 alphabet: Set[str],
-                 oracle: Oracle):
+    def __init__(self, alphabet: Set[str], oracle: Oracle):
         """
-        :param pos_examples: Set of positive example strings
-                             from the target language
-        :type pos_examples: Set[str]
-        :param neg_examples: Set of negative example strings,
-                             i.e strings that do not belong in
-                             the target language.
-        :type neg_examples: Set[str]
         :param alphabet: The alphabet (Sigma) of the target
                          regular language.
         :type alphabet: Set[str]
         :param oracle: Minimally adequate teacher (MAT)
         :type oracle: Oracle
         """
-        super().__init__(pos_examples, neg_examples, alphabet)
+        super().__init__(alphabet, oracle)
         self._oracle = oracle
 
         self._ot = ObservationTable(self._alphabet, oracle)
@@ -148,15 +138,6 @@ class NLSTAR(Algorithm):
         """
         nfa = NFA(self._alphabet)
         epsilon_row = self._ot.get_epsilon_row()
-
-        # print('-' * 1000)
-        # for r in self._ot.suffixes:
-        #     print(r)
-        # print('-' * 1000)
-
-        # for row in self._ot.rows:
-        #     for col in row.columns:
-        #         print('row[{}][{}] = {}'.format(row, col, row.columns[col]))
 
         for row in self._ot.upper_primes:
             state = State(row.prefix)

@@ -1,10 +1,11 @@
 import functools
 from inferrer import utils, automaton
-from inferrer.algorithms.algorithm import Algorithm
+from inferrer.algorithms.passive.passive_learner import PassiveLearner
 from typing import Set
 
 
-class RPNI(Algorithm):
+
+class RPNI(PassiveLearner):
     """
     An implementation of the Regular Positive and Negative Inference (RPNI)
     algorithm. This algorithm tries to make sure that some generalisation
@@ -24,7 +25,7 @@ class RPNI(Algorithm):
                          regular language.
         :type alphabet: Set[str]
         """
-        super().__init__(pos_examples, neg_examples, alphabet)
+        super().__init__(alphabet, pos_examples, neg_examples)
         self._samples = pos_examples.union(neg_examples)
 
         self._red = {automaton.State('')}

@@ -1,5 +1,5 @@
 from inferrer.oracle.oracle import Oracle
-from inferrer.algorithms.nlstar.row import Row
+from inferrer.algorithms.active.nlstar.row import Row
 from typing import Set, Tuple
 
 

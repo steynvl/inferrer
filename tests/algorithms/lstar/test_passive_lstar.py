@@ -8,15 +8,12 @@ from inferrer import automaton, algorithms, oracle
 
 class TestPassiveLSTAR(unittest.TestCase):
 
-    def test_lstar_01(self):
+    def test_passive_lstar_01(self):
         s_plus = {'', 'a', 'b', 'ab', 'aba'}
         s_minus = {'abb'}
         teacher = oracle.PassiveOracle(s_plus, s_minus)
 
-        lstar = algorithms.LSTAR(s_plus,
-                                 s_minus,
-                                 {'a', 'b'},
-                                 teacher)
+        lstar = algorithms.LSTAR({'a', 'b'}, teacher)
         dfa = lstar.learn()
 
         self.assertEqual(5, len(dfa.states))
@@ -27,16 +24,13 @@ class TestPassiveLSTAR(unittest.TestCase):
         for s in s_minus:
             self.assertFalse(dfa.parse_string(s)[1])
 
-    def test_lstar_02(self):
+    def test_passive_lstar_02(self):
         s_plus = {'', 'a', 'b', 'ab', 'aa', 'aba', 'aab', 'abab'}
         s_minus = {'abb'}
 
         teacher = oracle.PassiveOracle(s_plus, s_minus)
 
-        lstar = algorithms.LSTAR(s_plus,
-                                 s_minus,
-                                 {'a', 'b'},
-                                 teacher)
+        lstar = algorithms.LSTAR({'a', 'b'}, teacher)
         dfa = lstar.learn()
 
         self.assertEqual(3, len(dfa.states))
@@ -69,21 +63,18 @@ class TestPassiveLSTAR(unittest.TestCase):
         for s in s_minus:
             self.assertFalse(dfa.parse_string(s)[1])
 
-    def test_lstar_03(self):
+    def test_passive_lstar_03(self):
         s_plus = {'a' * i for i in range(25)}
 
         teacher = oracle.PassiveOracle(s_plus, set())
-        lstar = algorithms.LSTAR(s_plus,
-                                 set(),
-                                 {'a'},
-                                 teacher)
+        lstar = algorithms.LSTAR({'a'}, teacher)
         dfa = lstar.learn()
 
         self.assertEqual(1, len(dfa.states))
         self.assertEqual(1, len(dfa.accept_states))
         self.assertTrue(dfa.parse_string('a' * 1000)[1])
 
-    def test_lstar_04(self):
+    def test_passive_lstar_04(self):
         """
         Try to let L* learn Kleene plus.
         The alphabet is sigma = {a} and the
@@ -94,16 +85,13 @@ class TestPassiveLSTAR(unittest.TestCase):
         s_minus = {''}
 
         teacher = oracle.PassiveOracle(s_plus, s_minus)
-        lstar = algorithms.LSTAR(s_plus,
-                                 s_minus,
-                                 {'a'},
-                                 teacher)
+        lstar = algorithms.LSTAR({'a'}, teacher)
         dfa = lstar.learn()
 
         self.assertEqual(2, len(dfa.states))
         self.assertEqual(1, len(dfa.accept_states))
 
-    def test_lstar_05(self):
+    def test_passive_lstar_05(self):
         s_plus = set()
         s_minus = set()
         for i in self._combinations({'a', 'b'}, 4):
@@ -113,10 +101,7 @@ class TestPassiveLSTAR(unittest.TestCase):
                 s_plus.add(i)
 
         teacher = oracle.PassiveOracle(s_plus, s_minus)
-        lstar = algorithms.LSTAR(s_plus,
-                                 s_minus,
-                                 {'a', 'b'},
-                                 teacher)
+        lstar = algorithms.LSTAR({'a', 'b'}, teacher)
         dfa = lstar.learn()
 
         self.assertEqual(2, len(dfa.states))
@@ -127,7 +112,7 @@ class TestPassiveLSTAR(unittest.TestCase):
         for s in s_minus:
             self.assertFalse(dfa.parse_string(s)[1])
 
-    def test_lstar_06(self):
+    def test_passive_lstar_06(self):
         """
         Try to let L* learn the regular language A.
         A is a language over the alphabet sigma = {a},
@@ -141,10 +126,7 @@ class TestPassiveLSTAR(unittest.TestCase):
             s_minus.add('a' * (i - 1))
 
         teacher = oracle.PassiveOracle(s_plus, s_minus)
-        lstar = algorithms.LSTAR(s_plus,
-                                 s_minus,
-                                 {'a'},
-                                  teacher)
+        lstar = algorithms.LSTAR({'a'}, teacher)
         dfa = lstar.learn()
 
         self.assertEqual(2, len(dfa.states))
@@ -155,7 +137,7 @@ class TestPassiveLSTAR(unittest.TestCase):
         for s in s_minus:
             self.assertFalse(dfa.parse_string(s)[1])
 
-    def test_lstar_07(self):
+    def test_passive_lstar_07(self):
         """
         try to let L* learn the regular language A.
         A is a regular language over the alphabet {0, 1} where
@@ -171,10 +153,7 @@ class TestPassiveLSTAR(unittest.TestCase):
                 s_minus.add(i)
 
         teacher = oracle.PassiveOracle(s_plus, s_minus)
-        lstar = algorithms.LSTAR(s_plus,
-                                 s_minus,
-                                 {'0', '1'},
-                                 teacher)
+        lstar = algorithms.LSTAR({'0', '1'}, teacher)
         dfa = lstar.learn()
 
         for s in s_plus:
@@ -182,7 +161,7 @@ class TestPassiveLSTAR(unittest.TestCase):
         for s in s_minus:
             self.assertFalse(dfa.parse_string(s)[1])
 
-    def test_lstar_08(self):
+    def test_passive_lstar_08(self):
         """
         try to let L* learn the regular language A.
         A is a regular language over the alphabet {0, 1} where
@@ -199,16 +178,13 @@ class TestPassiveLSTAR(unittest.TestCase):
                 s_minus.add(i)
 
         teacher = oracle.PassiveOracle(s_plus, s_minus)
-        lstar = algorithms.LSTAR(s_plus,
-                                 s_minus,
-                                 {'0', '1'},
-                                 teacher)
+        lstar = algorithms.LSTAR({'0', '1'}, teacher)
         dfa = lstar.learn()
 
         for s in s_minus:
             self.assertFalse(dfa.parse_string(s)[1])
 
-    def test_lstar_09(self):
+    def test_passive_lstar_09(self):
         """
         try to let L* learn the regular language A.
         A is a regular language over the alphabet {0, 1} where
@@ -223,16 +199,13 @@ class TestPassiveLSTAR(unittest.TestCase):
                 s_plus.add(i)
 
         teacher = oracle.PassiveOracle(s_plus, s_minus)
-        lstar = algorithms.LSTAR(s_plus,
-                                 s_minus,
-                                 {'0', '1'},
-                                 teacher)
+        lstar = algorithms.LSTAR({'0', '1'}, teacher)
         dfa = lstar.learn()
 
         for s in s_minus:
             self.assertFalse(dfa.parse_string(s)[1])
 
-    def test_lstar_10(self):
+    def test_passive_lstar_10(self):
         """
         try to let L* learn the regular language A.
         A is a regular language over the alphabet {0, 1} where
@@ -250,16 +223,13 @@ class TestPassiveLSTAR(unittest.TestCase):
                 s_minus.add(i)
 
         teacher = oracle.PassiveOracle(s_plus, s_minus)
-        lstar = algorithms.LSTAR(s_plus,
-                                 s_minus,
-                                 {'0', '1'},
-                                 teacher)
+        lstar = algorithms.LSTAR({'0', '1'}, teacher)
         dfa = lstar.learn()
 
         for s in s_minus:
             self.assertFalse(dfa.parse_string(s)[1])
 
-    def test_lstar_11(self):
+    def test_passive_lstar_11(self):
         """
         try to let L* learn the regular language L.
         L is a regular language over the alphabet {a, b, c} where
@@ -275,10 +245,7 @@ class TestPassiveLSTAR(unittest.TestCase):
                 s_minus.add(i)
 
         teacher = oracle.PassiveOracle(s_plus, s_minus)
-        lstar = algorithms.LSTAR(s_plus,
-                                 s_minus,
-                                 {'a', 'b', 'c'},
-                                 teacher)
+        lstar = algorithms.LSTAR({'a', 'b', 'c'}, teacher)
 
         dfa = lstar.learn()
 
@@ -287,7 +254,7 @@ class TestPassiveLSTAR(unittest.TestCase):
         for s in s_minus:
             self.assertFalse(dfa.parse_string(s)[1])
 
-    def test_lstar_12(self):
+    def test_passive_lstar_12(self):
         """
         try to let L* learn the regular language L.
         L is a regular language over the alphabet {a, b} where
@@ -317,17 +284,14 @@ class TestPassiveLSTAR(unittest.TestCase):
                 s_minus.add(i)
 
         teacher = oracle.PassiveOracle(s_plus, s_minus)
-        lstar = algorithms.LSTAR(s_plus,
-                                 s_minus,
-                                 {'a', 'b'},
-                                 teacher)
+        lstar = algorithms.LSTAR({'a', 'b'}, teacher)
 
         dfa = lstar.learn()
 
         for s in s_minus:
             self.assertFalse(dfa.parse_string(s)[1])
 
-    def test_lstar_13(self):
+    def test_passive_lstar_13(self):
         """
         try to let L* learn the regular language L.
         L is a regular language over the alphabet {a, b, c} where
@@ -356,16 +320,14 @@ class TestPassiveLSTAR(unittest.TestCase):
             s_minus.add(''.join(cpy_3))
 
         teacher = oracle.PassiveOracle(s_plus, s_minus)
-        lstar = algorithms.LSTAR(s_plus,
-                                 s_minus,
-                                 {'a', 'b', 'c'},
-                                 teacher)
+        lstar = algorithms.LSTAR({'a', 'b', 'c'}, teacher)
+
         dfa = lstar.learn()
 
         for s in s_minus:
             self.assertFalse(dfa.parse_string(s)[1])
 
-    def test_lstar_14(self):
+    def test_passive_lstar_14(self):
         """
         try to let L* learn the regular language L.
         L is a regular language over the alphabet {a, b} where
@@ -381,16 +343,14 @@ class TestPassiveLSTAR(unittest.TestCase):
                 s_minus.add(i)
 
         teacher = oracle.PassiveOracle(s_plus, s_minus)
-        lstar = algorithms.LSTAR(s_plus,
-                                 s_minus,
-                                 {'a', 'b'},
-                                 teacher)
+        lstar = algorithms.LSTAR({'a', 'b'}, teacher)
+
         dfa = lstar.learn()
 
         for s in s_minus:
             self.assertFalse(dfa.parse_string(s)[1])
 
-    def test_lstar_15(self):
+    def test_passive_lstar_15(self):
         """
         try to let L* learn the regular language L.
         L is a regular language over the alphabet {0, 1, .} where
@@ -464,16 +424,13 @@ class TestPassiveLSTAR(unittest.TestCase):
         })
 
         teacher = oracle.PassiveOracle(s_plus, s_minus)
-        lstar = algorithms.LSTAR(s_plus,
-                                 s_minus,
-                                 {'0', '1', '.'},
-                                 teacher)
+        lstar = algorithms.LSTAR({'0', '1', '.'}, teacher)
         dfa = lstar.learn()
 
         for s in s_minus:
             self.assertFalse(dfa.parse_string(s)[1])
 
-    def test_lstar_16(self):
+    def test_passive_lstar_16(self):
         s_plus = set()
         s_minus = set()
 
@@ -513,16 +470,13 @@ class TestPassiveLSTAR(unittest.TestCase):
         })
 
         teacher = oracle.PassiveOracle(s_plus, s_minus)
-        lstar = algorithms.LSTAR(s_plus,
-                                 s_minus,
-                                 {'a', '@'},
-                                 teacher)
+        lstar = algorithms.LSTAR({'a', '@'}, teacher)
         dfa = lstar.learn()
 
         for s in s_minus:
             self.assertFalse(dfa.parse_string(s)[1])
 
-    def test_lstar_17(self):
+    def test_passive_lstar_17(self):
         s_plus = set()
         s_minus = set()
 
@@ -533,10 +487,7 @@ class TestPassiveLSTAR(unittest.TestCase):
                 s_minus.add(i)
 
         teacher = oracle.PassiveOracle(s_plus, s_minus)
-        lstar = algorithms.LSTAR(s_plus,
-                                 s_minus,
-                                 {'a', '1', '#'},
-                                 teacher)
+        lstar = algorithms.LSTAR({'a', '1', '#'}, teacher)
         dfa = lstar.learn()
 
         for s in s_minus:

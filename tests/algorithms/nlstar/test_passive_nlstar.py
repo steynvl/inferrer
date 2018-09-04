@@ -3,8 +3,8 @@ import itertools
 import random
 from typing import Set, Generator
 from inferrer import algorithms, oracle
-from inferrer.algorithms.nlstar.observation_table import ObservationTable
-from inferrer.algorithms.nlstar.row import Row
+from inferrer.algorithms.active.nlstar.observation_table import ObservationTable
+from inferrer.algorithms.active.nlstar.row import Row
 
 
 class TestPassiveNLSTAR(unittest.TestCase):
@@ -43,10 +43,7 @@ class TestPassiveNLSTAR(unittest.TestCase):
 
         ot.update_meta_data()
 
-        nlstar = algorithms.NLSTAR(set(),
-                                   set(),
-                                   {'a', 'b'},
-                                   oracle.PassiveOracle(set(), set()))
+        nlstar = algorithms.NLSTAR({'a', 'b'}, oracle.PassiveOracle(set(), set()))
         nlstar._ot = ot
 
         nfa = nlstar._build_hypothesis()
@@ -94,10 +91,7 @@ class TestPassiveNLSTAR(unittest.TestCase):
 
         self.assertEqual(3, len(ot.primes))
 
-        nlstar = algorithms.NLSTAR(set(),
-                                   set(),
-                                   {'a', 'b'},
-                                   oracle.PassiveOracle(set(), set()))
+        nlstar = algorithms.NLSTAR({'a', 'b'}, oracle.PassiveOracle(set(), set()))
         nlstar._ot = ot
 
         self.assertFalse(ot.is_closed())
@@ -124,10 +118,7 @@ class TestPassiveNLSTAR(unittest.TestCase):
         self.assertEqual(3, len(ot.primes))
         self.assertEqual(0, len(ot.rows.symmetric_difference(ot.primes)))
 
-        nlstar = algorithms.NLSTAR(set(),
-                                   set(),
-                                   {'a', 'b'},
-                                   oracle.PassiveOracle(set(), set()))
+        nlstar = algorithms.NLSTAR({'a', 'b'}, oracle.PassiveOracle(set(), set()))
         nlstar._ot = ot
 
         self.assertFalse(ot.is_closed())
@@ -162,10 +153,7 @@ class TestPassiveNLSTAR(unittest.TestCase):
         self.assertEqual(4, len(ot.primes))
         self.assertEqual(1, len(ot.rows.symmetric_difference(ot.primes)))
 
-        nlstar = algorithms.NLSTAR(set(),
-                                   set(),
-                                   {'a', 'b'},
-                                   oracle.PassiveOracle(set(), set()))
+        nlstar = algorithms.NLSTAR({'a', 'b'}, oracle.PassiveOracle(set(), set()))
         nlstar._ot = ot
 
         self.assertFalse(nlstar._ot.is_closed())
@@ -206,10 +194,7 @@ class TestPassiveNLSTAR(unittest.TestCase):
         self.assertEqual(5, len(ot.primes))
         self.assertEqual(2, len(ot.rows.symmetric_difference(ot.primes)))
 
-        nlstar = algorithms.NLSTAR(set(),
-                                   set(),
-                                   {'a', 'b'},
-                                   oracle.PassiveOracle(set(), set()))
+        nlstar = algorithms.NLSTAR({'a', 'b'}, oracle.PassiveOracle(set(), set()))
         nlstar._ot = ot
 
         self.assertFalse(nlstar._ot.is_closed())
@@ -221,21 +206,18 @@ class TestPassiveNLSTAR(unittest.TestCase):
 
         self.assertEqual(9, len(nlstar._ot.rows))
 
-    def test_nlstar_01(self):
+    def test_passive_nlstar_01(self):
         s_plus = {'a' * i for i in range(25)}
 
         teacher = oracle.PassiveOracle(s_plus, set())
-        nlstar = algorithms.NLSTAR(s_plus,
-                                   set(),
-                                   {'a'},
-                                   teacher)
+        nlstar = algorithms.NLSTAR({'a'}, teacher)
         nfa = nlstar.learn()
 
         self.assertEqual(1, len(nfa._states))
         self.assertEqual(1, len(nfa._accept_states))
         self.assertTrue(nfa.parse_string('a' * 1000)[1])
 
-    def test_nlstar_02(self):
+    def test_passive_nlstar_02(self):
         """
         Try to let NL* learn Kleene plus.
         The alphabet is sigma = {a} and the
@@ -246,16 +228,13 @@ class TestPassiveNLSTAR(unittest.TestCase):
         s_minus = {''}
 
         teacher = oracle.PassiveOracle(s_plus, s_minus)
-        nlstar = algorithms.NLSTAR(s_plus,
-                                   s_minus,
-                                   {'a'},
-                                   teacher)
+        nlstar = algorithms.NLSTAR({'a'}, teacher)
         nfa = nlstar.learn()
 
         self.assertEqual(2, len(nfa._states))
         self.assertEqual(1, len(nfa._accept_states))
 
-    def test_nlstar_03(self):
+    def test_passive_nlstar_03(self):
         s_plus = set()
         s_minus = set()
         for i in self._combinations({'a', 'b'}, 4):
@@ -265,10 +244,7 @@ class TestPassiveNLSTAR(unittest.TestCase):
                 s_plus.add(i)
 
         teacher = oracle.PassiveOracle(s_plus, s_minus)
-        nlstar = algorithms.NLSTAR(s_plus,
-                                   s_minus,
-                                   {'a', 'b'},
-                                   teacher)
+        nlstar = algorithms.NLSTAR({'a', 'b'}, teacher)
         nfa = nlstar.learn()
 
         self.assertEqual(2, len(nfa._states))
@@ -279,7 +255,7 @@ class TestPassiveNLSTAR(unittest.TestCase):
         for s in s_minus:
             self.assertFalse(nfa.parse_string(s)[1])
 
-    def test_nlstar_04(self):
+    def test_passive_nlstar_04(self):
         """
         Try to let NL* learn the regular language A.
         A is a language over the alphabet sigma = {a},
@@ -293,10 +269,7 @@ class TestPassiveNLSTAR(unittest.TestCase):
             s_minus.add('a' * (i - 1))
 
         teacher = oracle.PassiveOracle(s_plus, s_minus)
-        nlstar = algorithms.NLSTAR(s_plus,
-                                   s_minus,
-                                   {'a'},
-                                   teacher)
+        nlstar = algorithms.NLSTAR({'a'}, teacher)
         nfa = nlstar.learn()
 
         self.assertEqual(2, len(nfa._states))
@@ -307,7 +280,7 @@ class TestPassiveNLSTAR(unittest.TestCase):
         for s in s_minus:
             self.assertFalse(nfa.parse_string(s)[1])
 
-    def test_nlstar_05(self):
+    def test_passive_nlstar_05(self):
         """
         try to let NL* learn the regular language A.
         A is a regular language over the alphabet {a, b, c} where
@@ -325,16 +298,13 @@ class TestPassiveNLSTAR(unittest.TestCase):
                 s_minus.add(i)
 
         teacher = oracle.PassiveOracle(s_plus, s_minus)
-        nlstar = algorithms.NLSTAR(s_plus,
-                                   s_minus,
-                                   {'a', 'b', 'c'},
-                                   teacher)
+        nlstar = algorithms.NLSTAR({'a', 'b', 'c'}, teacher)
         nfa = nlstar.learn()
 
         for s in s_minus:
             self.assertFalse(nfa.parse_string(s)[1])
 
-    def test_nlstar_06(self):
+    def test_passive_nlstar_06(self):
         """
         try to let NL* learn the regular language A.
         A is a regular language over the alphabet {0, 1} where
@@ -350,16 +320,13 @@ class TestPassiveNLSTAR(unittest.TestCase):
                 s_minus.add(i)
 
         teacher = oracle.PassiveOracle(s_plus, s_minus)
-        nlstar = algorithms.NLSTAR(s_plus,
-                                   s_minus,
-                                   {'0', '1'},
-                                   teacher)
+        nlstar = algorithms.NLSTAR({'0', '1'}, teacher)
         nfa = nlstar.learn()
 
         for s in s_minus:
             self.assertFalse(nfa.parse_string(s)[1])
 
-    def test_nlstar_07(self):
+    def test_passive_nlstar_07(self):
         """
         try to let NL* learn the regular language A.
         A is a regular language over the alphabet {0, 1} where
@@ -376,16 +343,13 @@ class TestPassiveNLSTAR(unittest.TestCase):
                 s_minus.add(i)
 
         teacher = oracle.PassiveOracle(s_plus, s_minus)
-        nlstar = algorithms.NLSTAR(s_plus,
-                                   s_minus,
-                                   {'0', '1'},
-                                   teacher)
+        nlstar = algorithms.NLSTAR({'0', '1'}, teacher)
         nfa = nlstar.learn()
 
         for s in s_minus:
             self.assertFalse(nfa.parse_string(s)[1])
 
-    def test_nlstar_08(self):
+    def test_passive_nlstar_08(self):
         """
         try to let NL* learn the regular language L.
         L is a regular language over the alphabet {a, b} where
@@ -401,10 +365,7 @@ class TestPassiveNLSTAR(unittest.TestCase):
                 s_minus.add(i)
 
         teacher = oracle.PassiveOracle(s_plus, s_minus)
-        nlstar = algorithms.NLSTAR(s_plus,
-                                   s_minus,
-                                   {'a', 'b'},
-                                   teacher)
+        nlstar = algorithms.NLSTAR({'a', 'b'}, teacher)
         nfa = nlstar.learn()
 
         for s in s_plus:
@@ -412,7 +373,7 @@ class TestPassiveNLSTAR(unittest.TestCase):
         for s in s_minus:
             self.assertFalse(nfa.parse_string(s)[1])
 
-    def test_nlstar_09(self):
+    def test_passive_nlstar_09(self):
         """
         try to let NL* learn the regular language L.
         L is a regular language over the alphabet {a, b} where
@@ -428,10 +389,7 @@ class TestPassiveNLSTAR(unittest.TestCase):
                 s_minus.add(i)
 
         teacher = oracle.PassiveOracle(s_plus, s_minus)
-        nlstar = algorithms.NLSTAR(s_plus,
-                                   s_minus,
-                                   {'a', 'b'},
-                                   teacher)
+        nlstar = algorithms.NLSTAR({'a', 'b'}, teacher)
         nfa = nlstar.learn()
 
         for s in s_plus:
@@ -439,7 +397,7 @@ class TestPassiveNLSTAR(unittest.TestCase):
         for s in s_minus:
             self.assertFalse(nfa.parse_string(s)[1])
 
-    def test_nlstar_10(self):
+    def test_passive_nlstar_10(self):
         """
         try to let NL* learn the regular language A.
         A is a regular language over the alphabet {0, 1} where
@@ -457,10 +415,7 @@ class TestPassiveNLSTAR(unittest.TestCase):
                 s_minus.add(i)
 
         teacher = oracle.PassiveOracle(s_plus, s_minus)
-        nlstar = algorithms.NLSTAR(s_plus,
-                                   s_minus,
-                                   {'0', '1'},
-                                   teacher)
+        nlstar = algorithms.NLSTAR({'0', '1'}, teacher)
         nfa = nlstar.learn()
 
         for s in s_plus:
@@ -468,7 +423,7 @@ class TestPassiveNLSTAR(unittest.TestCase):
         for s in s_minus:
             self.assertFalse(nfa.parse_string(s)[1])
 
-    def test_nlstar_11(self):
+    def test_passive_nlstar_11(self):
         """
         try to let NL* learn the regular language L.
         L is a regular language over the alphabet {a, b} where
@@ -484,10 +439,7 @@ class TestPassiveNLSTAR(unittest.TestCase):
                 s_minus.add(i)
 
         teacher = oracle.PassiveOracle(s_plus, s_minus)
-        nlstar = algorithms.NLSTAR(s_plus,
-                                   s_minus,
-                                   {'a', 'b'},
-                                   teacher)
+        nlstar = algorithms.NLSTAR({'a', 'b'}, teacher)
         nfa = nlstar.learn()
 
         for s in s_plus:

@@ -1,7 +1,7 @@
 import unittest
 from inferrer import oracle
-from inferrer.algorithms.nlstar.observation_table import ObservationTable
-from inferrer.algorithms.nlstar.row import Row
+from inferrer.algorithms.active.nlstar.observation_table import ObservationTable
+from inferrer.algorithms.active.nlstar.row import Row
 
 
 class TestObservationTable(unittest.TestCase):

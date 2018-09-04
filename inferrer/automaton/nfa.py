@@ -256,15 +256,6 @@ class NFA(FSA):
             if any([s in cpy._accept_states for s in power_set_to_states[r]]):
                 accept_prime.add(r)
 
-        # print('*' * 1000)
-        # for from_states in transitions.keys():
-        #     for sym, to_states in transitions[from_states].items():
-        #         print('delta({}, {}) = {}'.format(from_states,
-        #                                           sym,
-        #                                           ' AND '.join(map(str, to_states))))
-        # print(','.join(map(str, cpy._accept_states)))
-        # print('*' * 1000)
-
         start_state = State(''.join(sorted(map(str, q0_prime))))
         dfa = DFA(self.alphabet, start_state)
 

@@ -1,9 +1,10 @@
 from inferrer import utils, automaton
-from inferrer.algorithms.algorithm import Algorithm
+from inferrer.algorithms.passive.passive_learner import PassiveLearner
 from typing import Set, Tuple
 
 
-class Gold(Algorithm):
+
+class Gold(PassiveLearner):
     """
     An implementation of E. Mark GOLD's algorithm, which tries
     to find the minimum DFA consistent with the sample.
@@ -22,7 +23,7 @@ class Gold(Algorithm):
                          regular language.
         :type alphabet: Set[str]
         """
-        super().__init__(pos_examples, neg_examples, alphabet)
+        super().__init__(alphabet, pos_examples, neg_examples)
         self._samples = pos_examples.union(neg_examples)
 
         self._red = {''}
