@@ -88,8 +88,6 @@ class Learner:
         fsa = learner.learn()
 
         if type(fsa) is automaton.NFA:
-            print(fsa)
-            print(type(fsa))
             fsa = fsa.to_dfa()
 
         return fsa
