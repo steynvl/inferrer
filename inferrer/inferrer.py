@@ -22,6 +22,9 @@ class Learner:
 
     L*  : An implementation of Dana Angluin's L* algorithm, which
           learns regular languages from queries and counterexamples.
+
+    NL* : An implementation of the NL* algorithm, which extends
+          Angluin-Style learning to the learning of an NFA.
     """
 
     def __init__(self, pos_examples: Set[str],
@@ -41,6 +44,7 @@ class Learner:
                           gold
                           rpni
                           lstar
+                          nlstar
         :type algorithm: str
         """
         if not isinstance(pos_examples, set):
@@ -55,11 +59,12 @@ class Learner:
         self._alphabet = utils.determine_alphabet(pos_examples.union(neg_examples))
 
         self._learners = {
-            'gold' : algorithms.Gold(pos_examples, neg_examples, self._alphabet),
-            'rpni' : algorithms.RPNI(pos_examples, neg_examples, self._alphabet),
-            'lstar': algorithms.LSTAR(pos_examples, neg_examples, self._alphabet,
-                                      oracle.PassiveOracle(pos_examples,
-                                                           neg_examples))
+            'gold'  : algorithms.Gold(pos_examples, neg_examples, self._alphabet),
+            'rpni'  : algorithms.RPNI(pos_examples, neg_examples, self._alphabet),
+            'lstar' : algorithms.LSTAR(self._alphabet, oracle.PassiveOracle(pos_examples,
+                                                                            neg_examples)),
+            'nlstar': algorithms.NLSTAR(self._alphabet, oracle.PassiveOracle(pos_examples,
+                                                                             neg_examples))
         }
 
         if algorithm not in self._learners:
@@ -80,4 +85,11 @@ class Learner:
         :rtype: Automaton
         """
         learner = self._learners[self._algorithm]
-        return learner.learn()
+        fsa = learner.learn()
+
+        if type(fsa) is automaton.NFA:
+            print(fsa)
+            print(type(fsa))
+            fsa = fsa.to_dfa()
+
+        return fsa
