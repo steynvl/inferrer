@@ -41,6 +41,8 @@ class TestPassiveNLSTAR(unittest.TestCase):
         row8.columns = {'': 0, 'aaa': 1, 'aa': 0, 'a': 0}
         row9.columns = {'': 0, 'aaa': 1, 'aa': 1, 'a': 0}
 
+        ot.prefix_to_row = {r.prefix: r for r in ot.rows}
+
         ot.update_meta_data()
 
         nlstar = algorithms.NLSTAR({'a', 'b'}, oracle.PassiveOracle(set(), set()))
@@ -148,6 +150,8 @@ class TestPassiveNLSTAR(unittest.TestCase):
         row4.columns = {'': 0, 'aaa': 1, 'aa': 0, 'a': 1}
         row5.columns = {'': 0, 'aaa': 1, 'aa': 1, 'a': 1}
 
+        ot.prefix_to_row = {r.prefix: r for r in ot.rows}
+
         ot.update_meta_data()
 
         self.assertEqual(4, len(ot.primes))
@@ -188,6 +192,8 @@ class TestPassiveNLSTAR(unittest.TestCase):
         row5.columns = {'': 0, 'aaa': 1, 'aa': 1, 'a': 1}
         row6.columns = {'': 1, 'aaa': 1, 'aa': 0, 'a': 0}
         row7.columns = {'': 1, 'aaa': 1, 'aa': 1, 'a': 0}
+
+        ot.prefix_to_row = {r.prefix: r for r in ot.rows}
 
         ot.update_meta_data()
 

@@ -30,6 +30,8 @@ class ObservationTable:
 
         self.__suffixes = set()
 
+        self.__prefix_to_row = {}
+
     @property
     def rows(self):
         return self.__rows
@@ -54,9 +56,17 @@ class ObservationTable:
     def suffixes(self):
         return self.__suffixes
 
+    @property
+    def prefix_to_row(self):
+        return self.__prefix_to_row
+
     @suffixes.setter
     def suffixes(self, suffixes):
         self.__suffixes = suffixes
+
+    @prefix_to_row.setter
+    def prefix_to_row(self, prefix_to_row):
+        self.__prefix_to_row = prefix_to_row
 
     @upper_rows.setter
     def upper_rows(self, rows):
@@ -91,11 +101,13 @@ class ObservationTable:
         row = Row('')
         self.rows.add(row)
         self.upper_rows.add(row)
+        self.prefix_to_row[row.prefix] = row
 
         for symbol in self._alphabet:
             row = Row(symbol)
             self.rows.add(row)
             self.lower_rows.add(row)
+            self.prefix_to_row[row.prefix] = row
 
         self.add_suffix('')
 
@@ -213,9 +225,7 @@ class ObservationTable:
         :return: Epsilon row in the table.
         :rtype: Row
         """
-        for row in self.upper_rows:
-            if row.prefix == '':
-                return row
+        return self.prefix_to_row['']
 
     def get_row_by_prefix(self, prefix: str) -> Row:
         """
@@ -228,6 +238,4 @@ class ObservationTable:
         :return: Row corresponding to the prefix.
         :rtype: Row
         """
-        for row in self.rows:
-            if row.prefix == prefix:
-                return row
+        return self.prefix_to_row[prefix]

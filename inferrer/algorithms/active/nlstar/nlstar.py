@@ -118,6 +118,7 @@ class NLSTAR(ActiveLearner):
                     new_row = Row(row.prefix + symbol)
                     self._ot.rows.add(new_row)
                     self._ot.lower_rows.add(new_row)
+                    self._ot.prefix_to_row[new_row.prefix] = new_row
 
                     self._ot.add_columns_to_row(new_row)
 
