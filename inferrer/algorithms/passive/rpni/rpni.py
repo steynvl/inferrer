@@ -1,8 +1,8 @@
 import functools
 from inferrer import utils, automaton
 from inferrer.algorithms.passive.passive_learner import PassiveLearner
+from inferrer.logger.logger import Logger
 from typing import Set
-
 
 
 class RPNI(PassiveLearner):
@@ -26,10 +26,14 @@ class RPNI(PassiveLearner):
         :type alphabet: Set[str]
         """
         super().__init__(alphabet, pos_examples, neg_examples)
+
+        self._logger = Logger().get_logger()
         self._samples = pos_examples.union(neg_examples)
 
         self._red = {automaton.State('')}
         self._blue = set()
+
+        self._logger.info('Created Passive Learner [RPNI] instance')
 
     def learn(self) -> automaton.DFA:
         """
@@ -40,6 +44,13 @@ class RPNI(PassiveLearner):
         :return: DFA
         :rtype: Automaton
         """
+        self._logger.info('Start learning with alphabet = {}\n'
+                          'positive samples = {}\n'
+                          'negative samples = {}'.format(self._alphabet,
+                                                         self._pos_examples,
+                                                         self._neg_examples))
+
+        self._logger.info('Building PTA')
         dfa = automaton.build_pta(self._pos_examples)
 
         pref_set = utils.prefix_set(self._pos_examples, self._alphabet)
@@ -86,6 +97,7 @@ class RPNI(PassiveLearner):
         :return: Updated dfa
         :rtype: Automaton
         """
+        self._logger.info('Promoting state {} from blue to red'.format(qu.name))
         self._red.add(qu)
 
         self._blue.update({
@@ -132,6 +144,8 @@ class RPNI(PassiveLearner):
         :return: updated Automaton
         :rtype: Automaton
         """
+        self._logger.info('Merging the two states {} and {}'.format(q.name,
+                                                                    q_prime.name))
         qf, a = dfa.find_transition_to_q(q_prime)
 
         if qf is None or a is None:
@@ -158,6 +172,7 @@ class RPNI(PassiveLearner):
         :return: updated Automaton
         :rtype: Automaton
         """
+        self._logger.info('Folding the tree rooted in the state {}'.format(q_prime.name))
         if q_prime in dfa.accept_states:
             dfa.accept_states.add(q)
 

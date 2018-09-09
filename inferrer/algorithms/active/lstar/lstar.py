@@ -1,7 +1,9 @@
 import copy
 from inferrer import utils, automaton
 from inferrer.oracle.oracle import Oracle
+from inferrer.oracle.active_oracle import ActiveOracle
 from inferrer.algorithms.active.active_learner import ActiveLearner
+from inferrer.logger.logger import Logger
 from typing import Set, Tuple
 
 
@@ -28,9 +30,14 @@ class LSTAR(ActiveLearner):
         :type oracle: Oracle
         """
         super().__init__(alphabet, oracle)
+
+        self._logger = Logger().get_logger()
         self._oracle = oracle
         self._red = set()
         self._blue = set()
+
+        self._logger.info('Created Active Learner [LSTAR] instance with {} oracle'
+                          .format('Active' if type(oracle) is ActiveOracle else 'Passive'))
 
     def learn(self) -> automaton.DFA:
         """
@@ -40,6 +47,7 @@ class LSTAR(ActiveLearner):
         :return: The dfa accepting the target language.
         :rtype: DFA
         """
+        self._logger.info('Start learning.')
         ot = self._initialise()
 
         while True:
@@ -54,11 +62,14 @@ class LSTAR(ActiveLearner):
                 is_closed, is_consistent = ot.is_closed_and_consistent()
 
             dfa = self._build_automaton(ot)
+            self._logger.info('Submitting equivalence query.')
             answer, satisfied = self._oracle.equivalence_query(dfa)
 
             if satisfied:
+                self._logger.info('Oracle happy with our hypothesis.')
                 break
 
+            self._logger.info('Oracle return {} as counterexample.'.format(answer))
             ot = self._useq(ot, answer)
 
         return dfa
@@ -72,6 +83,7 @@ class LSTAR(ActiveLearner):
         :return: Initialised observation table
         :rtype: ObservationTable
         """
+        self._logger.info('Initialising the table.')
         self._red = {''}
         self._blue = copy.deepcopy(self._alphabet)
 
@@ -95,6 +107,7 @@ class LSTAR(ActiveLearner):
         :return: The closed and updated observation table
         :rtype: ObservationTable
         """
+        self._logger.info('Closing the table by adding a row.')
         for s in self._blue.copy():
             if not all([ot.get_row(s) != ot.get_row(u) for u in self._red]):
                 continue
@@ -123,6 +136,7 @@ class LSTAR(ActiveLearner):
         :return: The consistent and updated observation table
         :rtype: ObservationTable
         """
+        self._logger.info('Making the table consistent by adding a column.')
         s1, s2, a, e = self._find_inconsistent(ot)
 
         ae = a + e
@@ -148,6 +162,7 @@ class LSTAR(ActiveLearner):
         :return: Inconsistent row
         :rtype: Tuple[str, str, str, str]
         """
+        self._logger.info('Trying to find two inconsistent rows in the table.')
         for s1 in self._red:
             for s2 in self._red:
                 if s1 == s2:
@@ -157,7 +172,11 @@ class LSTAR(ActiveLearner):
                         if ot.get_row(s1) == ot.get_row(s2) and \
                             ot.entry_exists(s1 + a, e) and ot.entry_exists(s2 + a, e) \
                                 and ot.get(s1 + a, e) != ot.get(s2 + a, e):
+                            self._logger.info('Found two inconsistent rows {} and {}'
+                                              .format(s1, s2))
                             return s1, s2, a, e
+
+        self._logger.info('Did not find a inconsistency in the table.')
         return '', '', '', ''
 
     def _useq(self, ot: utils.ObservationTable, answer: str) -> utils.ObservationTable:
@@ -177,6 +196,8 @@ class LSTAR(ActiveLearner):
         :rtype: ObservationTable
         """
         prefix_set = set(utils.prefix_set({answer}, self._alphabet))
+        self._logger.info('Updating table by adding the following prefixes: {}'
+                          .format(', '.join(prefix_set)))
 
         for p in prefix_set:
 
@@ -209,6 +230,7 @@ class LSTAR(ActiveLearner):
         :return: The dfa built from the observation table.
         :rtype: DFA
         """
+        self._logger.info('Building DFA from the table.')
         dfa = automaton.DFA(self._alphabet)
 
         for u in self._red:

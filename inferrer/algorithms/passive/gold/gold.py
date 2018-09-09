@@ -1,7 +1,7 @@
 from inferrer import utils, automaton
 from inferrer.algorithms.passive.passive_learner import PassiveLearner
+from inferrer.logger.logger import Logger
 from typing import Set, Tuple
-
 
 
 class Gold(PassiveLearner):
@@ -24,10 +24,14 @@ class Gold(PassiveLearner):
         :type alphabet: Set[str]
         """
         super().__init__(alphabet, pos_examples, neg_examples)
+
+        self._logger = Logger().get_logger()
         self._samples = pos_examples.union(neg_examples)
 
         self._red = {''}
         self._blue = set()
+
+        self._logger.info('Created Passive Learner [Gold] instance')
 
     def learn(self) -> automaton.DFA:
         """
@@ -38,10 +42,16 @@ class Gold(PassiveLearner):
         :return: The minimum DFA consistent with the sample
         :rtype: Automaton
         """
+        self._logger.info('Start learning with alphabet = {}\n'
+                          'positive samples = {}\n'
+                          'negative samples = {}'.format(self._alphabet,
+                                                         self._pos_examples,
+                                                         self._neg_examples))
         ot = self._build_table()
 
         od_row, x = ot.obviously_different_row()
         while od_row:
+            self._logger.info('Processing obviously different row: {}.'.format(x))
             xa = [x + a for a in self._alphabet]
             ot.sta.update(xa)
 
@@ -63,13 +73,17 @@ class Gold(PassiveLearner):
         ot, failed = self._fill_holes(ot)
 
         if failed:
+            self._logger.info('Failed to make table complete.')
             return automaton.build_pta(self._pos_examples, self._neg_examples)
         else:
+            self._logger.info('Successfully completed table.')
             a = self._build_automaton(ot)
 
             if self._is_consistent(a, ot):
+                self._logger.info('DFA and table is consistent, returning DFA.')
                 return a.remove_dead_states()
             else:
+                self._logger.info('DFA and table is not consistent, building PTA from samples.')
                 return automaton.build_pta(self._pos_examples, self._neg_examples)
 
     def _build_table(self) -> utils.ObservationTable:
@@ -79,6 +93,7 @@ class Gold(PassiveLearner):
         :return: Initial observation table
         :rtype: ObservationTable
         """
+        self._logger.info('Building table from sample.')
         sta = {''}
 
         self._blue = self._alphabet.copy()
@@ -113,6 +128,7 @@ class Gold(PassiveLearner):
         :return: updated ObservationTable and whether the method was successful.
         :rtype: tuple(ObservationTable, bool)
         """
+        self._logger.info('Try to make table complete by filling in * entries.')
         for p in self._blue:
             r = ot.find_compatible_row(p)
             if r is not None:
@@ -176,8 +192,7 @@ class Gold(PassiveLearner):
 
         return dfa
 
-    @staticmethod
-    def _is_consistent(dfa: automaton.DFA, ot: utils.ObservationTable) -> bool:
+    def _is_consistent(self, dfa: automaton.DFA, ot: utils.ObservationTable) -> bool:
         """
         Determines whether the automaton is consistent with the
         observation table ot.
@@ -187,6 +202,7 @@ class Gold(PassiveLearner):
         :return: Whether the automaton and observation table are consistent.
         :rtype: bool
         """
+        self._logger.info('Determine whether the DFA is consistent with the table.')
         for u, col in ot.ot.items():
             for e, val in col.items():
                 ue = automaton.State(u + e)

@@ -28,7 +28,7 @@ class LoggerManager(Singleton):
 
         self.logger.setLevel(logging.DEBUG)
         formatter = logging.Formatter(
-            fmt='[%(asctime)s] [%(filename)s:%(lineno)d] [%(levelname)-8s] %(message)s',
+            fmt='[%(asctime)s] [%(filename)s:%(lineno)d] [%(levelname)-4s] %(message)s',
             datefmt='%F %H:%M:%S'
         )
 

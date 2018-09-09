@@ -1,9 +1,11 @@
 from inferrer.algorithms.active.active_learner import ActiveLearner
 from inferrer.oracle.oracle import Oracle
+from inferrer.oracle.active_oracle import ActiveOracle
 from inferrer.algorithms.active.nlstar.observation_table import ObservationTable
 from inferrer.algorithms.active.nlstar.row import Row
 from inferrer.automaton import State
 from inferrer.automaton.nfa import NFA
+from inferrer.logger.logger import Logger
 from typing import Set
 
 
@@ -30,8 +32,14 @@ class NLSTAR(ActiveLearner):
         :type oracle: Oracle
         """
         super().__init__(alphabet, oracle)
+
+        self._logger = Logger().get_logger()
+        self._logger.info('Created Active Learner [NLSTAR] instance with {} oracle'
+                          .format('Active' if type(oracle) is ActiveOracle else 'Passive'))
+
         self._oracle = oracle
 
+        self._logger.info('Initialising the table.')
         self._ot = ObservationTable(self._alphabet, oracle)
         self._hypothesis = None
 
@@ -43,6 +51,7 @@ class NLSTAR(ActiveLearner):
         :return: The nfa accepting the target language.
         :rtype: NFA
         """
+        self._logger.info('Start learning.')
         self._ot.initialize()
 
         while True:
@@ -60,11 +69,14 @@ class NLSTAR(ActiveLearner):
 
             hypothesis = self._build_hypothesis()
 
+            self._logger.info('Submitting equivalence query.')
             answer, satisfied = self._oracle.equivalence_query(hypothesis)
 
             if satisfied:
+                self._logger.info('Oracle happy with our hypothesis.')
                 break
 
+            self._logger.info('Oracle return {} as counterexample.'.format(answer))
             self._use_eq(answer)
 
         return hypothesis
@@ -81,6 +93,10 @@ class NLSTAR(ActiveLearner):
         :type eq: str
         """
         new_suffixes = {eq[i:] for i in range(len(eq) + 1)}
+
+        self._logger.info('Updating table by adding the following suffixes: {}'
+                          .format(', '.join(new_suffixes)))
+
         self._ot.add_new_suffixes(new_suffixes)
         self._ot.update_meta_data()
 
@@ -89,6 +105,7 @@ class NLSTAR(ActiveLearner):
         Attempts to close the observation table
         by adding a new row to the table.
         """
+        self._logger.info('Attempting to close the table by adding a new row.')
         for row in self._ot.lower_rows:
             covered = [r_prime for r_prime in self._ot.upper_primes if r_prime.covered_by(row)]
 
@@ -113,6 +130,7 @@ class NLSTAR(ActiveLearner):
         consistent by adding a new column (experiment)
         to the table.
         """
+        self._logger.info('Attempting to make the table consistent by adding a new column.')
         for r1 in self._ot.upper_rows:
             for r2 in r1.covered_rows(self._ot.upper_rows):
                 for a in self._alphabet:
@@ -136,6 +154,7 @@ class NLSTAR(ActiveLearner):
         :return: The "hypothesis" NFA.
         :rtype: NFA
         """
+        self._logger.info('Building NFA from the table.')
         nfa = NFA(self._alphabet)
         epsilon_row = self._ot.get_epsilon_row()
 
