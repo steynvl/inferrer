@@ -35,6 +35,16 @@ class TestActiveNLSTAR(unittest.TestCase):
 
         nfa = nlstar.learn()
 
+        self.assertTrue(nfa.parse_string('')[1])
+        self.assertTrue(nfa.parse_string('a')[1])
+        self.assertTrue(nfa.parse_string('ab')[1])
+        self.assertTrue(nfa.parse_string('aba')[1])
+
+        self.assertFalse(nfa.parse_string('aa')[1])
+        self.assertFalse(nfa.parse_string('abb')[1])
+        self.assertFalse(nfa.parse_string('ba')[1])
+        self.assertFalse(nfa.parse_string('bb')[1])
+
     def test_active_nlstar_02(self):
         q0 = automaton.State('0')
 
@@ -73,10 +83,9 @@ class TestActiveNLSTAR(unittest.TestCase):
         nlstar = algorithms.NLSTAR({'a'}, teacher)
 
         nfa = nlstar.learn()
-        dfa = nfa.to_dfa()
 
-        self.assertEqual(2, len(dfa.states))
-        self.assertEqual(1, len(dfa.accept_states))
+        self.assertEqual(2, len(nfa._states))
+        self.assertEqual(1, len(nfa._accept_states))
 
     def test_active_nlstar_04(self):
         q0 = automaton.State('0')
@@ -121,12 +130,11 @@ class TestActiveNLSTAR(unittest.TestCase):
         nlstar = algorithms.NLSTAR({'a'}, teacher)
 
         nfa = nlstar.learn()
-        dfa = nfa.to_dfa()
 
-        self.assertEqual(2, len(dfa.states))
-        self.assertEqual(1, len(dfa.accept_states))
+        self.assertEqual(2, len(nfa._states))
+        self.assertEqual(1, len(nfa._accept_states))
 
-        self.assertEqual(expected_dfa, dfa)
+        self.assertEqual(expected_dfa, nfa.to_dfa())
 
     def test_active_nlstar_06(self):
         """
@@ -151,9 +159,11 @@ class TestActiveNLSTAR(unittest.TestCase):
         nlstar = algorithms.NLSTAR({'0', '1'}, teacher)
 
         nfa = nlstar.learn()
-        dfa = nfa.to_dfa()
 
-        self.assertEqual(expected_dfa, dfa)
+        self.assertEqual(2, len(nfa._states))
+        self.assertEqual(1, len(nfa._accept_states))
+
+        self.assertEqual(expected_dfa, nfa.to_dfa())
 
     def test_active_nlstar_07(self):
         """
@@ -325,5 +335,69 @@ class TestActiveNLSTAR(unittest.TestCase):
 
         nfa = nlstar.learn()
         dfa = nfa.to_dfa()
+
+        self.assertEqual(expected_dfa, dfa)
+
+    def test_active_nlstar_12(self):
+        q0 = automaton.State('0')
+        q1 = automaton.State('1')
+        q2 = automaton.State('2')
+        q3 = automaton.State('3')
+        q4 = automaton.State('4')
+        q5 = automaton.State('5')
+        q6 = automaton.State('6')
+        q7 = automaton.State('7')
+
+        expected_dfa = automaton.DFA({'a', '1', '#'}, start_state=q0)
+
+        expected_dfa.add_transition(q0, q1, '#')
+        expected_dfa.add_transition(q0, q2, '1')
+        expected_dfa.add_transition(q0, q3, 'a')
+
+        expected_dfa.add_transition(q1, q1, '#')
+        expected_dfa.add_transition(q1, q4, '1')
+        expected_dfa.add_transition(q1, q5, 'a')
+
+        expected_dfa.add_transition(q2, q2, '1')
+        expected_dfa.add_transition(q2, q4, '#')
+        expected_dfa.add_transition(q2, q6, 'a')
+
+        expected_dfa.add_transition(q3, q3, 'a')
+        expected_dfa.add_transition(q3, q5, '#')
+        expected_dfa.add_transition(q3, q6, '1')
+
+        expected_dfa.add_transition(q4, q4, '1')
+        expected_dfa.add_transition(q4, q4, '#')
+        expected_dfa.add_transition(q4, q7, 'a')
+
+        expected_dfa.add_transition(q5, q5, '#')
+        expected_dfa.add_transition(q5, q5, 'a')
+        expected_dfa.add_transition(q5, q7, '1')
+
+        expected_dfa.add_transition(q6, q6, '1')
+        expected_dfa.add_transition(q6, q6, 'a')
+        expected_dfa.add_transition(q6, q7, '#')
+
+        expected_dfa.add_transition(q7, q7, '1')
+        expected_dfa.add_transition(q7, q7, 'a')
+        expected_dfa.add_transition(q7, q7, '#')
+
+        expected_dfa.accept_states.add(q7)
+
+        teacher = oracle.ActiveOracle(expected_dfa)
+        nlstar = algorithms.NLSTAR({'#', '1', 'a'}, teacher)
+
+        nfa = nlstar.learn()
+
+        dfa = nfa.to_dfa()
+
+        self.assertEqual(8, len(dfa.states))
+        self.assertEqual(1, len(dfa.accept_states))
+
+        self.assertTrue(dfa.parse_string('#1a')[1])
+        self.assertTrue(dfa.parse_string('a#1')[1])
+
+        self.assertFalse(dfa.parse_string('#1')[1])
+        self.assertFalse(dfa.parse_string('a')[1])
 
         self.assertEqual(expected_dfa, dfa)

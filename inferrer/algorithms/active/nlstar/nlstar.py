@@ -55,17 +55,22 @@ class NLSTAR(ActiveLearner):
         self._ot.initialize()
 
         while True:
-            is_closed, is_consistent = self._ot.is_closed_and_consistent()
+            closed_info, consistency_info = self._ot.is_closed_and_consistent()
+
+            is_closed, unclosed_rows = closed_info
+            is_consistent, sym, suffix = consistency_info
 
             while not is_closed or not is_consistent:
-
                 if not is_closed:
-                    self._close_table()
+                    self._close_table(unclosed_rows)
 
                 if not is_consistent:
-                    self._make_table_consistent()
+                    self._make_table_consistent(sym, suffix)
 
-                is_closed, is_consistent = self._ot.is_closed_and_consistent()
+                closed_info, consistency_info = self._ot.is_closed_and_consistent()
+
+                is_closed, unclosed_rows = closed_info
+                is_consistent, sym, suffix = consistency_info
 
             hypothesis = self._build_hypothesis()
 
@@ -100,51 +105,39 @@ class NLSTAR(ActiveLearner):
         self._ot.add_new_suffixes(new_suffixes)
         self._ot.update_meta_data()
 
-    def _close_table(self):
+    def _close_table(self, unclosed_rows):
         """
         Attempts to close the observation table
         by adding a new row to the table.
         """
         self._logger.info('Attempting to close the table by adding a new row.')
-        for row in self._ot.lower_rows:
-            covered = [r_prime for r_prime in self._ot.upper_primes if r_prime.covered_by(row)]
 
-            if len(covered) == 0 or not Row.join(covered).columns_are_equal(row):
-                self._ot.upper_rows.add(row)
-                self._ot.lower_rows.remove(row)
-                self._ot.upper_primes.add(row)
+        for row in unclosed_rows:
+            self._ot.upper_rows.add(row)
+            self._ot.lower_rows.remove(row)
+            self._ot.upper_primes.add(row)
 
-                for symbol in self._alphabet:
-                    new_row = Row(row.prefix + symbol)
-                    self._ot.rows.add(new_row)
-                    self._ot.lower_rows.add(new_row)
-                    self._ot.prefix_to_row[new_row.prefix] = new_row
+            for symbol in self._alphabet:
+                new_row = Row(row.prefix + symbol)
+                self._ot.rows.add(new_row)
+                self._ot.lower_rows.add(new_row)
+                self._ot.prefix_to_row[new_row.prefix] = new_row
 
-                    self._ot.add_columns_to_row(new_row)
+                self._ot.add_columns_to_row(new_row)
 
-                self._ot.update_meta_data()
-                return
+        self._ot.update_meta_data()
 
-    def _make_table_consistent(self):
+    def _make_table_consistent(self, sym, suffix):
         """
         Attempts to make the observation table
         consistent by adding a new column (experiment)
         to the table.
         """
         self._logger.info('Attempting to make the table consistent by adding a new column.')
-        for r1 in self._ot.upper_rows:
-            for r2 in r1.covered_rows(self._ot.upper_rows):
-                for a in self._alphabet:
-                    for v in self._ot.suffixes:
-                        u_prime = self._ot.get_row_by_prefix(r1.prefix + a)
-                        u = self._ot.get_row_by_prefix(r2.prefix + a)
 
-                        if not u.columns[v] and u_prime.columns[v]:
-                            new_suffixes = {sym + v for sym in self._alphabet}
-
-                            self._ot.add_new_suffixes(new_suffixes)
-                            self._ot.update_meta_data()
-                            return
+        new_suffix = '{}{}'.format(sym, suffix)
+        self._ot.add_suffix(new_suffix)
+        self._ot.update_meta_data()
 
     def _build_hypothesis(self) -> NFA:
         """

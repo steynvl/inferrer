@@ -91,13 +91,13 @@ class TestPassiveNLSTAR(unittest.TestCase):
 
         ot.update_meta_data()
 
-        self.assertEqual(3, len(ot.primes))
+        self.assertEqual(2, len(ot.primes))
 
         nlstar = algorithms.NLSTAR({'a', 'b'}, oracle.PassiveOracle(set(), set()))
         nlstar._ot = ot
 
-        self.assertFalse(ot.is_closed())
-        self.assertTrue(ot.is_consistent())
+        self.assertFalse(ot.is_closed()[0])
+        self.assertTrue(ot.is_consistent()[0])
 
     def test_closed_and_consistent_02(self):
         ot = ObservationTable({'a', 'b'}, oracle.PassiveOracle(set(), set()))
@@ -117,16 +117,20 @@ class TestPassiveNLSTAR(unittest.TestCase):
 
         ot.update_meta_data()
 
-        self.assertEqual(3, len(ot.primes))
-        self.assertEqual(0, len(ot.rows.symmetric_difference(ot.primes)))
+        self.assertEqual(2, len(ot.primes))
+        self.assertEqual(1, len(ot.rows.symmetric_difference(ot.primes)))
 
         nlstar = algorithms.NLSTAR({'a', 'b'}, oracle.PassiveOracle(set(), set()))
         nlstar._ot = ot
 
-        self.assertFalse(ot.is_closed())
-        self.assertTrue(ot.is_consistent())
+        closed_info, consistency_info = ot.is_closed_and_consistent()
+        is_closed, unclosed_rows = closed_info
+        is_consistent, _, _ = consistency_info
 
-        nlstar._close_table()
+        self.assertFalse(is_closed)
+        self.assertTrue(is_consistent)
+
+        nlstar._close_table(unclosed_rows)
 
         self.assertEqual(5, len(nlstar._ot.rows))
 
@@ -160,10 +164,14 @@ class TestPassiveNLSTAR(unittest.TestCase):
         nlstar = algorithms.NLSTAR({'a', 'b'}, oracle.PassiveOracle(set(), set()))
         nlstar._ot = ot
 
-        self.assertFalse(nlstar._ot.is_closed())
-        self.assertTrue(nlstar._ot.is_consistent())
+        closed_info, consistency_info = ot.is_closed_and_consistent()
+        is_closed, unclosed_rows = closed_info
+        is_consistent, _, _ = consistency_info
 
-        nlstar._close_table()
+        self.assertFalse(is_closed)
+        self.assertTrue(is_consistent)
+
+        nlstar._close_table([next(iter(unclosed_rows))])
 
         nlstar._ot.update_meta_data()
 
@@ -203,10 +211,14 @@ class TestPassiveNLSTAR(unittest.TestCase):
         nlstar = algorithms.NLSTAR({'a', 'b'}, oracle.PassiveOracle(set(), set()))
         nlstar._ot = ot
 
-        self.assertFalse(nlstar._ot.is_closed())
-        self.assertTrue(nlstar._ot.is_consistent())
+        closed_info, consistency_info = ot.is_closed_and_consistent()
+        is_closed, unclosed_rows = closed_info
+        is_consistent, _, _ = consistency_info
 
-        nlstar._close_table()
+        self.assertFalse(is_closed)
+        self.assertTrue(is_consistent)
+
+        nlstar._close_table([next(iter(unclosed_rows))])
 
         nlstar._ot.update_meta_data()
 
@@ -252,9 +264,10 @@ class TestPassiveNLSTAR(unittest.TestCase):
         teacher = oracle.PassiveOracle(s_plus, s_minus)
         nlstar = algorithms.NLSTAR({'a', 'b'}, teacher)
         nfa = nlstar.learn()
+        dfa = nfa.to_dfa()
 
-        self.assertEqual(2, len(nfa._states))
-        self.assertEqual(1, len(nfa._accept_states))
+        self.assertEqual(2, len(dfa.states))
+        self.assertEqual(1, len(dfa.accept_states))
 
         for s in s_plus:
             self.assertTrue(nfa.parse_string(s)[1])

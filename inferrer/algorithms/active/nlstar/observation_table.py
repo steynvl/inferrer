@@ -134,57 +134,61 @@ class ObservationTable:
         :param suffix: suffix to add to suffix-set.
         :type suffix: str
         """
-        self.suffixes.add(suffix)
+        if suffix not in self.suffixes:
+            self.suffixes.add(suffix)
+            for row in self.rows:
+                mq = self._oracle.membership_query(row.prefix + suffix)
+                row.columns[suffix] = mq
 
-        for row in self.rows:
-            mq = self._oracle.membership_query(row.prefix + suffix)
-            row.columns[suffix] = mq
-
-    def is_closed_and_consistent(self) -> Tuple[bool, bool]:
+    def is_closed_and_consistent(self) -> Tuple[Tuple[bool, Set[Row]], Tuple[bool, str, str]]:
         """
         Tells us whether the observation table is closed
         and consistent.
         :return: Whether the table is closed and whether
                  the table is consistent.
-        :rtype: Tuple[bool, bool]
+        :rtype: Tuple[Tuple[bool, Set[Row]], Tuple[bool, str, str]]
         """
         return self.is_closed(), self.is_consistent()
 
-    def is_closed(self) -> bool:
+    def is_closed(self) -> Tuple[bool, Set[Row]]:
         """
         An observation table is closed if and only if
         any prime row of the lower part is a prime row
         of the upper part.
 
-        :return: Whether the table is closed.
-        :rtype: Tuple[bool, Row]
+        :return: Whether the table is closed, along with a set
+                 of unclosed rows if there are any.
+        :rtype: Tuple[bool, Set[Row]]
         """
+        unclosed_rows = set()
         for row in self.lower_rows:
             covered = [r_prime for r_prime in self.upper_primes if r_prime.covered_by(row)]
 
             if len(covered) == 0 or \
                     not Row.join(covered).columns_are_equal(row):
-                return False
+                unclosed_rows.add(row)
 
-        return True
+        return len(unclosed_rows) == 0, unclosed_rows
 
-    def is_consistent(self) -> bool:
+    def is_consistent(self) -> Tuple[bool, str, str]:
         """
         Determines whether the observation table is
         consistent.
 
-        :return: Whether the table is consistent.
-        :rtype: bool
+        :return: Whether the table is consistent, along
+                 with information.
+        :rtype: Tuple[bool, str, str]
         """
-        for r1 in self.upper_rows:
-            for r2 in r1.covered_rows(self.upper_rows):
-                for a in self._alphabet:
-                    row1_succ = self.get_row_by_prefix(r1.prefix + a)
-                    row2_succ = self.get_row_by_prefix(r2.prefix + a)
+        for u_prime in self.upper_rows:
+            for u in u_prime.covered_rows(self.upper_rows):
+                for sym in self._alphabet:
+                    u_prime_a = self.get_row_by_prefix(u_prime.prefix + sym)
+                    u_a = self.get_row_by_prefix(u.prefix + sym)
+                    for suffix in self.suffixes:
+                        if u_prime_a.columns[suffix] and not u_a.columns[suffix]:
+                            return False, sym, suffix
 
-                    if not row1_succ.covered_by(row2_succ):
-                        return False
-        return True
+        return True, '', ''
 
     def add_new_suffixes(self, suffixes: Set[str]):
         """
@@ -210,9 +214,10 @@ class ObservationTable:
 
         for row in self.rows:
 
-            candidates = list(filter(lambda r: r != row and not row.covered_by(r), self.rows))
+            covered_rows = list(filter(lambda r: r != row and row.covered_by(r), self.rows))
 
-            if row in self.upper_rows or not row.is_composed(candidates):
+            if row in self.upper_rows or not row.is_composed(covered_rows):
+
                 row.prime = True
                 self.primes.add(row)
                 if row in self.upper_rows:

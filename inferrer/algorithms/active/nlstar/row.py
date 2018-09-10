@@ -1,5 +1,4 @@
 import copy
-import itertools
 from typing import Generator
 
 
@@ -101,12 +100,10 @@ class Row:
                  composed by the other rows.
         :rtype: bool
         """
-        for rep in range(2, len(rows) + 1):
-            for p in itertools.combinations(rows, rep):
-                joined_row = Row.join(list(p))
-                if joined_row.columns == self.columns:
-                    return True
-        return False
+        if len(rows) == 0:
+            return True
+
+        return self.join(rows).columns == self.columns
 
     @staticmethod
     def join(rows: list):
