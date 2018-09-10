@@ -5,6 +5,8 @@ from inferrer.automaton.dfa import DFA
 from collections import defaultdict, OrderedDict, deque
 from typing import Set, List, Tuple
 import copy
+import graphviz
+import tempfile
 
 
 class NFA(FSA):
@@ -192,6 +194,46 @@ class NFA(FSA):
 
         return nfa
 
+    def create_graphviz_object(self) -> graphviz.Digraph:
+        """
+        Creates a Graphviz object representing the
+        NFA of the current instance.
+        """
+        digraph = graphviz.Digraph('dfa')
+        digraph.graph_attr['rankdir'] = 'LR'
+
+        edges = defaultdict(lambda: defaultdict(list))
+
+        for state in self._states:
+            shape = 'doublecircle' if state in self._accept_states else 'circle'
+            digraph.node(name='q{}'.format(state.name), shape=shape, constraint='false')
+
+            if state in self._transitions:
+                for letter, to_states in self._transitions[state].items():
+                    for to_state in to_states:
+                        edges[state][to_state].append(letter)
+
+        for from_state in edges:
+            for to_state, letters in edges[from_state].items():
+                digraph.edge('q{}'.format(from_state.name),
+                             'q{}'.format(to_state.name),
+                             ', '.join(letters))
+
+        digraph.node('', shape='plaintext', constraint='true')
+
+        for start_state in self._start_states:
+            digraph.edge('', 'q{}'.format(start_state.name))
+
+        return digraph
+
+    def show(self):
+        """
+        Graphs the NFA using graphviz, the NFA will
+        immediately be shown in a PDF file when this
+        method is called.
+        """
+        self.create_graphviz_object().view(tempfile.mkstemp('gv')[1], cleanup=True)
+
     def copy(self):
         """
         Performs a deep copy of the instance.
@@ -260,7 +302,6 @@ class NFA(FSA):
         dfa = DFA(self.alphabet, start_state)
 
         dfa.states = q_prime.copy()
-
         dfa.accept_states = accept_prime.copy()
 
         for from_state in transitions.keys():
@@ -268,8 +309,7 @@ class NFA(FSA):
                 to_state = State(''.join(sorted(map(str, to_states))))
                 dfa.add_transition(from_state, to_state, symbol)
 
-
-        return dfa.rename_states().minimize()
+        return dfa.minimize()
 
     @staticmethod
     def _epsilon_closure(nfa, q: State):

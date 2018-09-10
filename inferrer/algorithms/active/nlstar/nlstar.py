@@ -57,19 +57,19 @@ class NLSTAR(ActiveLearner):
         while True:
             closed_info, consistency_info = self._ot.is_closed_and_consistent()
 
-            is_closed, unclosed_rows = closed_info
+            is_closed, unclosed = closed_info
             is_consistent, sym, suffix = consistency_info
 
             while not is_closed or not is_consistent:
                 if not is_closed:
-                    self._close_table(unclosed_rows)
+                    self._close_table(unclosed)
 
                 if not is_consistent:
                     self._make_table_consistent(sym, suffix)
 
                 closed_info, consistency_info = self._ot.is_closed_and_consistent()
 
-                is_closed, unclosed_rows = closed_info
+                is_closed, unclosed = closed_info
                 is_consistent, sym, suffix = consistency_info
 
             hypothesis = self._build_hypothesis()
@@ -105,25 +105,25 @@ class NLSTAR(ActiveLearner):
         self._ot.add_new_suffixes(new_suffixes)
         self._ot.update_meta_data()
 
-    def _close_table(self, unclosed_rows):
+    def _close_table(self, unclosed_row):
         """
         Attempts to close the observation table
         by adding a new row to the table.
         """
         self._logger.info('Attempting to close the table by adding a new row.')
 
-        for row in unclosed_rows:
-            self._ot.upper_rows.add(row)
-            self._ot.lower_rows.remove(row)
-            self._ot.upper_primes.add(row)
+        self._ot.upper_rows.add(unclosed_row)
+        self._ot.lower_rows.remove(unclosed_row)
+        self._ot.upper_primes.add(unclosed_row)
 
-            for symbol in self._alphabet:
-                new_row = Row(row.prefix + symbol)
-                self._ot.rows.add(new_row)
-                self._ot.lower_rows.add(new_row)
-                self._ot.prefix_to_row[new_row.prefix] = new_row
+        for symbol in self._alphabet:
+            new_row = Row(unclosed_row.prefix + symbol)
 
-                self._ot.add_columns_to_row(new_row)
+            self._ot.rows.add(new_row)
+            self._ot.lower_rows.add(new_row)
+            self._ot.prefix_to_row[new_row.prefix] = new_row
+
+            self._ot.add_columns_to_row(new_row)
 
         self._ot.update_meta_data()
 

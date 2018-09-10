@@ -70,9 +70,9 @@ class ActiveOracle(Oracle):
 
         if type(fsa) is automaton.DFA and self._fsa == fsa:
             return '', True
-        elif type(fsa) is automaton.NFA and \
-                self._fsa == fsa.to_dfa():
-            return '', True
+        # elif type(fsa) is automaton.NFA and \
+        #         self._fsa == fsa.to_dfa():
+        #     return '', True
 
         queue = deque([(self._fsa._start_state, 0, '')])
         visited = {self._fsa._start_state : 0}
@@ -91,7 +91,8 @@ class ActiveOracle(Oracle):
             trans = self._fsa._transitions[state]
 
             for sym, to_state in trans.items():
-                if to_state == state and loop_depth < ActiveOracle.MAX_SELF_LOOP_DEPTH:
+                if to_state == state and loop_depth < ActiveOracle.MAX_SELF_LOOP_DEPTH and \
+                        visited[to_state] < ActiveOracle.MAX_VISIT_DEPTH:
                     queue.append((state,
                                   loop_depth + 1,
                                   '{}{}'.format(word, sym)))
@@ -103,7 +104,7 @@ class ActiveOracle(Oracle):
                         visited[to_state] += 1
 
                     queue.append((to_state,
-                                 0,
+                                 loop_depth + 1,
                                  '{}{}'.format(word, sym)))
 
         return '', True

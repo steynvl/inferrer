@@ -434,6 +434,9 @@ class DFA(FSA):
         """
         self.create_graphviz_object().view(tempfile.mkstemp('gv')[1], cleanup=True)
 
+    def __hash__(self):
+        return hash(str(self))
+
     def __eq__(self, other):
         """
         Checks whether two DFA's are equivalent.

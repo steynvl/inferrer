@@ -253,4 +253,4 @@ class LSTAR(ActiveLearner):
                     if ot.get_row(u.name + a) == ot.get_row(w.name):
                         dfa.add_transition(u, w, a)
 
-        return dfa.remove_dead_states().minimize()
+        return dfa.rename_states()

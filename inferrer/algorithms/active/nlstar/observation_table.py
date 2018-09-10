@@ -140,7 +140,7 @@ class ObservationTable:
                 mq = self._oracle.membership_query(row.prefix + suffix)
                 row.columns[suffix] = mq
 
-    def is_closed_and_consistent(self) -> Tuple[Tuple[bool, Set[Row]], Tuple[bool, str, str]]:
+    def is_closed_and_consistent(self) -> Tuple[Tuple[bool, Row], Tuple[bool, str, str]]:
         """
         Tells us whether the observation table is closed
         and consistent.
@@ -150,25 +150,24 @@ class ObservationTable:
         """
         return self.is_closed(), self.is_consistent()
 
-    def is_closed(self) -> Tuple[bool, Set[Row]]:
+    def is_closed(self) -> Tuple[bool, Row]:
         """
         An observation table is closed if and only if
         any prime row of the lower part is a prime row
         of the upper part.
 
-        :return: Whether the table is closed, along with a set
-                 of unclosed rows if there are any.
-        :rtype: Tuple[bool, Set[Row]]
+        :return: Whether the table is closed, along with
+                 the unclosed row if there is one.
+        :rtype: Tuple[bool, Row]
         """
-        unclosed_rows = set()
         for row in self.lower_rows:
             covered = [r_prime for r_prime in self.upper_primes if r_prime.covered_by(row)]
 
             if len(covered) == 0 or \
                     not Row.join(covered).columns_are_equal(row):
-                unclosed_rows.add(row)
+                return False, row
 
-        return len(unclosed_rows) == 0, unclosed_rows
+        return True, None
 
     def is_consistent(self) -> Tuple[bool, str, str]:
         """

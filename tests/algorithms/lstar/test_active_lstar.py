@@ -276,7 +276,7 @@ class TestActiveLSTAR(unittest.TestCase):
         lstar = algorithms.LSTAR({'a', 'b', 'c'}, teacher)
         dfa = lstar.learn()
 
-        self.assertEqual(expected_dfa, dfa)
+        self.assertEqual(expected_dfa, dfa.rename_states())
 
     def test_active_lstar_10(self):
         """

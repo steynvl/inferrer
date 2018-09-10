@@ -171,7 +171,7 @@ class TestPassiveNLSTAR(unittest.TestCase):
         self.assertFalse(is_closed)
         self.assertTrue(is_consistent)
 
-        nlstar._close_table([next(iter(unclosed_rows))])
+        nlstar._close_table(unclosed_rows)
 
         nlstar._ot.update_meta_data()
 
@@ -218,7 +218,7 @@ class TestPassiveNLSTAR(unittest.TestCase):
         self.assertFalse(is_closed)
         self.assertTrue(is_consistent)
 
-        nlstar._close_table([next(iter(unclosed_rows))])
+        nlstar._close_table(unclosed_rows)
 
         nlstar._ot.update_meta_data()
 
