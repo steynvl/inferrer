@@ -13,12 +13,21 @@ def read_examples(file: str) -> Set[str]:
 
 
 def main(args):
+    alphabet = set(args.alphabet)
     pos_examples = read_examples(args.positive_examples)
     neg_examples = read_examples(args.negative_examples)
+    algorithm = args.algorithm
 
-    learner = inferrer.Learner(pos_examples=pos_examples,
-                               neg_examples=neg_examples,
-                               algorithm=args.algorithm)
+    if algorithm in ['rpni', 'gold']:
+        learner = inferrer.Learner(alphabet=alphabet,
+                                   pos_examples=pos_examples,
+                                   neg_examples=neg_examples,
+                                   algorithm=algorithm)
+    elif algorithm in ['lstar', 'nlstar']:
+        learner = inferrer.Learner(alphabet=alphabet,
+                                   oracle=inferrer.oracle.PassiveOracle(pos_examples,
+                                                                        neg_examples),
+                                   algorithm=algorithm)
 
     dfa = learner.learn_grammar()
     print(dfa.to_regex())
@@ -35,6 +44,10 @@ if __name__ == '__main__':
                                                  'positive and negative example '
                                                  'strings from the target language.')
 
+    parser.add_argument('alphabet', type=str,
+                        help='Alphabet of the target regular language we are going to '
+                             'attempt to learn.')
+
     parser.add_argument('positive_examples', type=str, metavar='positive-examples',
                         help='Path to the file containing positive example strings, '
                              'i.e. strings that belong in the target language separated '
@@ -46,8 +59,9 @@ if __name__ == '__main__':
                              ' separated by newlines.')
 
     parser.add_argument('algorithm', type=str,
+                        choices=['gold', 'rpni', 'lstar', 'nlstar'],
                         help='The algorithm that should be used to learn the grammar.'
-                             ' The options are: gold, rpni, lstar')
+                             ' The options are: gold, rpni, lstar, and nlstar')
 
     parser.add_argument('--show-dfa', action='store_true',
                         help='If this argument is given, the DFA learned by the '
