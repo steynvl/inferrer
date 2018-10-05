@@ -1,14 +1,15 @@
-import queue
 import graphviz
 import tempfile
 import copy
 from inferrer import utils
 from inferrer.automaton.state import State
-from collections import defaultdict, OrderedDict
+from inferrer.automaton.fsa import FSA
+from collections import defaultdict, OrderedDict, deque
 from typing import Set, Tuple, List, Generator
 
 
-class Automaton:
+
+class DFA(FSA):
     """
     Implements a deterministic finite automaton.
     """
@@ -17,13 +18,12 @@ class Automaton:
         """
         :param alphabet: The alphabet of the regular language
         :type alphabet: set
-        :param start_state: the initial state of the automaton
+        :param start_state: the initial state of the dfa
         :type start_state: State
         """
+        super().__init__(alphabet)
 
         self._start_state = start_state
-
-        self._alphabet = alphabet
 
         self.states = {self._start_state}
 
@@ -32,6 +32,25 @@ class Automaton:
         self.reject_states = set()
 
         self._transitions = defaultdict(OrderedDict)
+
+    def parse_string(self, s: str) -> Tuple[State, bool]:
+        """
+        Parses each character of the input string through
+        the dfa.
+
+        :param s: The string to parse (s element of alphabet*)
+        :type s: str
+        :return: The state after reading the string s and whether
+                 the dfa accepted the input string.
+        :rtype: tuple(State, bool)
+        """
+        q = self._start_state
+        for letter in s:
+            if not self.transition_exists(q, letter):
+                return q, False
+            q = self.transition(q, letter)
+
+        return q, q in self.accept_states
 
     def add_transition(self, q1: State, q2: State, a: str):
         """
@@ -45,8 +64,8 @@ class Automaton:
         :param a: letter in alphabet
         :type a: str
         """
-        if a not in self._alphabet:
-            raise ValueError('\'{}\' is not in the alphabet of the automaton!'.format(a))
+        if a not in self.alphabet:
+            raise ValueError('\'{}\' is not in the alphabet of the dfa!'.format(a))
 
         self.states.update({q1, q2})
         self._transitions[q1][a] = q2
@@ -82,33 +101,14 @@ class Automaton:
         """
         return self._transitions[q1][a]
 
-    def parse_string(self, s: str) -> Tuple[State, bool]:
-        """
-        Parses each character of the input string through
-        the automaton.
-
-        :param s: The string to parse (s element of alphabet*)
-        :type s: str
-        :return: The state after reading the string s and whether
-                 the automaton accepted the input string.
-        :rtype: tuple(State, bool)
-        """
-        q = self._start_state
-        for letter in s:
-            if not self.transition_exists(q, letter):
-                return q, False
-            q = self.transition(q, letter)
-
-        return q, q in self.accept_states
-
     def walk_path(self, q: State, a: str) -> Generator:
         """
-        Traverses the string a through the automaton
+        Traverses the string a through the dfa
         starting at state q. This method returns
         a generator of the states visited while walking
-        through the automaton.
+        through the dfa.
 
-        :param q: State the automaton should starts
+        :param q: State the dfa should starts
                   in when traversing a.
         :type q: State
         :param a: String with symbols from the alphabet.
@@ -140,9 +140,100 @@ class Automaton:
                     return qf, letter
         return None, None
 
+    def find_transitions_to_q_with_letter(self, q: State, a: str) -> Set[State]:
+        """
+        Finds the State(s) r that satisfies
+        delta(r, a) = a, where a is a symbol
+        in the alphabet.
+
+        :param q: Target state
+        :type q: automaton.State
+        :param a: Symbol
+        :type a: str
+        :return: The set of states
+        :rtype: Set[State]
+        """
+        states = set()
+        for qf in self._transitions.keys():
+            for letter, to_state in self._transitions[qf].items():
+                if to_state == q and letter == a:
+                    states.add(qf)
+        return states
+
     def minimize(self):
         """
-        Minimizes the automaton by removing all
+        Minimizes the dfa using Hopcroft's algorithm.
+        Please consult the following paper
+        https://pdfs.semanticscholar.org/e622/10eea9d53bc36af50675017a830c967fea3f.pdf
+        for an explanation of this algorithm.
+
+        :return: Minimized dfa
+        :rtype: DFA
+        """
+        p = self._hopcroft()
+
+        start = [state_set for state_set in p if self._start_state in state_set]
+        assert len(start) == 1
+
+        minimized_dfa = DFA(self.alphabet, State(''.join(map(str, start[0]))))
+        for state_set in p:
+            for a in self.alphabet:
+                for state in state_set:
+                    if self.transition_exists(state, a):
+                        to_state = self.transition(state, a)
+                        to = [s for s in p if to_state in s]
+                        assert len(to) == 1
+
+                        to_state_set = to[0]
+                        minimized_dfa.add_transition(State(''.join(map(str, state_set))),
+                                                     State(''.join(map(str, to_state_set))),
+                                                     a)
+                        break
+
+            if any(s in self.accept_states for s in state_set):
+                minimized_dfa.accept_states.add(State(''.join(map(str, state_set))))
+
+        return minimized_dfa.rename_states()
+
+    def _hopcroft(self):
+        qf = self.states - self.accept_states
+        if len(self.accept_states) < len(self.states - self.accept_states):
+            p = [qf, self.accept_states]
+            l = deque([self.accept_states])
+        else:
+            p = [self.accept_states, qf]
+            l = deque([qf])
+
+        while len(l) > 0:
+            s = l.popleft()
+            for a in self.alphabet:
+                for b in p.copy():
+                    b1, b2 = self._split(b, s, a)
+                    p.remove(b)
+                    if len(b1) > 0:
+                        p.append(b1)
+                    if len(b2) > 0:
+                        p.append(b2)
+
+                    if len(b1) < len(b2):
+                        if len(b1) > 0:
+                            l.append(b1)
+                    else:
+                        if len(b2) > 0:
+                            l.append(b2)
+        return p
+
+    def _split(self, b_prime, b, a):
+        ba = set()
+        for state in b:
+            ba.update(self.find_transitions_to_q_with_letter(state, a))
+
+        ba_comp = ba.symmetric_difference(self.states)
+        return b_prime.intersection(ba), b_prime.intersection(ba_comp)
+
+    def remove_dead_states(self):
+        """
+        Minimizes the dfa by removing all
         states (and transitions) that cannot be
         reached from the initial state. This is
         done by performing an iterative dept-first
@@ -150,64 +241,79 @@ class Automaton:
         initial state and alphabet.
 
         :return: minimized dfa
-        :rtype: Automaton
+        :rtype: DFA
         """
-        minimized_dfa = Automaton(self._alphabet)
-
-        stack = [State('')]
-        visited_states = {State('')}
+        new_dfa = DFA(self.alphabet, self._start_state)
+        stack = [self._start_state]
+        visited_states = {self._start_state}
         while stack:
             state = stack.pop()
 
-            minimized_dfa.states.add(state)
+            new_dfa.states.add(state)
 
-            for a in self._alphabet:
+            for a in self.alphabet:
                 if state in self._transitions and a in self._transitions[state]:
                     to_state = self.transition(state, a)
-                    minimized_dfa.add_transition(state, to_state, a)
+                    new_dfa.add_transition(state, to_state, a)
                     if to_state not in visited_states:
                         stack.append(to_state)
                         visited_states.add(to_state)
 
             if state in self.accept_states:
-                minimized_dfa.accept_states.add(state)
+                new_dfa.accept_states.add(state)
             elif state in self.reject_states:
-                minimized_dfa.reject_states.add(state)
+                new_dfa.reject_states.add(state)
 
-        return minimized_dfa
+        return new_dfa
 
-    def _rename_states(self):
+    def rename_states(self):
         """
         Renames all the states in the dfa.
+
+        :return: Original DFA with states renamed.
+        :rtype: DFA
         """
-        dfa = Automaton(self._alphabet)
+        alphabet = sorted(self.alphabet)
+        dfa = DFA(self.alphabet, State('0'))
 
-        q = queue.Queue()
-        q.put(self._start_state)
-
+        queue = deque([self._start_state])
         visited = {self._start_state}
+        cnt = 1
+        old_to_new = {self._start_state: State('0')}
 
-        dfa._start_state = State('q0')
+        while len(queue) > 0:
+            state = queue.popleft()
 
-        while not q.empty():
-            v = q.get()
-
-            for a in self._alphabet:
-                if v in self._transitions and a in self._transitions[v]:
-                    to_state = self.transition(v, a)
+            for a in alphabet:
+                if state in self._transitions and a in self._transitions[state]:
+                    to_state = self.transition(state, a)
 
                     if to_state not in visited:
-                        q.put(to_state)
+                        queue.append(to_state)
                         visited.add(to_state)
+
+                        old_to_new[to_state] = State(str(cnt))
+                        cnt += 1
+
+        for old, new in old_to_new.items():
+            old_transitions = self._transitions[old]
+
+            for sym, state in old_transitions.items():
+                dfa.add_transition(new, old_to_new[state], sym)
+
+            if old in self.accept_states:
+                dfa.accept_states.add(new)
+
+        return dfa
 
     def copy(self):
         """
         Performs a deep copy of this instance.
 
-        :return: A copied automaton
-        :rtype: Automaton
+        :return: A copied dfa
+        :rtype: DFA
         """
-        cp = Automaton(self._alphabet)
+        cp = DFA(self.alphabet, start_state=self._start_state)
 
         cp.states = self.states.copy()
         cp.accept_states = self.accept_states.copy()
@@ -242,7 +348,7 @@ class Automaton:
             if x in self.accept_states:
                 expressions[x, final] = ''
         for x in dfa_states:
-            for a in sorted(self._alphabet, reverse=True):
+            for a in sorted(self.alphabet, reverse=True):
                 if not self.transition_exists(x, a):
                     continue
                 y = self.transition(x, a)
@@ -301,15 +407,9 @@ class Automaton:
 
         edges = defaultdict(lambda: defaultdict(list))
 
-        node_count = 1
-        name_map = {}
         for state in self.states:
             shape = 'doublecircle' if state in self.accept_states else 'circle'
-            digraph.node(name=self._set_node_name(state, node_count), shape=shape, constraint='false')
-
-            name_map[state.name] = self._set_node_name(state, node_count)
-            if state.name != '':
-                node_count += 1
+            digraph.node(name='q{}'.format(state.name), shape=shape, constraint='false')
 
             if state in self._transitions:
                 for letter, to_state in self._transitions[state].items():
@@ -317,12 +417,12 @@ class Automaton:
 
         for from_state in edges:
             for to_state, letters in edges[from_state].items():
-                digraph.edge(name_map[from_state.name],
-                             name_map[to_state.name],
+                digraph.edge('q{}'.format(from_state.name),
+                             'q{}'.format(to_state.name),
                              ', '.join(letters))
 
         digraph.node('', shape='plaintext', constraint='true')
-        digraph.edge('', 'q0')
+        digraph.edge('', 'q{}'.format(self._start_state.name))
 
         return digraph
 
@@ -334,9 +434,36 @@ class Automaton:
         """
         self.create_graphviz_object().view(tempfile.mkstemp('gv')[1], cleanup=True)
 
-    @staticmethod
-    def _set_node_name(q: State, node_count: int) -> str:
-        return 'q0' if q.name == '' else 'q{}'.format(node_count)
+    def __hash__(self):
+        return hash(str(self))
+
+    def __eq__(self, other):
+        """
+        Checks whether two DFA's are equivalent.
+
+        :param other: dfa to compare to instance
+        :type other: DFA
+        :return: Whether the dfa is equal to
+                 the current instance.
+        :rtype: bool
+        """
+        tests = self._start_state == other._start_state and \
+            self.states == other.states and \
+            self.accept_states == other.accept_states
+
+        if not tests:
+            return False
+
+        if sorted(self._transitions.keys()) != sorted(other._transitions.keys()):
+            return False
+
+        for k in self._transitions.keys():
+            if sorted(self._transitions[k].keys()) != sorted(other._transitions[k].keys()):
+                return False
+
+            if sorted(self._transitions[k].values()) != sorted(other._transitions[k].values()):
+                return False
+        return True
 
     def __str__(self):
         """
@@ -348,7 +475,7 @@ class Automaton:
         """
         rep = [
             'Initial state:    = {}'.format(self._start_state),
-            'Alphabet:         = {}'.format(self._alphabet),
+            'Alphabet:         = {}'.format(self.alphabet),
             'States:           = {}'.format(set(map(str, self.states))),
             'Accepting states: = {}'.format(set(map(str, self.accept_states))),
             'Rejecting states: = {}'.format(set(map(str, self.reject_states))),
@@ -364,7 +491,7 @@ class Automaton:
         return '\n'.join(rep)
 
 
-def build_pta(s_plus: Set[str], s_minus: Set[str]=set()) -> Automaton:
+def build_pta(s_plus: Set[str], s_minus: Set[str]=set()) -> DFA:
     """
     Function that builds a prefix tree acceptor from the example strings
     S = S+ union S-
@@ -373,13 +500,13 @@ def build_pta(s_plus: Set[str], s_minus: Set[str]=set()) -> Automaton:
     :type s_plus: set
     :param s_minus: Set containing negative examples of the target language
     :type s_minus: set
-    :return: An automaton representing a prefix tree acceptor
-    :rtype: Automaton
+    :return: An dfa representing a prefix tree acceptor
+    :rtype: DFA
     """
     samples = s_plus.union(s_minus)
 
     alphabet = utils.determine_alphabet(samples)
-    pta = Automaton(alphabet)
+    pta = DFA(alphabet)
 
     for letter in alphabet:
         pta.add_transition(State(''), State(letter), letter)

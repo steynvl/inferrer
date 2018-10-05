@@ -1,11 +1,13 @@
 import copy
 from inferrer import utils, automaton
-from inferrer.algorithms.lstar.oracle import Oracle
-from inferrer.algorithms.algorithm import Algorithm
+from inferrer.oracle.oracle import Oracle
+from inferrer.oracle.active_oracle import ActiveOracle
+from inferrer.algorithms.active.active_learner import ActiveLearner
+from inferrer.logger.logger import Logger
 from typing import Set, Tuple
 
 
-class LSTAR(Algorithm):
+class LSTAR(ActiveLearner):
     """
     An implementation of Dana Angluin's L* algorithm, which
     learns regular languages from queries and counterexamples.
@@ -15,41 +17,37 @@ class LSTAR(Algorithm):
     Submit is as an equivalence query.
     Use the counter-example to update the table.
     Submit membership queries to make the table closed and complete.
-    Iterate until the Oracle, tells us the correct language has been
+    Iterate until the Oracle tells us the correct language has been
     reached.
     """
 
-    def __init__(self, pos_examples: Set[str],
-                 neg_examples: Set[str],
-                 alphabet: Set[str],
-                 oracle: Oracle):
+    def __init__(self, alphabet: Set[str], oracle: Oracle):
         """
-        :param pos_examples: Set of positive example strings
-                             from the target language
-        :type pos_examples: Set[str]
-        :param neg_examples: Set of negative example strings,
-                             i.e strings that do not belong in
-                             the target language.
-        :type neg_examples: Set[str]
         :param alphabet: The alphabet (Sigma) of the target
                          regular language.
         :type alphabet: Set[str]
         :param oracle: Minimally adequate teacher (MAT)
         :type oracle: Oracle
         """
-        super().__init__(pos_examples, neg_examples, alphabet)
+        super().__init__(alphabet, oracle)
+
+        self._logger = Logger().get_logger()
         self._oracle = oracle
         self._red = set()
         self._blue = set()
 
-    def learn(self) -> automaton.Automaton:
+        self._logger.info('Created Active Learner [LSTAR] instance with {} oracle'
+                          .format('Active' if type(oracle) is ActiveOracle else 'Passive'))
+
+    def learn(self) -> automaton.DFA:
         """
         Efficiently learns an initially unknown regular language
         from a minimally adequate Teacher (Oracle).
 
         :return: The dfa accepting the target language.
-        :rtype: Automaton
+        :rtype: DFA
         """
+        self._logger.info('Start learning.')
         ot = self._initialise()
 
         while True:
@@ -64,11 +62,14 @@ class LSTAR(Algorithm):
                 is_closed, is_consistent = ot.is_closed_and_consistent()
 
             dfa = self._build_automaton(ot)
+            self._logger.info('Submitting equivalence query.')
             answer, satisfied = self._oracle.equivalence_query(dfa)
 
             if satisfied:
+                self._logger.info('Oracle happy with our hypothesis.')
                 break
 
+            self._logger.info('Oracle return {} as counterexample.'.format(answer))
             ot = self._useq(ot, answer)
 
         return dfa
@@ -82,6 +83,7 @@ class LSTAR(Algorithm):
         :return: Initialised observation table
         :rtype: ObservationTable
         """
+        self._logger.info('Initialising the table.')
         self._red = {''}
         self._blue = copy.deepcopy(self._alphabet)
 
@@ -105,6 +107,7 @@ class LSTAR(Algorithm):
         :return: The closed and updated observation table
         :rtype: ObservationTable
         """
+        self._logger.info('Closing the table by adding a row.')
         for s in self._blue.copy():
             if not all([ot.get_row(s) != ot.get_row(u) for u in self._red]):
                 continue
@@ -133,6 +136,7 @@ class LSTAR(Algorithm):
         :return: The consistent and updated observation table
         :rtype: ObservationTable
         """
+        self._logger.info('Making the table consistent by adding a column.')
         s1, s2, a, e = self._find_inconsistent(ot)
 
         ae = a + e
@@ -158,6 +162,7 @@ class LSTAR(Algorithm):
         :return: Inconsistent row
         :rtype: Tuple[str, str, str, str]
         """
+        self._logger.info('Trying to find two inconsistent rows in the table.')
         for s1 in self._red:
             for s2 in self._red:
                 if s1 == s2:
@@ -167,7 +172,11 @@ class LSTAR(Algorithm):
                         if ot.get_row(s1) == ot.get_row(s2) and \
                             ot.entry_exists(s1 + a, e) and ot.entry_exists(s2 + a, e) \
                                 and ot.get(s1 + a, e) != ot.get(s2 + a, e):
+                            self._logger.info('Found two inconsistent rows {} and {}'
+                                              .format(s1, s2))
                             return s1, s2, a, e
+
+        self._logger.info('Did not find a inconsistency in the table.')
         return '', '', '', ''
 
     def _useq(self, ot: utils.ObservationTable, answer: str) -> utils.ObservationTable:
@@ -187,6 +196,8 @@ class LSTAR(Algorithm):
         :rtype: ObservationTable
         """
         prefix_set = set(utils.prefix_set({answer}, self._alphabet))
+        self._logger.info('Updating table by adding the following prefixes: {}'
+                          .format(', '.join(prefix_set)))
 
         for p in prefix_set:
 
@@ -210,16 +221,17 @@ class LSTAR(Algorithm):
 
         return ot
 
-    def _build_automaton(self, ot: utils.ObservationTable) -> automaton.Automaton:
+    def _build_automaton(self, ot: utils.ObservationTable) -> automaton.DFA:
         """
         Builds an automaton from the observation table.
 
         :param ot: The data to build the dfa from.
         :type ot: ObservationTable
         :return: The dfa built from the observation table.
-        :rtype: Automaton
+        :rtype: DFA
         """
-        dfa = automaton.Automaton(self._alphabet)
+        self._logger.info('Building DFA from the table.')
+        dfa = automaton.DFA(self._alphabet)
 
         for u in self._red:
             for v in ot.ot.keys():
@@ -241,4 +253,4 @@ class LSTAR(Algorithm):
                     if ot.get_row(u.name + a) == ot.get_row(w.name):
                         dfa.add_transition(u, w, a)
 
-        return dfa.minimize()
+        return dfa.rename_states()

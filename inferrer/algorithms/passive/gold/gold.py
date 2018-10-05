@@ -1,9 +1,10 @@
 from inferrer import utils, automaton
-from inferrer.algorithms.algorithm import Algorithm
+from inferrer.algorithms.passive.passive_learner import PassiveLearner
+from inferrer.logger.logger import Logger
 from typing import Set, Tuple
 
 
-class Gold(Algorithm):
+class Gold(PassiveLearner):
     """
     An implementation of E. Mark GOLD's algorithm, which tries
     to find the minimum DFA consistent with the sample.
@@ -22,13 +23,17 @@ class Gold(Algorithm):
                          regular language.
         :type alphabet: Set[str]
         """
-        super().__init__(pos_examples, neg_examples, alphabet)
+        super().__init__(alphabet, pos_examples, neg_examples)
+
+        self._logger = Logger().get_logger()
         self._samples = pos_examples.union(neg_examples)
 
         self._red = {''}
         self._blue = set()
 
-    def learn(self) -> automaton.Automaton:
+        self._logger.info('Created Passive Learner [Gold] instance')
+
+    def learn(self) -> automaton.DFA:
         """
         Learns the grammar from the sets of positive and negative
         example strings. This method returns the minimal DFA
@@ -37,10 +42,16 @@ class Gold(Algorithm):
         :return: The minimum DFA consistent with the sample
         :rtype: Automaton
         """
+        self._logger.info('Start learning with alphabet = {}\n'
+                          'positive samples = {}\n'
+                          'negative samples = {}'.format(self._alphabet,
+                                                         self._pos_examples,
+                                                         self._neg_examples))
         ot = self._build_table()
 
         od_row, x = ot.obviously_different_row()
         while od_row:
+            self._logger.info('Processing obviously different row: {}.'.format(x))
             xa = [x + a for a in self._alphabet]
             ot.sta.update(xa)
 
@@ -62,13 +73,17 @@ class Gold(Algorithm):
         ot, failed = self._fill_holes(ot)
 
         if failed:
+            self._logger.info('Failed to make table complete.')
             return automaton.build_pta(self._pos_examples, self._neg_examples)
         else:
+            self._logger.info('Successfully completed table.')
             a = self._build_automaton(ot)
 
             if self._is_consistent(a, ot):
-                return a.minimize()
+                self._logger.info('DFA and table is consistent, returning DFA.')
+                return a.remove_dead_states()
             else:
+                self._logger.info('DFA and table is not consistent, building PTA from samples.')
                 return automaton.build_pta(self._pos_examples, self._neg_examples)
 
     def _build_table(self) -> utils.ObservationTable:
@@ -78,6 +93,7 @@ class Gold(Algorithm):
         :return: Initial observation table
         :rtype: ObservationTable
         """
+        self._logger.info('Building table from sample.')
         sta = {''}
 
         self._blue = self._alphabet.copy()
@@ -112,6 +128,7 @@ class Gold(Algorithm):
         :return: updated ObservationTable and whether the method was successful.
         :rtype: tuple(ObservationTable, bool)
         """
+        self._logger.info('Try to make table complete by filling in * entries.')
         for p in self._blue:
             r = ot.find_compatible_row(p)
             if r is not None:
@@ -138,7 +155,7 @@ class Gold(Algorithm):
 
         return ot, False
 
-    def _build_automaton(self, ot: utils.ObservationTable) -> automaton.Automaton:
+    def _build_automaton(self, ot: utils.ObservationTable) -> automaton.DFA:
         """
         Builds an automaton from the observation table.
 
@@ -146,7 +163,7 @@ class Gold(Algorithm):
         :return: Automaton built from the observation table
         :rtype: Automaton
         """
-        dfa = automaton.Automaton(self._alphabet)
+        dfa = automaton.DFA(self._alphabet)
 
         states = {
             automaton.State(i) for i in self._red
@@ -175,8 +192,7 @@ class Gold(Algorithm):
 
         return dfa
 
-    @staticmethod
-    def _is_consistent(dfa: automaton.Automaton, ot: utils.ObservationTable) -> bool:
+    def _is_consistent(self, dfa: automaton.DFA, ot: utils.ObservationTable) -> bool:
         """
         Determines whether the automaton is consistent with the
         observation table ot.
@@ -186,6 +202,7 @@ class Gold(Algorithm):
         :return: Whether the automaton and observation table are consistent.
         :rtype: bool
         """
+        self._logger.info('Determine whether the DFA is consistent with the table.')
         for u, col in ot.ot.items():
             for e, val in col.items():
                 ue = automaton.State(u + e)

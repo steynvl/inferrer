@@ -30,7 +30,7 @@ class TestGold(unittest.TestCase):
         gold._red = red
         dfa = gold._build_automaton(ot)
 
-        self.assertSetEqual({'a', 'b'}, dfa._alphabet)
+        self.assertSetEqual({'a', 'b'}, dfa.alphabet)
         self.assertTrue(2, len(dfa.states))
         self.assertTrue(1, len(dfa.accept_states))
         self.assertTrue(1, len(dfa.reject_states))

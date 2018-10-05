@@ -8,6 +8,7 @@ library implements
 * E. Mark GOLD's algorithm,
 * The Regular Positive and Negative Inference (RPNI) algorithm, and
 * Dana Angluin's L* algorithm.
+* The NL* algorithm.
 
 ## Setup
 If you do not have pipenv installed on your system, then run the following:
@@ -47,7 +48,7 @@ strings and a file negative_01.txt, which contains negative example strings.
 
 We are going to try to learn this regular language using the RPNI algorithm:
 ```bash
-pipenv run python inferrer_cli.py resources/positive_01.txt resources/negative_01.txt rpni
+pipenv run python inferrer_cli.py 01 resources/positive_01.txt resources/negative_01.txt rpni --show-dfa
 ```
 RPNI then builds the following DFA
 
@@ -64,7 +65,7 @@ We want to try and learn the language L, where L is a language over the alphabet
 
 We are going to try to learn this regular language using the RPNI algorithm:
 ```bash
-pipenv run python inferrer_cli.py resources/positive_02.txt resources/negative_02.txt rpni
+pipenv run python inferrer_cli.py ab resources/positive_02.txt resources/negative_02.txt rpni --show-dfa
 ```
 RPNI then builds the following DFA
 

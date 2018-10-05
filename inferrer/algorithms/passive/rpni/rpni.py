@@ -1,10 +1,11 @@
 import functools
 from inferrer import utils, automaton
-from inferrer.algorithms.algorithm import Algorithm
+from inferrer.algorithms.passive.passive_learner import PassiveLearner
+from inferrer.logger.logger import Logger
 from typing import Set
 
 
-class RPNI(Algorithm):
+class RPNI(PassiveLearner):
     """
     An implementation of the Regular Positive and Negative Inference (RPNI)
     algorithm. This algorithm tries to make sure that some generalisation
@@ -24,13 +25,17 @@ class RPNI(Algorithm):
                          regular language.
         :type alphabet: Set[str]
         """
-        super().__init__(pos_examples, neg_examples, alphabet)
+        super().__init__(alphabet, pos_examples, neg_examples)
+
+        self._logger = Logger().get_logger()
         self._samples = pos_examples.union(neg_examples)
 
         self._red = {automaton.State('')}
         self._blue = set()
 
-    def learn(self) -> automaton.Automaton:
+        self._logger.info('Created Passive Learner [RPNI] instance')
+
+    def learn(self) -> automaton.DFA:
         """
         Learns the grammar from the sets of positive and negative
         example strings. This method returns a DFA that is
@@ -39,6 +44,13 @@ class RPNI(Algorithm):
         :return: DFA
         :rtype: Automaton
         """
+        self._logger.info('Start learning with alphabet = {}\n'
+                          'positive samples = {}\n'
+                          'negative samples = {}'.format(self._alphabet,
+                                                         self._pos_examples,
+                                                         self._neg_examples))
+
+        self._logger.info('Building PTA')
         dfa = automaton.build_pta(self._pos_examples)
 
         pref_set = utils.prefix_set(self._pos_examples, self._alphabet)
@@ -70,9 +82,9 @@ class RPNI(Algorithm):
             if not accepted:
                 dfa.reject_states.add(q)
 
-        return dfa.minimize()
+        return dfa.remove_dead_states()
 
-    def _promote(self, qu: automaton.State, dfa: automaton.Automaton) -> automaton.Automaton:
+    def _promote(self, qu: automaton.State, dfa: automaton.DFA) -> automaton.DFA:
         """
         Given a state blue state qu, this method promotes this state
         ro red and all the successors in the dfa. The method returns
@@ -85,6 +97,7 @@ class RPNI(Algorithm):
         :return: Updated dfa
         :rtype: Automaton
         """
+        self._logger.info('Promoting state {} from blue to red'.format(qu.name))
         self._red.add(qu)
 
         self._blue.update({
@@ -94,7 +107,7 @@ class RPNI(Algorithm):
 
         return dfa
 
-    def _compatible(self, dfa: automaton.Automaton) -> bool:
+    def _compatible(self, dfa: automaton.DFA) -> bool:
         """
         Determines whether the current automaton can parse any
         string in the set of negative example strings.
@@ -110,9 +123,9 @@ class RPNI(Algorithm):
         """
         return not any(dfa.parse_string(w)[1] for w in self._neg_examples)
 
-    def _merge(self, dfa: automaton.Automaton,
+    def _merge(self, dfa: automaton.DFA,
                q: automaton.State,
-               q_prime: automaton.State) -> automaton.Automaton:
+               q_prime: automaton.State) -> automaton.DFA:
         """
         Takes as arguments a red state q and a blue state q'.
         The method first finds the unique pair (qf, a) such
@@ -131,6 +144,8 @@ class RPNI(Algorithm):
         :return: updated Automaton
         :rtype: Automaton
         """
+        self._logger.info('Merging the two states {} and {}'.format(q.name,
+                                                                    q_prime.name))
         qf, a = dfa.find_transition_to_q(q_prime)
 
         if qf is None or a is None:
@@ -140,9 +155,9 @@ class RPNI(Algorithm):
 
         return self._fold(dfa, q, q_prime)
 
-    def _fold(self, dfa: automaton.Automaton,
+    def _fold(self, dfa: automaton.DFA,
               q: automaton.State,
-              q_prime: automaton.State) -> automaton.Automaton:
+              q_prime: automaton.State) -> automaton.DFA:
         """
         Folds the tree rooted in q' into the rest of the DFA. The
         possible intermediate situations of non-determinism
@@ -157,6 +172,7 @@ class RPNI(Algorithm):
         :return: updated Automaton
         :rtype: Automaton
         """
+        self._logger.info('Folding the tree rooted in the state {}'.format(q_prime.name))
         if q_prime in dfa.accept_states:
             dfa.accept_states.add(q)
 
