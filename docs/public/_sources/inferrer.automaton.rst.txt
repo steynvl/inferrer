@@ -4,10 +4,26 @@ inferrer.automaton package
 Submodules
 ----------
 
-inferrer.automaton.automaton module
------------------------------------
+inferrer.automaton.dfa module
+-----------------------------
 
-.. automodule:: inferrer.automaton.automaton
+.. automodule:: inferrer.automaton.dfa
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+inferrer.automaton.fsa module
+-----------------------------
+
+.. automodule:: inferrer.automaton.fsa
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+inferrer.automaton.nfa module
+-----------------------------
+
+.. automodule:: inferrer.automaton.nfa
     :members:
     :undoc-members:
     :show-inheritance:

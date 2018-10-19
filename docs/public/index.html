@@ -13,6 +13,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="inferrer package" href="inferrer.html" />
@@ -28,6 +29,8 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <div class="section" id="welcome-to-inferrer-s-documentation">
@@ -39,20 +42,34 @@
 <li class="toctree-l2"><a class="reference internal" href="inferrer.html#subpackages">Subpackages</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="inferrer.algorithms.html">inferrer.algorithms package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="inferrer.algorithms.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="inferrer.algorithms.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="inferrer.algorithms.html#module-inferrer.algorithms.algorithm">inferrer.algorithms.algorithm module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="inferrer.algorithms.html#module-inferrer.algorithms">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="inferrer.automaton.html">inferrer.automaton package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="inferrer.automaton.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="inferrer.automaton.html#module-inferrer.automaton.automaton">inferrer.automaton.automaton module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="inferrer.automaton.html#module-inferrer.automaton.dfa">inferrer.automaton.dfa module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="inferrer.automaton.html#module-inferrer.automaton.fsa">inferrer.automaton.fsa module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="inferrer.automaton.html#module-inferrer.automaton.nfa">inferrer.automaton.nfa module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="inferrer.automaton.html#module-inferrer.automaton.state">inferrer.automaton.state module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="inferrer.automaton.html#module-inferrer.automaton">Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="inferrer.tools.html">inferrer.tools package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="inferrer.tools.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="inferrer.tools.html#module-inferrer.tools.decorators">inferrer.tools.decorators module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="inferrer.tools.html#module-inferrer.tools">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inferrer.logger.html">inferrer.logger package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="inferrer.logger.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="inferrer.logger.html#module-inferrer.logger.logger">inferrer.logger.logger module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="inferrer.logger.html#module-inferrer.logger.logger_manager">inferrer.logger.logger_manager module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="inferrer.logger.html#module-inferrer.logger.singleton">inferrer.logger.singleton module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="inferrer.logger.html#module-inferrer.logger">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="inferrer.oracle.html">inferrer.oracle package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="inferrer.oracle.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="inferrer.oracle.html#module-inferrer.oracle.active_oracle">inferrer.oracle.active_oracle module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="inferrer.oracle.html#module-inferrer.oracle.oracle">inferrer.oracle.oracle module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="inferrer.oracle.html#module-inferrer.oracle.passive_oracle">inferrer.oracle.passive_oracle module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="inferrer.oracle.html#module-inferrer.oracle">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="inferrer.utils.html">inferrer.utils package</a><ul>
@@ -64,6 +81,8 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="inferrer.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inferrer.html#module-inferrer.inferrer">inferrer.inferrer module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="inferrer.html#module-inferrer">Module contents</a></li>
 </ul>
 </li>
@@ -81,15 +100,26 @@
 
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="#">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Welcome to inferrer’s documentation!</a></li>
-<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+<h1 class="logo"><a href="#">inferrer</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="inferrer.html">inferrer package</a></li>
 </ul>
+
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
@@ -98,25 +128,24 @@
   </ul></li>
 </ul>
 </div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/index.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -125,8 +154,8 @@
       &copy;2018, Steyn van Litsenborgh.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.0+/8c3ef45</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="_sources/index.rst.txt"

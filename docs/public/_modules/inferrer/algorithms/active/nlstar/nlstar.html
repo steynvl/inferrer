@@ -1,0 +1,284 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferrer.algorithms.active.nlstar.nlstar &#8212; inferrer 0.1 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for inferrer.algorithms.active.nlstar.nlstar</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">inferrer.algorithms.active.active_learner</span> <span class="k">import</span> <span class="n">ActiveLearner</span>
+<span class="kn">from</span> <span class="nn">inferrer.oracle.oracle</span> <span class="k">import</span> <span class="n">Oracle</span>
+<span class="kn">from</span> <span class="nn">inferrer.oracle.active_oracle</span> <span class="k">import</span> <span class="n">ActiveOracle</span>
+<span class="kn">from</span> <span class="nn">inferrer.algorithms.active.nlstar.observation_table</span> <span class="k">import</span> <span class="n">ObservationTable</span>
+<span class="kn">from</span> <span class="nn">inferrer.algorithms.active.nlstar.row</span> <span class="k">import</span> <span class="n">Row</span>
+<span class="kn">from</span> <span class="nn">inferrer.automaton</span> <span class="k">import</span> <span class="n">State</span>
+<span class="kn">from</span> <span class="nn">inferrer.automaton.nfa</span> <span class="k">import</span> <span class="n">NFA</span>
+<span class="kn">from</span> <span class="nn">inferrer.logger.logger</span> <span class="k">import</span> <span class="n">Logger</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Set</span>
+
+
+<div class="viewcode-block" id="NLSTAR"><a class="viewcode-back" href="../../../../../inferrer.algorithms.active.nlstar.html#inferrer.algorithms.active.nlstar.nlstar.NLSTAR">[docs]</a><span class="k">class</span> <span class="nc">NLSTAR</span><span class="p">(</span><span class="n">ActiveLearner</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An implementation of the NL* algorithm, which extends</span>
+<span class="sd">    Angluin-Style learning to the learning of an NFA.</span>
+
+<span class="sd">    The general idea of NL* is to:</span>
+<span class="sd">    Find a consistent observation table (representing a RFSA).</span>
+<span class="sd">    Submit is as an equivalence query.</span>
+<span class="sd">    Use the counter-example to update the table.</span>
+<span class="sd">    Submit membership queries to make the table closed and complete.</span>
+<span class="sd">    Iterate until the Oracle tells us the correct language has been</span>
+<span class="sd">    reached.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alphabet</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">oracle</span><span class="p">:</span> <span class="n">Oracle</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param alphabet: The alphabet (Sigma) of the target</span>
+<span class="sd">                         regular language.</span>
+<span class="sd">        :type alphabet: Set[str]</span>
+<span class="sd">        :param oracle: Minimally adequate teacher (MAT)</span>
+<span class="sd">        :type oracle: Oracle</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">alphabet</span><span class="p">,</span> <span class="n">oracle</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">Logger</span><span class="p">()</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Created Active Learner [NLSTAR] instance with </span><span class="si">{}</span><span class="s1"> oracle&#39;</span>
+                          <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;Active&#39;</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">oracle</span><span class="p">)</span> <span class="ow">is</span> <span class="n">ActiveOracle</span> <span class="k">else</span> <span class="s1">&#39;Passive&#39;</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_oracle</span> <span class="o">=</span> <span class="n">oracle</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Initialising the table.&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ot</span> <span class="o">=</span> <span class="n">ObservationTable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphabet</span><span class="p">,</span> <span class="n">oracle</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hypothesis</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="NLSTAR.learn"><a class="viewcode-back" href="../../../../../inferrer.algorithms.active.nlstar.html#inferrer.algorithms.active.nlstar.nlstar.NLSTAR.learn">[docs]</a>    <span class="k">def</span> <span class="nf">learn</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NFA</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Infers an initially unknown regular language</span>
+<span class="sd">        from a minimally adequate Teacher (Oracle).</span>
+
+<span class="sd">        :return: The nfa accepting the target language.</span>
+<span class="sd">        :rtype: NFA</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Start learning.&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ot</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">closed_info</span><span class="p">,</span> <span class="n">consistency_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ot</span><span class="o">.</span><span class="n">is_closed_and_consistent</span><span class="p">()</span>
+
+            <span class="n">is_closed</span><span class="p">,</span> <span class="n">unclosed</span> <span class="o">=</span> <span class="n">closed_info</span>
+            <span class="n">is_consistent</span><span class="p">,</span> <span class="n">sym</span><span class="p">,</span> <span class="n">suffix</span> <span class="o">=</span> <span class="n">consistency_info</span>
+
+            <span class="k">while</span> <span class="ow">not</span> <span class="n">is_closed</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">is_consistent</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">is_closed</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_close_table</span><span class="p">(</span><span class="n">unclosed</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">is_consistent</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_make_table_consistent</span><span class="p">(</span><span class="n">sym</span><span class="p">,</span> <span class="n">suffix</span><span class="p">)</span>
+
+                <span class="n">closed_info</span><span class="p">,</span> <span class="n">consistency_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ot</span><span class="o">.</span><span class="n">is_closed_and_consistent</span><span class="p">()</span>
+
+                <span class="n">is_closed</span><span class="p">,</span> <span class="n">unclosed</span> <span class="o">=</span> <span class="n">closed_info</span>
+                <span class="n">is_consistent</span><span class="p">,</span> <span class="n">sym</span><span class="p">,</span> <span class="n">suffix</span> <span class="o">=</span> <span class="n">consistency_info</span>
+
+            <span class="n">hypothesis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_hypothesis</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Submitting equivalence query.&#39;</span><span class="p">)</span>
+            <span class="n">answer</span><span class="p">,</span> <span class="n">satisfied</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_oracle</span><span class="o">.</span><span class="n">equivalence_query</span><span class="p">(</span><span class="n">hypothesis</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">satisfied</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Oracle happy with our hypothesis.&#39;</span><span class="p">)</span>
+                <span class="k">break</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Oracle return </span><span class="si">{}</span><span class="s1"> as counterexample.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">answer</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_use_eq</span><span class="p">(</span><span class="n">answer</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">hypothesis</span></div>
+
+    <span class="k">def</span> <span class="nf">_use_eq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eq</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        When the Oracle is not happy with our</span>
+<span class="sd">        hypothesis and returns a counterexample,</span>
+<span class="sd">        this method adds the new suffixes to the</span>
+<span class="sd">        observation table and updates all the rows.</span>
+
+<span class="sd">        :param eq: Counterexample returned</span>
+<span class="sd">                   by the oracle.</span>
+<span class="sd">        :type eq: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_suffixes</span> <span class="o">=</span> <span class="p">{</span><span class="n">eq</span><span class="p">[</span><span class="n">i</span><span class="p">:]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">eq</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Updating table by adding the following suffixes: </span><span class="si">{}</span><span class="s1">&#39;</span>
+                          <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">new_suffixes</span><span class="p">)))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ot</span><span class="o">.</span><span class="n">add_new_suffixes</span><span class="p">(</span><span class="n">new_suffixes</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ot</span><span class="o">.</span><span class="n">update_meta_data</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_close_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">unclosed_row</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Attempts to close the observation table</span>
+<span class="sd">        by adding a new row to the table.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Attempting to close the table by adding a new row.&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ot</span><span class="o">.</span><span class="n">upper_rows</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">unclosed_row</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ot</span><span class="o">.</span><span class="n">lower_rows</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">unclosed_row</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ot</span><span class="o">.</span><span class="n">upper_primes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">unclosed_row</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">symbol</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alphabet</span><span class="p">:</span>
+            <span class="n">new_row</span> <span class="o">=</span> <span class="n">Row</span><span class="p">(</span><span class="n">unclosed_row</span><span class="o">.</span><span class="n">prefix</span> <span class="o">+</span> <span class="n">symbol</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ot</span><span class="o">.</span><span class="n">rows</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">new_row</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ot</span><span class="o">.</span><span class="n">lower_rows</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">new_row</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ot</span><span class="o">.</span><span class="n">prefix_to_row</span><span class="p">[</span><span class="n">new_row</span><span class="o">.</span><span class="n">prefix</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_row</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ot</span><span class="o">.</span><span class="n">add_columns_to_row</span><span class="p">(</span><span class="n">new_row</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ot</span><span class="o">.</span><span class="n">update_meta_data</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_make_table_consistent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sym</span><span class="p">,</span> <span class="n">suffix</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Attempts to make the observation table</span>
+<span class="sd">        consistent by adding a new column (experiment)</span>
+<span class="sd">        to the table.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Attempting to make the table consistent by adding a new column.&#39;</span><span class="p">)</span>
+
+        <span class="n">new_suffix</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sym</span><span class="p">,</span> <span class="n">suffix</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ot</span><span class="o">.</span><span class="n">add_suffix</span><span class="p">(</span><span class="n">new_suffix</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ot</span><span class="o">.</span><span class="n">update_meta_data</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_build_hypothesis</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NFA</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Builds a NFA from the observation table,</span>
+<span class="sd">        which we will use when making an</span>
+<span class="sd">        equivalence query to the Oracle.</span>
+
+<span class="sd">        :return: The &quot;hypothesis&quot; NFA.</span>
+<span class="sd">        :rtype: NFA</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Building NFA from the table.&#39;</span><span class="p">)</span>
+        <span class="n">nfa</span> <span class="o">=</span> <span class="n">NFA</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphabet</span><span class="p">)</span>
+        <span class="n">epsilon_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ot</span><span class="o">.</span><span class="n">get_epsilon_row</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ot</span><span class="o">.</span><span class="n">upper_primes</span><span class="p">:</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="n">State</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">prefix</span><span class="p">)</span>
+            <span class="n">nfa</span><span class="o">.</span><span class="n">add_state</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">covered_by</span><span class="p">(</span><span class="n">epsilon_row</span><span class="p">):</span>
+                <span class="n">nfa</span><span class="o">.</span><span class="n">add_start_state</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]:</span>
+                <span class="n">nfa</span><span class="o">.</span><span class="n">add_accepting_state</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ot</span><span class="o">.</span><span class="n">rows</span><span class="p">:</span>
+            <span class="n">state</span> <span class="o">=</span> <span class="n">State</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">prefix</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">state</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">nfa</span><span class="o">.</span><span class="n">get_states</span><span class="p">():</span>
+                <span class="k">continue</span>
+
+            <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alphabet</span><span class="p">:</span>
+                <span class="n">ua_row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ot</span><span class="o">.</span><span class="n">get_row_by_prefix</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">prefix</span> <span class="o">+</span> <span class="n">a</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">ua_row</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">nfa</span><span class="o">.</span><span class="n">get_states</span><span class="p">():</span>
+                    <span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ot</span><span class="o">.</span><span class="n">get_row_by_prefix</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">row</span><span class="o">.</span><span class="n">covered_by</span><span class="p">(</span><span class="n">ua_row</span><span class="p">):</span>
+                        <span class="n">nfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">nfa</span><span class="o">.</span><span class="n">rename_states</span><span class="p">()</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../../index.html">inferrer</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../inferrer.html">inferrer package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Steyn van Litsenborgh.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.0+/8c3ef45</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

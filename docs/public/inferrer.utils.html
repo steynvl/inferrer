@@ -13,9 +13,10 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="inferrer.tools package" href="inferrer.tools.html" />
+    <link rel="prev" title="inferrer.oracle package" href="inferrer.oracle.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -28,6 +29,8 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <div class="section" id="inferrer-utils-package">
@@ -83,7 +86,7 @@ label r.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A deep copy of the observation table.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#inferrer.utils.observation_table.ObservationTable" title="inferrer.utils.observation_table.ObservationTable">ObservationTable</a></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="inferrer.algorithms.active.nlstar.html#inferrer.algorithms.active.nlstar.observation_table.ObservationTable" title="inferrer.algorithms.active.nlstar.observation_table.ObservationTable">ObservationTable</a></td>
 </tr>
 </tbody>
 </table>
@@ -137,7 +140,7 @@ row exists.</td>
 
 <dl class="method">
 <dt id="inferrer.utils.observation_table.ObservationTable.find_holes">
-<code class="descname">find_holes</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Generator<a class="reference internal" href="_modules/inferrer/utils/observation_table.html#ObservationTable.find_holes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.utils.observation_table.ObservationTable.find_holes" title="Permalink to this definition">¶</a></dt>
+<code class="descname">find_holes</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Generator[T_co, T_contra, V_co]<a class="reference internal" href="_modules/inferrer/utils/observation_table.html#ObservationTable.find_holes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.utils.observation_table.ObservationTable.find_holes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds all the entries in the observation table that is
 a hole.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -371,7 +374,7 @@ regular language.</td>
 
 <dl class="function">
 <dt id="inferrer.utils.utils.prefix_set">
-<code class="descclassname">inferrer.utils.utils.</code><code class="descname">prefix_set</code><span class="sig-paren">(</span><em>s: Set[str], alphabet: Set[str] = None</em><span class="sig-paren">)</span> &#x2192; Generator<a class="reference internal" href="_modules/inferrer/utils/utils.html#prefix_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.utils.utils.prefix_set" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">inferrer.utils.utils.</code><code class="descname">prefix_set</code><span class="sig-paren">(</span><em>s: Set[str], alphabet: Set[str] = None</em><span class="sig-paren">)</span> &#x2192; Generator[T_co, T_contra, V_co]<a class="reference internal" href="_modules/inferrer/utils/utils.html#prefix_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.utils.utils.prefix_set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the prefix set of the set s given the
 alphabet.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;aaa&#39;</span><span class="p">,</span> <span class="s1">&#39;bbb&#39;</span><span class="p">,</span> <span class="s1">&#39;aba&#39;</span><span class="p">}</span>
@@ -401,7 +404,7 @@ alphabet.</p>
 
 <dl class="function">
 <dt id="inferrer.utils.utils.suffix_set">
-<code class="descclassname">inferrer.utils.utils.</code><code class="descname">suffix_set</code><span class="sig-paren">(</span><em>s: Set[str], alphabet: Set[str] = None</em><span class="sig-paren">)</span> &#x2192; Generator<a class="reference internal" href="_modules/inferrer/utils/utils.html#suffix_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.utils.utils.suffix_set" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">inferrer.utils.utils.</code><code class="descname">suffix_set</code><span class="sig-paren">(</span><em>s: Set[str], alphabet: Set[str] = None</em><span class="sig-paren">)</span> &#x2192; Generator[T_co, T_contra, V_co]<a class="reference internal" href="_modules/inferrer/utils/utils.html#suffix_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.utils.utils.suffix_set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the suffix set of the set s given the
 alphabet.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;aaa&#39;</span><span class="p">,</span> <span class="s1">&#39;bbb&#39;</span><span class="p">,</span> <span class="s1">&#39;aba&#39;</span><span class="p">}</span>
@@ -437,49 +440,73 @@ alphabet.</p>
 
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">inferrer.utils package</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-inferrer.utils.observation_table">inferrer.utils.observation_table module</a></li>
-<li><a class="reference internal" href="#module-inferrer.utils.utils">inferrer.utils.utils module</a></li>
-<li><a class="reference internal" href="#module-inferrer.utils">Module contents</a></li>
+<h1 class="logo"><a href="index.html">inferrer</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="inferrer.html">inferrer package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="inferrer.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="inferrer.algorithms.html">inferrer.algorithms package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inferrer.automaton.html">inferrer.automaton package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inferrer.logger.html">inferrer.logger package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inferrer.oracle.html">inferrer.oracle package</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">inferrer.utils package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-inferrer.utils.observation_table">inferrer.utils.observation_table module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-inferrer.utils.utils">inferrer.utils.utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-inferrer.utils">Module contents</a></li>
 </ul>
 </li>
 </ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="inferrer.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inferrer.html#module-inferrer.inferrer">inferrer.inferrer module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inferrer.html#module-inferrer">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
   <li><a href="inferrer.html">inferrer package</a><ul>
-      <li>Previous: <a href="inferrer.tools.html" title="previous chapter">inferrer.tools package</a></li>
+      <li>Previous: <a href="inferrer.oracle.html" title="previous chapter">inferrer.oracle package</a></li>
   </ul></li>
   </ul></li>
 </ul>
 </div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/inferrer.utils.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -488,8 +515,8 @@ alphabet.</p>
       &copy;2018, Steyn van Litsenborgh.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.0+/8c3ef45</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="_sources/inferrer.utils.rst.txt"
