@@ -13,9 +13,9 @@ def read_examples(file: str) -> Set[str]:
 
 
 def main(args):
-    alphabet = set(args.alphabet)
     pos_examples = read_examples(args.positive_examples)
     neg_examples = read_examples(args.negative_examples)
+    alphabet = inferrer.utils.determine_alphabet(pos_examples.union(neg_examples))
     algorithm = args.algorithm
 
     if algorithm in ['rpni', 'gold']:
@@ -35,7 +35,6 @@ def main(args):
     if args.show_dfa:
         dfa.show()
 
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='This is the CLI tool for the '
                                                  'grammatical inference library '
@@ -43,10 +42,6 @@ if __name__ == '__main__':
                                                  ' learn regular languages using '
                                                  'positive and negative example '
                                                  'strings from the target language.')
-
-    parser.add_argument('alphabet', type=str,
-                        help='Alphabet of the target regular language we are going to '
-                             'attempt to learn.')
 
     parser.add_argument('positive_examples', type=str, metavar='positive-examples',
                         help='Path to the file containing positive example strings, '

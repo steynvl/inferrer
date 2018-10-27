@@ -107,7 +107,4 @@ class Learner:
         """
         fsa = self._learners[self._algorithm]()
 
-        if type(fsa) is automaton.NFA:
-            fsa = fsa.to_dfa()
-
-        return fsa
+        return fsa.to_dfa() if type(fsa) is automaton.NFA else fsa.rename_states()
