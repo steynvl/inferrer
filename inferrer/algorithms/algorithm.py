@@ -24,6 +24,7 @@ class Algorithm(abc.ABC):
         Gold
         RPNI
         Angluin Learning (L*)
+        NL*
 
         :return: DFA consistent with the sample.
         :rtype: Automaton

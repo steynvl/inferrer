@@ -1,0 +1,183 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferrer.oracle.passive_oracle &#8212; inferrer 0.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for inferrer.oracle.passive_oracle</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">inferrer</span> <span class="k">import</span> <span class="n">automaton</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">inferrer.oracle.oracle</span> <span class="k">import</span> <span class="n">Oracle</span>
+
+
+<div class="viewcode-block" id="PassiveOracle"><a class="viewcode-back" href="../../../inferrer.oracle.html#inferrer.oracle.passive_oracle.PassiveOracle">[docs]</a><span class="k">class</span> <span class="nc">PassiveOracle</span><span class="p">(</span><span class="n">Oracle</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s_plus</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">s_minus</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        An implementation of a passive oracle. The oracle only</span>
+<span class="sd">        has access to two sets. A set of positive example strings</span>
+<span class="sd">        and a set of negative strings. It answers membership</span>
+<span class="sd">        queries and equivalence queries based of these two sets.</span>
+
+<span class="sd">        :param s_plus: Set of positive example strings, i.e.</span>
+<span class="sd">                       strings that belong in the</span>
+<span class="sd">                       target language.</span>
+<span class="sd">        :type s_plus: Set[str]</span>
+<span class="sd">        :param s_minus: Set of negative example strings, i.e.</span>
+<span class="sd">                        strings that do not belong in the</span>
+<span class="sd">                        target language.</span>
+<span class="sd">        :type s_minus: Set[str]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_s_plus</span> <span class="o">=</span> <span class="n">s_plus</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_s_minus</span> <span class="o">=</span> <span class="n">s_minus</span>
+
+<div class="viewcode-block" id="PassiveOracle.membership_query"><a class="viewcode-back" href="../../../inferrer.oracle.html#inferrer.oracle.passive_oracle.PassiveOracle.membership_query">[docs]</a>    <span class="k">def</span> <span class="nf">membership_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Answers a Membership Query (MQ) made by the learner.</span>
+<span class="sd">        If the given string s is in the set of positive example</span>
+<span class="sd">        strings then the Oracle will answer with True, if s is not</span>
+<span class="sd">        in the set of negative example strings then the oracle will</span>
+<span class="sd">        answer False.</span>
+
+<span class="sd">        :param s: The membership query string</span>
+<span class="sd">        :type s: str</span>
+<span class="sd">        :return: True if s is in the set of positive</span>
+<span class="sd">                 example strings, else False</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_s_plus</span></div>
+
+<div class="viewcode-block" id="PassiveOracle.equivalence_query"><a class="viewcode-back" href="../../../inferrer.oracle.html#inferrer.oracle.passive_oracle.PassiveOracle.equivalence_query">[docs]</a>    <span class="k">def</span> <span class="nf">equivalence_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fsa</span><span class="p">:</span> <span class="n">automaton</span><span class="o">.</span><span class="n">FSA</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Answers a Equivalence Query (EQ) made by the learner..</span>
+<span class="sd">        The learner provides the Oracle with some hypothesis.</span>
+<span class="sd">        The hypothesis is a grammar representing the unknown</span>
+<span class="sd">        language. The Oracle has to provide the learner with</span>
+<span class="sd">        a counter-example, i.e. a string that does not belong</span>
+<span class="sd">        in the target language, but is accepted by the</span>
+<span class="sd">        proposed grammar. If the Oracle is happy with the</span>
+<span class="sd">        hypothesis, then it tells the learner that it is satisfied</span>
+<span class="sd">        and the algorithm will converge.</span>
+
+<span class="sd">        :param fsa: The &#39;hypothesis&#39;, a finite state acceptor</span>
+<span class="sd">                    representing the unknown language.</span>
+<span class="sd">        :type fsa: FSA</span>
+<span class="sd">        :return: Tuple where the first index is a counter-example</span>
+<span class="sd">                 and the second index is whether the Oracle is</span>
+<span class="sd">                 satisfied. If the Oracle is satisfied, then the</span>
+<span class="sd">                 first index will just be the empty string.</span>
+<span class="sd">        :rtype: Tuple[str, bool]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">positive_string</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s_plus</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_marked</span><span class="p">)):</span>
+            <span class="n">accepted</span> <span class="o">=</span> <span class="n">fsa</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="n">positive_string</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">accepted</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_marked</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">positive_string</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">positive_string</span><span class="p">,</span> <span class="kc">False</span>
+
+        <span class="k">for</span> <span class="n">negative_string</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_s_minus</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_marked</span><span class="p">)):</span>
+            <span class="n">accepted</span> <span class="o">=</span> <span class="n">fsa</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="n">negative_string</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">accepted</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_marked</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">negative_string</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">negative_string</span><span class="p">,</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="kc">True</span></div></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">inferrer</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../inferrer.html">inferrer package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Steyn van Litsenborgh.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.0+/8c3ef45</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

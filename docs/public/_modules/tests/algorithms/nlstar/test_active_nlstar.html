@@ -1,0 +1,506 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>tests.algorithms.nlstar.test_active_nlstar &#8212; inferrer 0.1 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for tests.algorithms.nlstar.test_active_nlstar</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">unittest</span>
+<span class="kn">from</span> <span class="nn">inferrer</span> <span class="k">import</span> <span class="n">automaton</span><span class="p">,</span> <span class="n">algorithms</span><span class="p">,</span> <span class="n">oracle</span>
+
+
+<div class="viewcode-block" id="TestActiveNLSTAR"><a class="viewcode-back" href="../../../../tests.algorithms.nlstar.html#tests.algorithms.nlstar.test_active_nlstar.TestActiveNLSTAR">[docs]</a><span class="k">class</span> <span class="nc">TestActiveNLSTAR</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TestActiveNLSTAR.test_active_nlstar_01"><a class="viewcode-back" href="../../../../tests.algorithms.nlstar.html#tests.algorithms.nlstar.test_active_nlstar.TestActiveNLSTAR.test_active_nlstar_01">[docs]</a>    <span class="k">def</span> <span class="nf">test_active_nlstar_01</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">q0</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">)</span>
+        <span class="n">q1</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">)</span>
+        <span class="n">q2</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;2&#39;</span><span class="p">)</span>
+        <span class="n">q3</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;3&#39;</span><span class="p">)</span>
+        <span class="n">q4</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;4&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">DFA</span><span class="p">({</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">},</span> <span class="n">start_state</span><span class="o">=</span><span class="n">q0</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q0</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q0</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q3</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q4</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q2</span><span class="p">,</span> <span class="n">q3</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q2</span><span class="p">,</span> <span class="n">q3</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q4</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q4</span><span class="p">,</span> <span class="n">q3</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q3</span><span class="p">,</span> <span class="n">q3</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q3</span><span class="p">,</span> <span class="n">q3</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">accept_states</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">q0</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="n">q4</span><span class="p">})</span>
+
+        <span class="n">teacher</span> <span class="o">=</span> <span class="n">oracle</span><span class="o">.</span><span class="n">ActiveOracle</span><span class="p">(</span><span class="n">expected_dfa</span><span class="p">)</span>
+        <span class="n">nlstar</span> <span class="o">=</span> <span class="n">algorithms</span><span class="o">.</span><span class="n">NLSTAR</span><span class="p">({</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">},</span> <span class="n">teacher</span><span class="p">)</span>
+
+        <span class="n">nfa</span> <span class="o">=</span> <span class="n">nlstar</span><span class="o">.</span><span class="n">learn</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">nfa</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">nfa</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">nfa</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="s1">&#39;ab&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">nfa</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="s1">&#39;aba&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">nfa</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="s1">&#39;aa&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">nfa</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="s1">&#39;abb&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">nfa</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="s1">&#39;ba&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">nfa</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="s1">&#39;bb&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="TestActiveNLSTAR.test_active_nlstar_02"><a class="viewcode-back" href="../../../../tests.algorithms.nlstar.html#tests.algorithms.nlstar.test_active_nlstar.TestActiveNLSTAR.test_active_nlstar_02">[docs]</a>    <span class="k">def</span> <span class="nf">test_active_nlstar_02</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">q0</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">DFA</span><span class="p">({</span><span class="s1">&#39;a&#39;</span><span class="p">},</span> <span class="n">start_state</span><span class="o">=</span><span class="n">q0</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q0</span><span class="p">,</span> <span class="n">q0</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">accept_states</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">q0</span><span class="p">)</span>
+
+        <span class="n">teacher</span> <span class="o">=</span> <span class="n">oracle</span><span class="o">.</span><span class="n">ActiveOracle</span><span class="p">(</span><span class="n">expected_dfa</span><span class="p">)</span>
+        <span class="n">nlstar</span> <span class="o">=</span> <span class="n">algorithms</span><span class="o">.</span><span class="n">NLSTAR</span><span class="p">({</span><span class="s1">&#39;a&#39;</span><span class="p">},</span> <span class="n">teacher</span><span class="p">)</span>
+
+        <span class="n">nfa</span> <span class="o">=</span> <span class="n">nlstar</span><span class="o">.</span><span class="n">learn</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">nfa</span><span class="o">.</span><span class="n">_states</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">nfa</span><span class="o">.</span><span class="n">_accept_states</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">nfa</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="s1">&#39;a&#39;</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="TestActiveNLSTAR.test_active_nlstar_03"><a class="viewcode-back" href="../../../../tests.algorithms.nlstar.html#tests.algorithms.nlstar.test_active_nlstar.TestActiveNLSTAR.test_active_nlstar_03">[docs]</a>    <span class="k">def</span> <span class="nf">test_active_nlstar_03</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Try to let NL* learn Kleene plus.</span>
+<span class="sd">        The alphabet is sigma = {a} and the</span>
+<span class="sd">        language accepts every string with 1</span>
+<span class="sd">        or more a&#39;s.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">q0</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">)</span>
+        <span class="n">q1</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">DFA</span><span class="p">({</span><span class="s1">&#39;a&#39;</span><span class="p">},</span> <span class="n">start_state</span><span class="o">=</span><span class="n">q0</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q0</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">accept_states</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">q1</span><span class="p">)</span>
+
+        <span class="n">teacher</span> <span class="o">=</span> <span class="n">oracle</span><span class="o">.</span><span class="n">ActiveOracle</span><span class="p">(</span><span class="n">expected_dfa</span><span class="p">)</span>
+        <span class="n">nlstar</span> <span class="o">=</span> <span class="n">algorithms</span><span class="o">.</span><span class="n">NLSTAR</span><span class="p">({</span><span class="s1">&#39;a&#39;</span><span class="p">},</span> <span class="n">teacher</span><span class="p">)</span>
+
+        <span class="n">nfa</span> <span class="o">=</span> <span class="n">nlstar</span><span class="o">.</span><span class="n">learn</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">nfa</span><span class="o">.</span><span class="n">_states</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">nfa</span><span class="o">.</span><span class="n">_accept_states</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TestActiveNLSTAR.test_active_nlstar_04"><a class="viewcode-back" href="../../../../tests.algorithms.nlstar.html#tests.algorithms.nlstar.test_active_nlstar.TestActiveNLSTAR.test_active_nlstar_04">[docs]</a>    <span class="k">def</span> <span class="nf">test_active_nlstar_04</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">q0</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">)</span>
+        <span class="n">q1</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">DFA</span><span class="p">({</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">},</span> <span class="n">start_state</span><span class="o">=</span><span class="n">q0</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q0</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q0</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">accept_states</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">q1</span><span class="p">)</span>
+
+        <span class="n">teacher</span> <span class="o">=</span> <span class="n">oracle</span><span class="o">.</span><span class="n">ActiveOracle</span><span class="p">(</span><span class="n">expected_dfa</span><span class="p">)</span>
+        <span class="n">nlstar</span> <span class="o">=</span> <span class="n">algorithms</span><span class="o">.</span><span class="n">NLSTAR</span><span class="p">({</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">},</span> <span class="n">teacher</span><span class="p">)</span>
+
+        <span class="n">nfa</span> <span class="o">=</span> <span class="n">nlstar</span><span class="o">.</span><span class="n">learn</span><span class="p">()</span>
+        <span class="n">dfa</span> <span class="o">=</span> <span class="n">nfa</span><span class="o">.</span><span class="n">to_dfa</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dfa</span><span class="o">.</span><span class="n">states</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dfa</span><span class="o">.</span><span class="n">accept_states</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TestActiveNLSTAR.test_active_nlstar_05"><a class="viewcode-back" href="../../../../tests.algorithms.nlstar.html#tests.algorithms.nlstar.test_active_nlstar.TestActiveNLSTAR.test_active_nlstar_05">[docs]</a>    <span class="k">def</span> <span class="nf">test_active_nlstar_05</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Try to let NL* learn the regular language A.</span>
+<span class="sd">        A is a language over the alphabet sigma = {a},</span>
+<span class="sd">        that accepts all strings with an odd number of</span>
+<span class="sd">        a&#39;s.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">q0</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">)</span>
+        <span class="n">q1</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">DFA</span><span class="p">({</span><span class="s1">&#39;a&#39;</span><span class="p">},</span> <span class="n">start_state</span><span class="o">=</span><span class="n">q0</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q0</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q0</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">accept_states</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">q1</span><span class="p">)</span>
+
+        <span class="n">teacher</span> <span class="o">=</span> <span class="n">oracle</span><span class="o">.</span><span class="n">ActiveOracle</span><span class="p">(</span><span class="n">expected_dfa</span><span class="p">)</span>
+        <span class="n">nlstar</span> <span class="o">=</span> <span class="n">algorithms</span><span class="o">.</span><span class="n">NLSTAR</span><span class="p">({</span><span class="s1">&#39;a&#39;</span><span class="p">},</span> <span class="n">teacher</span><span class="p">)</span>
+
+        <span class="n">nfa</span> <span class="o">=</span> <span class="n">nlstar</span><span class="o">.</span><span class="n">learn</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">nfa</span><span class="o">.</span><span class="n">_states</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">nfa</span><span class="o">.</span><span class="n">_accept_states</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">expected_dfa</span><span class="p">,</span> <span class="n">nfa</span><span class="o">.</span><span class="n">to_dfa</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="TestActiveNLSTAR.test_active_nlstar_06"><a class="viewcode-back" href="../../../../tests.algorithms.nlstar.html#tests.algorithms.nlstar.test_active_nlstar.TestActiveNLSTAR.test_active_nlstar_06">[docs]</a>    <span class="k">def</span> <span class="nf">test_active_nlstar_06</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        try to let NL* learn the regular language A.</span>
+<span class="sd">        A is a regular language over the alphabet {0, 1} where</span>
+<span class="sd">        each string contains an odd number of 1s</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">q0</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">)</span>
+        <span class="n">q1</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">DFA</span><span class="p">({</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">},</span> <span class="n">start_state</span><span class="o">=</span><span class="n">q0</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q0</span><span class="p">,</span> <span class="n">q0</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q0</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q0</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">accept_states</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">q1</span><span class="p">)</span>
+
+        <span class="n">teacher</span> <span class="o">=</span> <span class="n">oracle</span><span class="o">.</span><span class="n">ActiveOracle</span><span class="p">(</span><span class="n">expected_dfa</span><span class="p">)</span>
+        <span class="n">nlstar</span> <span class="o">=</span> <span class="n">algorithms</span><span class="o">.</span><span class="n">NLSTAR</span><span class="p">({</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">},</span> <span class="n">teacher</span><span class="p">)</span>
+
+        <span class="n">nfa</span> <span class="o">=</span> <span class="n">nlstar</span><span class="o">.</span><span class="n">learn</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">nfa</span><span class="o">.</span><span class="n">_states</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">nfa</span><span class="o">.</span><span class="n">_accept_states</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">expected_dfa</span><span class="p">,</span> <span class="n">nfa</span><span class="o">.</span><span class="n">to_dfa</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="TestActiveNLSTAR.test_active_nlstar_07"><a class="viewcode-back" href="../../../../tests.algorithms.nlstar.html#tests.algorithms.nlstar.test_active_nlstar.TestActiveNLSTAR.test_active_nlstar_07">[docs]</a>    <span class="k">def</span> <span class="nf">test_active_nlstar_07</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        try to let NL* learn the regular language A.</span>
+<span class="sd">        A is a regular language over the alphabet {0, 1} where</span>
+<span class="sd">        each string contains 101 as a substring.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">q1</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">)</span>
+        <span class="n">q2</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;2&#39;</span><span class="p">)</span>
+        <span class="n">q3</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;3&#39;</span><span class="p">)</span>
+        <span class="n">q4</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;4&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">DFA</span><span class="p">({</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">},</span> <span class="n">start_state</span><span class="o">=</span><span class="n">q1</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q2</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q2</span><span class="p">,</span> <span class="n">q3</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q3</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q3</span><span class="p">,</span> <span class="n">q4</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q4</span><span class="p">,</span> <span class="n">q4</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q4</span><span class="p">,</span> <span class="n">q4</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">accept_states</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">q4</span><span class="p">)</span>
+
+        <span class="n">teacher</span> <span class="o">=</span> <span class="n">oracle</span><span class="o">.</span><span class="n">ActiveOracle</span><span class="p">(</span><span class="n">expected_dfa</span><span class="p">)</span>
+        <span class="n">nlstar</span> <span class="o">=</span> <span class="n">algorithms</span><span class="o">.</span><span class="n">NLSTAR</span><span class="p">({</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">},</span> <span class="n">teacher</span><span class="p">)</span>
+
+        <span class="n">nfa</span> <span class="o">=</span> <span class="n">nlstar</span><span class="o">.</span><span class="n">learn</span><span class="p">()</span>
+        <span class="n">dfa</span> <span class="o">=</span> <span class="n">nfa</span><span class="o">.</span><span class="n">to_dfa</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">expected_dfa</span><span class="o">.</span><span class="n">rename_states</span><span class="p">(),</span>
+                         <span class="n">dfa</span><span class="o">.</span><span class="n">rename_states</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="TestActiveNLSTAR.test_active_nlstar_08"><a class="viewcode-back" href="../../../../tests.algorithms.nlstar.html#tests.algorithms.nlstar.test_active_nlstar.TestActiveNLSTAR.test_active_nlstar_08">[docs]</a>    <span class="k">def</span> <span class="nf">test_active_nlstar_08</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        try to let NL* learn the regular language A.</span>
+<span class="sd">        A is a regular language over the alphabet {0, 1} where</span>
+<span class="sd">        each string contains an even number of 0&#39;s and an even</span>
+<span class="sd">        number of 1&#39;s.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">q1</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">)</span>
+        <span class="n">q2</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;2&#39;</span><span class="p">)</span>
+        <span class="n">q3</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;3&#39;</span><span class="p">)</span>
+        <span class="n">q4</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;4&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">DFA</span><span class="p">({</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">},</span> <span class="n">start_state</span><span class="o">=</span><span class="n">q1</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q4</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q2</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q2</span><span class="p">,</span> <span class="n">q3</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q3</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q3</span><span class="p">,</span> <span class="n">q4</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q4</span><span class="p">,</span> <span class="n">q3</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q4</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">accept_states</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">q1</span><span class="p">)</span>
+
+        <span class="n">teacher</span> <span class="o">=</span> <span class="n">oracle</span><span class="o">.</span><span class="n">ActiveOracle</span><span class="p">(</span><span class="n">expected_dfa</span><span class="p">)</span>
+
+        <span class="n">nlstar</span> <span class="o">=</span> <span class="n">algorithms</span><span class="o">.</span><span class="n">NLSTAR</span><span class="p">({</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">},</span> <span class="n">teacher</span><span class="p">)</span>
+        <span class="n">nfa</span> <span class="o">=</span> <span class="n">nlstar</span><span class="o">.</span><span class="n">learn</span><span class="p">()</span>
+        <span class="n">dfa</span> <span class="o">=</span> <span class="n">nfa</span><span class="o">.</span><span class="n">to_dfa</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">expected_dfa</span><span class="p">,</span> <span class="n">dfa</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestActiveNLSTAR.test_active_nlstar_09"><a class="viewcode-back" href="../../../../tests.algorithms.nlstar.html#tests.algorithms.nlstar.test_active_nlstar.TestActiveNLSTAR.test_active_nlstar_09">[docs]</a>    <span class="k">def</span> <span class="nf">test_active_nlstar_09</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        try to let NL* learn the regular language L.</span>
+<span class="sd">        L is a regular language over the alphabet {a, b, c} where</span>
+<span class="sd">        every string in L is an even length.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">q0</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">)</span>
+        <span class="n">q1</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">DFA</span><span class="p">({</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">},</span> <span class="n">start_state</span><span class="o">=</span><span class="n">q0</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q0</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q0</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q0</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q0</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q0</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q0</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">accept_states</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">q0</span><span class="p">)</span>
+
+        <span class="n">teacher</span> <span class="o">=</span> <span class="n">oracle</span><span class="o">.</span><span class="n">ActiveOracle</span><span class="p">(</span><span class="n">expected_dfa</span><span class="p">)</span>
+        <span class="n">nlstar</span> <span class="o">=</span> <span class="n">algorithms</span><span class="o">.</span><span class="n">NLSTAR</span><span class="p">({</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">},</span> <span class="n">teacher</span><span class="p">)</span>
+        <span class="n">nfa</span> <span class="o">=</span> <span class="n">nlstar</span><span class="o">.</span><span class="n">learn</span><span class="p">()</span>
+        <span class="n">dfa</span> <span class="o">=</span> <span class="n">nfa</span><span class="o">.</span><span class="n">to_dfa</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">expected_dfa</span><span class="p">,</span> <span class="n">dfa</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestActiveNLSTAR.test_active_nlstar_10"><a class="viewcode-back" href="../../../../tests.algorithms.nlstar.html#tests.algorithms.nlstar.test_active_nlstar.TestActiveNLSTAR.test_active_nlstar_10">[docs]</a>    <span class="k">def</span> <span class="nf">test_active_nlstar_10</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        try to let NL* learn the regular language L.</span>
+<span class="sd">        L is a regular language over the alphabet {a, b} where</span>
+<span class="sd">        for every string in L, we have the following property,</span>
+<span class="sd">        the characters at an even position should be a, the</span>
+<span class="sd">        characters at an odd position can be a or b. The empty</span>
+<span class="sd">        string is not accepted by the language.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">q0</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">)</span>
+        <span class="n">q1</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">)</span>
+        <span class="n">q2</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;2&#39;</span><span class="p">)</span>
+        <span class="n">q3</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;3&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">DFA</span><span class="p">({</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">},</span> <span class="n">start_state</span><span class="o">=</span><span class="n">q0</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q0</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q0</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q3</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q2</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q2</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q3</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q3</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">accept_states</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">q1</span><span class="p">,</span> <span class="n">q3</span><span class="p">})</span>
+
+        <span class="n">teacher</span> <span class="o">=</span> <span class="n">oracle</span><span class="o">.</span><span class="n">ActiveOracle</span><span class="p">(</span><span class="n">expected_dfa</span><span class="p">)</span>
+        <span class="n">nlstar</span> <span class="o">=</span> <span class="n">algorithms</span><span class="o">.</span><span class="n">NLSTAR</span><span class="p">({</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">},</span> <span class="n">teacher</span><span class="p">)</span>
+        <span class="n">nfa</span> <span class="o">=</span> <span class="n">nlstar</span><span class="o">.</span><span class="n">learn</span><span class="p">()</span>
+        <span class="n">dfa</span> <span class="o">=</span> <span class="n">nfa</span><span class="o">.</span><span class="n">to_dfa</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">expected_dfa</span><span class="o">.</span><span class="n">rename_states</span><span class="p">(),</span>
+                         <span class="n">dfa</span><span class="o">.</span><span class="n">rename_states</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="TestActiveNLSTAR.test_active_nlstar_11"><a class="viewcode-back" href="../../../../tests.algorithms.nlstar.html#tests.algorithms.nlstar.test_active_nlstar.TestActiveNLSTAR.test_active_nlstar_11">[docs]</a>    <span class="k">def</span> <span class="nf">test_active_nlstar_11</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        try to let NL* learn the regular language L.</span>
+<span class="sd">        L is a regular language over the alphabet {a, b} where</span>
+<span class="sd">        for every string in L contains exactly two a&#39;s.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">q0</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">)</span>
+        <span class="n">q1</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">)</span>
+        <span class="n">q2</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;2&#39;</span><span class="p">)</span>
+        <span class="n">q3</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;3&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">DFA</span><span class="p">({</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">},</span> <span class="n">start_state</span><span class="o">=</span><span class="n">q0</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q0</span><span class="p">,</span> <span class="n">q0</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q0</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q2</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q2</span><span class="p">,</span> <span class="n">q3</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q3</span><span class="p">,</span> <span class="n">q3</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q3</span><span class="p">,</span> <span class="n">q3</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">accept_states</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">q2</span><span class="p">)</span>
+
+        <span class="n">teacher</span> <span class="o">=</span> <span class="n">oracle</span><span class="o">.</span><span class="n">ActiveOracle</span><span class="p">(</span><span class="n">expected_dfa</span><span class="p">)</span>
+        <span class="n">nlstar</span> <span class="o">=</span> <span class="n">algorithms</span><span class="o">.</span><span class="n">NLSTAR</span><span class="p">({</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">},</span> <span class="n">teacher</span><span class="p">)</span>
+
+        <span class="n">nfa</span> <span class="o">=</span> <span class="n">nlstar</span><span class="o">.</span><span class="n">learn</span><span class="p">()</span>
+        <span class="n">dfa</span> <span class="o">=</span> <span class="n">nfa</span><span class="o">.</span><span class="n">to_dfa</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">expected_dfa</span><span class="p">,</span> <span class="n">dfa</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestActiveNLSTAR.test_active_nlstar_12"><a class="viewcode-back" href="../../../../tests.algorithms.nlstar.html#tests.algorithms.nlstar.test_active_nlstar.TestActiveNLSTAR.test_active_nlstar_12">[docs]</a>    <span class="k">def</span> <span class="nf">test_active_nlstar_12</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">q0</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">)</span>
+        <span class="n">q1</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">)</span>
+        <span class="n">q2</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;2&#39;</span><span class="p">)</span>
+        <span class="n">q3</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;3&#39;</span><span class="p">)</span>
+        <span class="n">q4</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;4&#39;</span><span class="p">)</span>
+        <span class="n">q5</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;5&#39;</span><span class="p">)</span>
+        <span class="n">q6</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;6&#39;</span><span class="p">)</span>
+        <span class="n">q7</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="s1">&#39;7&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span> <span class="o">=</span> <span class="n">automaton</span><span class="o">.</span><span class="n">DFA</span><span class="p">({</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;#&#39;</span><span class="p">},</span> <span class="n">start_state</span><span class="o">=</span><span class="n">q0</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q0</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="s1">&#39;#&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q0</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q0</span><span class="p">,</span> <span class="n">q3</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q1</span><span class="p">,</span> <span class="s1">&#39;#&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q4</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q1</span><span class="p">,</span> <span class="n">q5</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q2</span><span class="p">,</span> <span class="n">q2</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q2</span><span class="p">,</span> <span class="n">q4</span><span class="p">,</span> <span class="s1">&#39;#&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q2</span><span class="p">,</span> <span class="n">q6</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q3</span><span class="p">,</span> <span class="n">q3</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q3</span><span class="p">,</span> <span class="n">q5</span><span class="p">,</span> <span class="s1">&#39;#&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q3</span><span class="p">,</span> <span class="n">q6</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q4</span><span class="p">,</span> <span class="n">q4</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q4</span><span class="p">,</span> <span class="n">q4</span><span class="p">,</span> <span class="s1">&#39;#&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q4</span><span class="p">,</span> <span class="n">q7</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q5</span><span class="p">,</span> <span class="n">q5</span><span class="p">,</span> <span class="s1">&#39;#&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q5</span><span class="p">,</span> <span class="n">q5</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q5</span><span class="p">,</span> <span class="n">q7</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q6</span><span class="p">,</span> <span class="n">q6</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q6</span><span class="p">,</span> <span class="n">q6</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q6</span><span class="p">,</span> <span class="n">q7</span><span class="p">,</span> <span class="s1">&#39;#&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q7</span><span class="p">,</span> <span class="n">q7</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q7</span><span class="p">,</span> <span class="n">q7</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span>
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">add_transition</span><span class="p">(</span><span class="n">q7</span><span class="p">,</span> <span class="n">q7</span><span class="p">,</span> <span class="s1">&#39;#&#39;</span><span class="p">)</span>
+
+        <span class="n">expected_dfa</span><span class="o">.</span><span class="n">accept_states</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">q7</span><span class="p">)</span>
+
+        <span class="n">teacher</span> <span class="o">=</span> <span class="n">oracle</span><span class="o">.</span><span class="n">ActiveOracle</span><span class="p">(</span><span class="n">expected_dfa</span><span class="p">)</span>
+        <span class="n">nlstar</span> <span class="o">=</span> <span class="n">algorithms</span><span class="o">.</span><span class="n">NLSTAR</span><span class="p">({</span><span class="s1">&#39;#&#39;</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">},</span> <span class="n">teacher</span><span class="p">)</span>
+
+        <span class="n">nfa</span> <span class="o">=</span> <span class="n">nlstar</span><span class="o">.</span><span class="n">learn</span><span class="p">()</span>
+
+        <span class="n">dfa</span> <span class="o">=</span> <span class="n">nfa</span><span class="o">.</span><span class="n">to_dfa</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dfa</span><span class="o">.</span><span class="n">states</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dfa</span><span class="o">.</span><span class="n">accept_states</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">dfa</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="s1">&#39;#1a&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">dfa</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="s1">&#39;a#1&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">dfa</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="s1">&#39;#1&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">dfa</span><span class="o">.</span><span class="n">parse_string</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">expected_dfa</span><span class="p">,</span> <span class="n">dfa</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../index.html">inferrer</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../inferrer.html">inferrer package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Steyn van Litsenborgh.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.0+/8c3ef45</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,13 @@
+image: python:3.7
+
+stages:
+- test
+
+test:
+  stage: test
+  script:
+  - apt-get update -qy
+  - apt-get install -y python-dev python-pip
+  - pip install pipenv
+  - pipenv install
+  - pipenv run python -m unittest discover

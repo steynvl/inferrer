@@ -1,0 +1,174 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferrer_cli &#8212; inferrer 0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for inferrer_cli</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">inferrer</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Set</span>
+
+
+<div class="viewcode-block" id="read_examples"><a class="viewcode-back" href="../inferrer_cli.html#inferrer_cli.read_examples">[docs]</a><span class="k">def</span> <span class="nf">read_examples</span><span class="p">(</span><span class="n">file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\&#39;</span><span class="si">{}</span><span class="se">\&#39;</span><span class="s1"> does not exist&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">file</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../inferrer_cli.html#inferrer_cli.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+    <span class="n">alphabet</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">alphabet</span><span class="p">)</span>
+    <span class="n">pos_examples</span> <span class="o">=</span> <span class="n">read_examples</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">positive_examples</span><span class="p">)</span>
+    <span class="n">neg_examples</span> <span class="o">=</span> <span class="n">read_examples</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">negative_examples</span><span class="p">)</span>
+    <span class="n">algorithm</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">algorithm</span>
+
+    <span class="k">if</span> <span class="n">algorithm</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;rpni&#39;</span><span class="p">,</span> <span class="s1">&#39;gold&#39;</span><span class="p">]:</span>
+        <span class="n">learner</span> <span class="o">=</span> <span class="n">inferrer</span><span class="o">.</span><span class="n">Learner</span><span class="p">(</span><span class="n">alphabet</span><span class="o">=</span><span class="n">alphabet</span><span class="p">,</span>
+                                   <span class="n">pos_examples</span><span class="o">=</span><span class="n">pos_examples</span><span class="p">,</span>
+                                   <span class="n">neg_examples</span><span class="o">=</span><span class="n">neg_examples</span><span class="p">,</span>
+                                   <span class="n">algorithm</span><span class="o">=</span><span class="n">algorithm</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">algorithm</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;lstar&#39;</span><span class="p">,</span> <span class="s1">&#39;nlstar&#39;</span><span class="p">]:</span>
+        <span class="n">learner</span> <span class="o">=</span> <span class="n">inferrer</span><span class="o">.</span><span class="n">Learner</span><span class="p">(</span><span class="n">alphabet</span><span class="o">=</span><span class="n">alphabet</span><span class="p">,</span>
+                                   <span class="n">oracle</span><span class="o">=</span><span class="n">inferrer</span><span class="o">.</span><span class="n">oracle</span><span class="o">.</span><span class="n">PassiveOracle</span><span class="p">(</span><span class="n">pos_examples</span><span class="p">,</span>
+                                                                        <span class="n">neg_examples</span><span class="p">),</span>
+                                   <span class="n">algorithm</span><span class="o">=</span><span class="n">algorithm</span><span class="p">)</span>
+
+    <span class="n">dfa</span> <span class="o">=</span> <span class="n">learner</span><span class="o">.</span><span class="n">learn_grammar</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">dfa</span><span class="o">.</span><span class="n">to_regex</span><span class="p">())</span>
+
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">show_dfa</span><span class="p">:</span>
+        <span class="n">dfa</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;This is the CLI tool for the &#39;</span>
+                                                 <span class="s1">&#39;grammatical inference library &#39;</span>
+                                                 <span class="s1">&#39;inferrer. The library tries to&#39;</span>
+                                                 <span class="s1">&#39; learn regular languages using &#39;</span>
+                                                 <span class="s1">&#39;positive and negative example &#39;</span>
+                                                 <span class="s1">&#39;strings from the target language.&#39;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;alphabet&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Alphabet of the target regular language we are going to &#39;</span>
+                             <span class="s1">&#39;attempt to learn.&#39;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;positive_examples&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;positive-examples&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Path to the file containing positive example strings, &#39;</span>
+                             <span class="s1">&#39;i.e. strings that belong in the target language separated &#39;</span>
+                             <span class="s1">&#39;by newlines.&#39;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;negative_examples&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;negative-examples&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Path to the file containing negative example strings, &#39;</span>
+                             <span class="s1">&#39;i.e. strings that do not belong in the target language&#39;</span>
+                             <span class="s1">&#39; separated by newlines.&#39;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;algorithm&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                        <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;gold&#39;</span><span class="p">,</span> <span class="s1">&#39;rpni&#39;</span><span class="p">,</span> <span class="s1">&#39;lstar&#39;</span><span class="p">,</span> <span class="s1">&#39;nlstar&#39;</span><span class="p">],</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The algorithm that should be used to learn the grammar.&#39;</span>
+                             <span class="s1">&#39; The options are: gold, rpni, lstar, and nlstar&#39;</span><span class="p">)</span>
+
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--show-dfa&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;If this argument is given, the DFA learned by the &#39;</span>
+                             <span class="s1">&#39;specified algorithm will be shown.&#39;</span><span class="p">)</span>
+
+    <span class="n">options</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">main</span><span class="p">(</span><span class="n">options</span><span class="p">))</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">inferrer</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../inferrer.html">inferrer package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Steyn van Litsenborgh.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.0+/8c3ef45</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

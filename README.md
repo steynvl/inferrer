@@ -1,13 +1,14 @@
 # inferrer: A grammatical inference library
 
 ## About inferrer
-Inferrer is a grammatical inference library written in python. The library can be
-used to learn the grammar of a regular language from a given set of example strings. The
+Inferrer is an automata learning library written in Python. The library can be
+used to learn the grammar of a regular language from a given set of example strings
+or by systematically observing the behaviour of a target automaton and matching its behaviour. The
 library implements 
 
 * E. Mark GOLD's algorithm,
-* The Regular Positive and Negative Inference (RPNI) algorithm, and
-* Dana Angluin's L* algorithm.
+* The Regular Positive and Negative Inference (RPNI) algorithm,
+* Dana Angluin's L* algorithm, and
 * The NL* algorithm.
 
 ## Setup
@@ -33,7 +34,7 @@ $ pipenv run python -m unittest discover
 Since inferrer is a library, you can import and use it in your own code, but the library
 is also exposed via a CLI:
 ```bash
-$ pipenv run python inferrer_cli.py --help
+$ pipenv run python cli.py --help
 ```
 
 Documentation for the library is located in docs/public/index.html.
@@ -48,7 +49,7 @@ strings and a file negative_01.txt, which contains negative example strings.
 
 We are going to try to learn this regular language using the RPNI algorithm:
 ```bash
-pipenv run python inferrer_cli.py 01 resources/positive_01.txt resources/negative_01.txt rpni --show-dfa
+pipenv run python cli.py resources/positive_01.txt resources/negative_01.txt rpni --show-dfa
 ```
 RPNI then builds the following DFA
 
@@ -65,7 +66,7 @@ We want to try and learn the language L, where L is a language over the alphabet
 
 We are going to try to learn this regular language using the RPNI algorithm:
 ```bash
-pipenv run python inferrer_cli.py ab resources/positive_02.txt resources/negative_02.txt rpni --show-dfa
+pipenv run python cli.py resources/positive_02.txt resources/negative_02.txt rpni --show-dfa
 ```
 RPNI then builds the following DFA
 

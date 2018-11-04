@@ -13,10 +13,11 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="inferrer.tools package" href="inferrer.tools.html" />
-    <link rel="prev" title="inferrer.algorithms.rpni package" href="inferrer.algorithms.rpni.html" />
+    <link rel="next" title="inferrer.logger package" href="inferrer.logger.html" />
+    <link rel="prev" title="inferrer.algorithms.passive.rpni package" href="inferrer.algorithms.passive.rpni.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -29,6 +30,8 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <div class="section" id="inferrer-automaton-package">
@@ -36,16 +39,16 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-inferrer.automaton.automaton">
-<span id="inferrer-automaton-automaton-module"></span><h2>inferrer.automaton.automaton module<a class="headerlink" href="#module-inferrer.automaton.automaton" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-inferrer.automaton.dfa">
+<span id="inferrer-automaton-dfa-module"></span><h2>inferrer.automaton.dfa module<a class="headerlink" href="#module-inferrer.automaton.dfa" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="inferrer.automaton.automaton.Automaton">
-<em class="property">class </em><code class="descclassname">inferrer.automaton.automaton.</code><code class="descname">Automaton</code><span class="sig-paren">(</span><em>alphabet: Set[str], start_state: inferrer.automaton.state.State = &lt;inferrer.automaton.state.State object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/automaton/automaton.html#Automaton"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.automaton.Automaton" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dt id="inferrer.automaton.dfa.DFA">
+<em class="property">class </em><code class="descclassname">inferrer.automaton.dfa.</code><code class="descname">DFA</code><span class="sig-paren">(</span><em>alphabet: Set[str], start_state: inferrer.automaton.state.State = &lt;inferrer.automaton.state.State object&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/automaton/dfa.html#DFA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.dfa.DFA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferrer.automaton.fsa.FSA" title="inferrer.automaton.fsa.FSA"><code class="xref py py-class docutils literal notranslate"><span class="pre">inferrer.automaton.fsa.FSA</span></code></a></p>
 <p>Implements a deterministic finite automaton.</p>
 <dl class="method">
-<dt id="inferrer.automaton.automaton.Automaton.add_transition">
-<code class="descname">add_transition</code><span class="sig-paren">(</span><em>q1: inferrer.automaton.state.State</em>, <em>q2: inferrer.automaton.state.State</em>, <em>a: str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/automaton/automaton.html#Automaton.add_transition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.automaton.Automaton.add_transition" title="Permalink to this definition">¶</a></dt>
+<dt id="inferrer.automaton.dfa.DFA.add_transition">
+<code class="descname">add_transition</code><span class="sig-paren">(</span><em>q1: inferrer.automaton.state.State</em>, <em>q2: inferrer.automaton.state.State</em>, <em>a: str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/automaton/dfa.html#DFA.add_transition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.dfa.DFA.add_transition" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds the transition, delta(q1, a) = q2 to the
 transition table.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -64,31 +67,31 @@ transition table.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="inferrer.automaton.automaton.Automaton.copy">
-<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/automaton/automaton.html#Automaton.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.automaton.Automaton.copy" title="Permalink to this definition">¶</a></dt>
+<dt id="inferrer.automaton.dfa.DFA.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/automaton/dfa.html#DFA.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.dfa.DFA.copy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs a deep copy of this instance.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A copied automaton</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A copied dfa</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#inferrer.automaton.automaton.Automaton" title="inferrer.automaton.automaton.Automaton">Automaton</a></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#inferrer.automaton.dfa.DFA" title="inferrer.automaton.dfa.DFA">DFA</a></td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
 <dl class="method">
-<dt id="inferrer.automaton.automaton.Automaton.create_graphviz_object">
-<code class="descname">create_graphviz_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; graphviz.dot.Digraph<a class="reference internal" href="_modules/inferrer/automaton/automaton.html#Automaton.create_graphviz_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.automaton.Automaton.create_graphviz_object" title="Permalink to this definition">¶</a></dt>
+<dt id="inferrer.automaton.dfa.DFA.create_graphviz_object">
+<code class="descname">create_graphviz_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; graphviz.dot.Digraph<a class="reference internal" href="_modules/inferrer/automaton/dfa.html#DFA.create_graphviz_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.dfa.DFA.create_graphviz_object" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a Graphviz object representing the
 DFA of the current instance.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="inferrer.automaton.automaton.Automaton.find_transition_to_q">
-<code class="descname">find_transition_to_q</code><span class="sig-paren">(</span><em>q: inferrer.automaton.state.State</em><span class="sig-paren">)</span> &#x2192; Tuple<a class="reference internal" href="_modules/inferrer/automaton/automaton.html#Automaton.find_transition_to_q"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.automaton.Automaton.find_transition_to_q" title="Permalink to this definition">¶</a></dt>
+<dt id="inferrer.automaton.dfa.DFA.find_transition_to_q">
+<code class="descname">find_transition_to_q</code><span class="sig-paren">(</span><em>q: inferrer.automaton.state.State</em><span class="sig-paren">)</span> &#x2192; Tuple<a class="reference internal" href="_modules/inferrer/automaton/dfa.html#DFA.find_transition_to_q"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.dfa.DFA.find_transition_to_q" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds the State r that satisfies
 delta(q, a) = r where a is a string in the
 alphabet</p>
@@ -107,9 +110,74 @@ alphabet</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="inferrer.automaton.automaton.Automaton.minimize">
-<code class="descname">minimize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/automaton/automaton.html#Automaton.minimize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.automaton.Automaton.minimize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Minimizes the automaton by removing all
+<dt id="inferrer.automaton.dfa.DFA.find_transitions_to_q_with_letter">
+<code class="descname">find_transitions_to_q_with_letter</code><span class="sig-paren">(</span><em>q: inferrer.automaton.state.State</em>, <em>a: str</em><span class="sig-paren">)</span> &#x2192; Set[inferrer.automaton.state.State]<a class="reference internal" href="_modules/inferrer/automaton/dfa.html#DFA.find_transitions_to_q_with_letter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.dfa.DFA.find_transitions_to_q_with_letter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the State(s) r that satisfies
+delta(r, a) = a, where a is a symbol
+in the alphabet.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>q</strong> (<em>automaton.State</em>) – Target state</li>
+<li><strong>a</strong> (<em>str</em>) – Symbol</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The set of states</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">Set[<a class="reference internal" href="#inferrer.automaton.state.State" title="inferrer.automaton.state.State">State</a>]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferrer.automaton.dfa.DFA.minimize">
+<code class="descname">minimize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/automaton/dfa.html#DFA.minimize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.dfa.DFA.minimize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Minimizes the dfa using Hopcroft’s algorithm.
+Please consult the following paper
+<a class="reference external" href="https://pdfs.semanticscholar.org/e622/10eea9d53bc36af50675017a830c967fea3f.pdf">https://pdfs.semanticscholar.org/e622/10eea9d53bc36af50675017a830c967fea3f.pdf</a>
+for an explanation of this algorithm.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Minimized dfa</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#inferrer.automaton.dfa.DFA" title="inferrer.automaton.dfa.DFA">DFA</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferrer.automaton.dfa.DFA.parse_string">
+<code class="descname">parse_string</code><span class="sig-paren">(</span><em>s: str</em><span class="sig-paren">)</span> &#x2192; Tuple[inferrer.automaton.state.State, bool]<a class="reference internal" href="_modules/inferrer/automaton/dfa.html#DFA.parse_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.dfa.DFA.parse_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses each character of the input string through
+the dfa.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>s</strong> (<em>str</em>) – The string to parse (s element of alphabet*)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The state after reading the string s and whether
+the dfa accepted the input string.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple(<a class="reference internal" href="#inferrer.automaton.state.State" title="inferrer.automaton.state.State">State</a>, bool)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferrer.automaton.dfa.DFA.remove_dead_states">
+<code class="descname">remove_dead_states</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/automaton/dfa.html#DFA.remove_dead_states"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.dfa.DFA.remove_dead_states" title="Permalink to this definition">¶</a></dt>
+<dd><p>Minimizes the dfa by removing all
 states (and transitions) that cannot be
 reached from the initial state. This is
 done by performing an iterative dept-first
@@ -121,43 +189,39 @@ initial state and alphabet.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">minimized dfa</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#inferrer.automaton.automaton.Automaton" title="inferrer.automaton.automaton.Automaton">Automaton</a></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#inferrer.automaton.dfa.DFA" title="inferrer.automaton.dfa.DFA">DFA</a></td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
 <dl class="method">
-<dt id="inferrer.automaton.automaton.Automaton.parse_string">
-<code class="descname">parse_string</code><span class="sig-paren">(</span><em>s: str</em><span class="sig-paren">)</span> &#x2192; Tuple[inferrer.automaton.state.State, bool]<a class="reference internal" href="_modules/inferrer/automaton/automaton.html#Automaton.parse_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.automaton.Automaton.parse_string" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parses each character of the input string through
-the automaton.</p>
+<dt id="inferrer.automaton.dfa.DFA.rename_states">
+<code class="descname">rename_states</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/automaton/dfa.html#DFA.rename_states"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.dfa.DFA.rename_states" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renames all the states in the dfa.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>s</strong> (<em>str</em>) – The string to parse (s element of alphabet*)</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Original DFA with states renamed.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The state after reading the string s and whether
-the automaton accepted the input string.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple(<a class="reference internal" href="#inferrer.automaton.state.State" title="inferrer.automaton.state.State">State</a>, bool)</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#inferrer.automaton.dfa.DFA" title="inferrer.automaton.dfa.DFA">DFA</a></td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
 <dl class="method">
-<dt id="inferrer.automaton.automaton.Automaton.show">
-<code class="descname">show</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/automaton/automaton.html#Automaton.show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.automaton.Automaton.show" title="Permalink to this definition">¶</a></dt>
+<dt id="inferrer.automaton.dfa.DFA.show">
+<code class="descname">show</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/automaton/dfa.html#DFA.show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.dfa.DFA.show" title="Permalink to this definition">¶</a></dt>
 <dd><p>Graphs the DFA using graphviz, the DFA will
 immediately be shown in a PDF file when this
 method is called.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="inferrer.automaton.automaton.Automaton.to_regex">
-<code class="descname">to_regex</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/inferrer/automaton/automaton.html#Automaton.to_regex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.automaton.Automaton.to_regex" title="Permalink to this definition">¶</a></dt>
+<dt id="inferrer.automaton.dfa.DFA.to_regex">
+<code class="descname">to_regex</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/inferrer/automaton/dfa.html#DFA.to_regex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.dfa.DFA.to_regex" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts a DFA to an equivalent regular expression.
 Please consult Sipser for an explanation of this algorithm:
 <a class="reference external" href="https://www.amazon.com/Introduction-Theory-Computation-Michael-Sipser/dp/113318779X">https://www.amazon.com/Introduction-Theory-Computation-Michael-Sipser/dp/113318779X</a></p>
@@ -174,8 +238,8 @@ Please consult Sipser for an explanation of this algorithm:
 </dd></dl>
 
 <dl class="method">
-<dt id="inferrer.automaton.automaton.Automaton.transition">
-<code class="descname">transition</code><span class="sig-paren">(</span><em>q1: inferrer.automaton.state.State</em>, <em>a: str</em><span class="sig-paren">)</span> &#x2192; inferrer.automaton.state.State<a class="reference internal" href="_modules/inferrer/automaton/automaton.html#Automaton.transition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.automaton.Automaton.transition" title="Permalink to this definition">¶</a></dt>
+<dt id="inferrer.automaton.dfa.DFA.transition">
+<code class="descname">transition</code><span class="sig-paren">(</span><em>q1: inferrer.automaton.state.State</em>, <em>a: str</em><span class="sig-paren">)</span> &#x2192; inferrer.automaton.state.State<a class="reference internal" href="_modules/inferrer/automaton/dfa.html#DFA.transition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.dfa.DFA.transition" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs the transition delta(q1, a) and
 then return the state reached after the
 transition.</p>
@@ -200,8 +264,8 @@ transition.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="inferrer.automaton.automaton.Automaton.transition_exists">
-<code class="descname">transition_exists</code><span class="sig-paren">(</span><em>q1: inferrer.automaton.state.State</em>, <em>a: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/inferrer/automaton/automaton.html#Automaton.transition_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.automaton.Automaton.transition_exists" title="Permalink to this definition">¶</a></dt>
+<dt id="inferrer.automaton.dfa.DFA.transition_exists">
+<code class="descname">transition_exists</code><span class="sig-paren">(</span><em>q1: inferrer.automaton.state.State</em>, <em>a: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/inferrer/automaton/dfa.html#DFA.transition_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.dfa.DFA.transition_exists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks whether the transition
 delta(q1, a) is defined.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -225,18 +289,18 @@ delta(q1, a) is defined.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="inferrer.automaton.automaton.Automaton.walk_path">
-<code class="descname">walk_path</code><span class="sig-paren">(</span><em>q: inferrer.automaton.state.State</em>, <em>a: str</em><span class="sig-paren">)</span> &#x2192; Generator<a class="reference internal" href="_modules/inferrer/automaton/automaton.html#Automaton.walk_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.automaton.Automaton.walk_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>Traverses the string a through the automaton
+<dt id="inferrer.automaton.dfa.DFA.walk_path">
+<code class="descname">walk_path</code><span class="sig-paren">(</span><em>q: inferrer.automaton.state.State</em>, <em>a: str</em><span class="sig-paren">)</span> &#x2192; Generator[T_co, T_contra, V_co]<a class="reference internal" href="_modules/inferrer/automaton/dfa.html#DFA.walk_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.dfa.DFA.walk_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Traverses the string a through the dfa
 starting at state q. This method returns
 a generator of the states visited while walking
-through the automaton.</p>
+through the dfa.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>q</strong> (<a class="reference internal" href="#inferrer.automaton.state.State" title="inferrer.automaton.state.State"><em>State</em></a>) – State the automaton should starts
+<li><strong>q</strong> (<a class="reference internal" href="#inferrer.automaton.state.State" title="inferrer.automaton.state.State"><em>State</em></a>) – State the dfa should starts
 in when traversing a.</li>
 <li><strong>a</strong> (<em>str</em>) – String with symbols from the alphabet.</li>
 </ul>
@@ -255,8 +319,8 @@ in when traversing a.</li>
 </dd></dl>
 
 <dl class="function">
-<dt id="inferrer.automaton.automaton.build_pta">
-<code class="descclassname">inferrer.automaton.automaton.</code><code class="descname">build_pta</code><span class="sig-paren">(</span><em>s_plus: Set[str], s_minus: Set[str] = set()</em><span class="sig-paren">)</span> &#x2192; inferrer.automaton.automaton.Automaton<a class="reference internal" href="_modules/inferrer/automaton/automaton.html#build_pta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.automaton.build_pta" title="Permalink to this definition">¶</a></dt>
+<dt id="inferrer.automaton.dfa.build_pta">
+<code class="descclassname">inferrer.automaton.dfa.</code><code class="descname">build_pta</code><span class="sig-paren">(</span><em>s_plus: Set[str], s_minus: Set[str] = {}</em><span class="sig-paren">)</span> &#x2192; inferrer.automaton.dfa.DFA<a class="reference internal" href="_modules/inferrer/automaton/dfa.html#build_pta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.dfa.build_pta" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function that builds a prefix tree acceptor from the example strings
 S = S+ union S-</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -269,14 +333,254 @@ S = S+ union S-</p>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">An automaton representing a prefix tree acceptor</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">An dfa representing a prefix tree acceptor</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#inferrer.automaton.automaton.Automaton" title="inferrer.automaton.automaton.Automaton">Automaton</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#inferrer.automaton.dfa.DFA" title="inferrer.automaton.dfa.DFA">DFA</a></p>
 </td>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferrer.automaton.fsa">
+<span id="inferrer-automaton-fsa-module"></span><h2>inferrer.automaton.fsa module<a class="headerlink" href="#module-inferrer.automaton.fsa" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferrer.automaton.fsa.FSA">
+<em class="property">class </em><code class="descclassname">inferrer.automaton.fsa.</code><code class="descname">FSA</code><span class="sig-paren">(</span><em>alphabet: Set[str]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/automaton/fsa.html#FSA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.fsa.FSA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Represents a finite state acceptor that
+accepts or rejects strings of the given
+alphabet.</p>
+<p>The two known implementations of this
+abstract class is dfa.py and nfa.py.</p>
+<dl class="attribute">
+<dt id="inferrer.automaton.fsa.FSA.alphabet">
+<code class="descname">alphabet</code><a class="headerlink" href="#inferrer.automaton.fsa.FSA.alphabet" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="inferrer.automaton.fsa.FSA.parse_string">
+<code class="descname">parse_string</code><span class="sig-paren">(</span><em>s: str</em><span class="sig-paren">)</span> &#x2192; Tuple[inferrer.automaton.state.State, bool]<a class="reference internal" href="_modules/inferrer/automaton/fsa.html#FSA.parse_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.fsa.FSA.parse_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses each character of the input string through
+the finite state acceptor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>s</strong> (<em>str</em>) – The string to parse (s element of alphabet*)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The state after reading the string s and whether
+the fsa accepted the input string.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple(<a class="reference internal" href="#inferrer.automaton.state.State" title="inferrer.automaton.state.State">State</a>, bool)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-inferrer.automaton.nfa">
+<span id="inferrer-automaton-nfa-module"></span><h2>inferrer.automaton.nfa module<a class="headerlink" href="#module-inferrer.automaton.nfa" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="inferrer.automaton.nfa.NFA">
+<em class="property">class </em><code class="descclassname">inferrer.automaton.nfa.</code><code class="descname">NFA</code><span class="sig-paren">(</span><em>alphabet: Set[str]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/automaton/nfa.html#NFA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.nfa.NFA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#inferrer.automaton.fsa.FSA" title="inferrer.automaton.fsa.FSA"><code class="xref py py-class docutils literal notranslate"><span class="pre">inferrer.automaton.fsa.FSA</span></code></a></p>
+<p>Implements a non-deterministic finite automaton.</p>
+<dl class="method">
+<dt id="inferrer.automaton.nfa.NFA.add_accepting_state">
+<code class="descname">add_accepting_state</code><span class="sig-paren">(</span><em>state: inferrer.automaton.state.State</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/automaton/nfa.html#NFA.add_accepting_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.nfa.NFA.add_accepting_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes the state an accepting state in
+the NFA.
+:param state: state to make accepting state.
+:type state: State</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferrer.automaton.nfa.NFA.add_start_state">
+<code class="descname">add_start_state</code><span class="sig-paren">(</span><em>state: inferrer.automaton.state.State</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/automaton/nfa.html#NFA.add_start_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.nfa.NFA.add_start_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a start state to the NFA.
+:param state: start state to add.
+:type state: State</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferrer.automaton.nfa.NFA.add_state">
+<code class="descname">add_state</code><span class="sig-paren">(</span><em>state: inferrer.automaton.state.State</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/automaton/nfa.html#NFA.add_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.nfa.NFA.add_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a state to the NFA.
+:param state: state to add to NFA.
+:type state: State</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferrer.automaton.nfa.NFA.add_transition">
+<code class="descname">add_transition</code><span class="sig-paren">(</span><em>q1: inferrer.automaton.state.State</em>, <em>q2: inferrer.automaton.state.State</em>, <em>a: str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/automaton/nfa.html#NFA.add_transition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.nfa.NFA.add_transition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds the transition, delta(q1, a) = q2 to the
+transition table.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>q1</strong> (<em>automaton.State</em>) – from state</li>
+<li><strong>q2</strong> (<em>automaton.State</em>) – to state</li>
+<li><strong>a</strong> (<em>str</em>) – letter in alphabet</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferrer.automaton.nfa.NFA.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/automaton/nfa.html#NFA.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.nfa.NFA.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs a deep copy of the instance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A deep copy of the nfa.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#inferrer.automaton.nfa.NFA" title="inferrer.automaton.nfa.NFA">NFA</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferrer.automaton.nfa.NFA.create_graphviz_object">
+<code class="descname">create_graphviz_object</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; graphviz.dot.Digraph<a class="reference internal" href="_modules/inferrer/automaton/nfa.html#NFA.create_graphviz_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.nfa.NFA.create_graphviz_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a Graphviz object representing the
+NFA of the current instance.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferrer.automaton.nfa.NFA.get_states">
+<code class="descname">get_states</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Set[inferrer.automaton.state.State]<a class="reference internal" href="_modules/inferrer/automaton/nfa.html#NFA.get_states"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.nfa.NFA.get_states" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the states in the NFA.
+:return: Set of states
+:rtype: Set[State]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferrer.automaton.nfa.NFA.parse_string">
+<code class="descname">parse_string</code><span class="sig-paren">(</span><em>s: str</em><span class="sig-paren">)</span> &#x2192; Tuple[inferrer.automaton.state.State, bool]<a class="reference internal" href="_modules/inferrer/automaton/nfa.html#NFA.parse_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.nfa.NFA.parse_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses each character of the input string through
+the nfa.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>s</strong> (<em>str</em>) – The string to parse (s element of alphabet*)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The state after reading the string s and whether
+the nfa accepted the input string.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple(<a class="reference internal" href="#inferrer.automaton.state.State" title="inferrer.automaton.state.State">State</a>, bool)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferrer.automaton.nfa.NFA.rename_states">
+<code class="descname">rename_states</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/automaton/nfa.html#NFA.rename_states"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.nfa.NFA.rename_states" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renames all the states in the nfa</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Original NFA with states renamed.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#inferrer.automaton.nfa.NFA" title="inferrer.automaton.nfa.NFA">NFA</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferrer.automaton.nfa.NFA.show">
+<code class="descname">show</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/inferrer/automaton/nfa.html#NFA.show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.nfa.NFA.show" title="Permalink to this definition">¶</a></dt>
+<dd><p>Graphs the NFA using graphviz, the NFA will
+immediately be shown in a PDF file when this
+method is called.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferrer.automaton.nfa.NFA.to_dfa">
+<code class="descname">to_dfa</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; inferrer.automaton.dfa.DFA<a class="reference internal" href="_modules/inferrer/automaton/nfa.html#NFA.to_dfa"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.nfa.NFA.to_dfa" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts the nfa instance to its
+equivalent deterministic finite
+state machine.
+Please consult Sipser for an explanation of this algorithm:
+<a class="reference external" href="https://www.amazon.com/Introduction-Theory-Computation-Michael-Sipser/dp/113318779X">https://www.amazon.com/Introduction-Theory-Computation-Michael-Sipser/dp/113318779X</a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the equivalent dfa</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#inferrer.automaton.dfa.DFA" title="inferrer.automaton.dfa.DFA">DFA</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferrer.automaton.nfa.NFA.transition">
+<code class="descname">transition</code><span class="sig-paren">(</span><em>q1: inferrer.automaton.state.State</em>, <em>a: str</em><span class="sig-paren">)</span> &#x2192; List[inferrer.automaton.state.State]<a class="reference internal" href="_modules/inferrer/automaton/nfa.html#NFA.transition"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.nfa.NFA.transition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs the transition delta(q1, a) and
+then return the list of states that can be
+reached with this transition.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>q1</strong> (<em>automaton.State</em>) – from state</li>
+<li><strong>a</strong> (<em>str</em>) – letter in alphabet</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">List of reachable states</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">List[<a class="reference internal" href="#inferrer.automaton.state.State" title="inferrer.automaton.state.State">State</a>]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="inferrer.automaton.nfa.NFA.transition_exists">
+<code class="descname">transition_exists</code><span class="sig-paren">(</span><em>q1: inferrer.automaton.state.State</em>, <em>a: str</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/inferrer/automaton/nfa.html#NFA.transition_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#inferrer.automaton.nfa.NFA.transition_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks whether the transition
+delta(q1, a) is defined.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>q1</strong> (<em>automaton.State</em>) – from state</li>
+<li><strong>a</strong> (<em>str</em>) – letter in alphabet</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">True if it exists</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -301,50 +605,76 @@ S = S+ union S-</p>
 
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">inferrer.automaton package</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-inferrer.automaton.automaton">inferrer.automaton.automaton module</a></li>
-<li><a class="reference internal" href="#module-inferrer.automaton.state">inferrer.automaton.state module</a></li>
-<li><a class="reference internal" href="#module-inferrer.automaton">Module contents</a></li>
+<h1 class="logo"><a href="index.html">inferrer</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="inferrer.html">inferrer package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="inferrer.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="inferrer.algorithms.html">inferrer.algorithms package</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">inferrer.automaton package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-inferrer.automaton.dfa">inferrer.automaton.dfa module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-inferrer.automaton.fsa">inferrer.automaton.fsa module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-inferrer.automaton.nfa">inferrer.automaton.nfa module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-inferrer.automaton.state">inferrer.automaton.state module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-inferrer.automaton">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="inferrer.logger.html">inferrer.logger package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inferrer.oracle.html">inferrer.oracle package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="inferrer.utils.html">inferrer.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="inferrer.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inferrer.html#module-inferrer.inferrer">inferrer.inferrer module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inferrer.html#module-inferrer">Module contents</a></li>
 </ul>
 </li>
 </ul>
+
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
   <li><a href="inferrer.html">inferrer package</a><ul>
-      <li>Previous: <a href="inferrer.algorithms.rpni.html" title="previous chapter">inferrer.algorithms.rpni package</a></li>
-      <li>Next: <a href="inferrer.tools.html" title="next chapter">inferrer.tools package</a></li>
+      <li>Previous: <a href="inferrer.algorithms.passive.rpni.html" title="previous chapter">inferrer.algorithms.passive.rpni package</a></li>
+      <li>Next: <a href="inferrer.logger.html" title="next chapter">inferrer.logger package</a></li>
   </ul></li>
   </ul></li>
 </ul>
 </div>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/inferrer.automaton.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -353,8 +683,8 @@ S = S+ union S-</p>
       &copy;2018, Steyn van Litsenborgh.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.0+/8c3ef45</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
       <a href="_sources/inferrer.automaton.rst.txt"

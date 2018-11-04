@@ -1,0 +1,216 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>inferrer.inferrer &#8212; inferrer 0.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for inferrer.inferrer</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">inferrer</span> <span class="k">import</span> <span class="n">utils</span><span class="p">,</span> <span class="n">automaton</span><span class="p">,</span> <span class="n">algorithms</span>
+<span class="kn">from</span> <span class="nn">inferrer.oracle.oracle</span> <span class="k">import</span> <span class="n">Oracle</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Set</span>
+
+
+<div class="viewcode-block" id="Learner"><a class="viewcode-back" href="../../inferrer.html#inferrer.inferrer.Learner">[docs]</a><span class="k">class</span> <span class="nc">Learner</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Attempts to learn a target regular language provided</span>
+<span class="sd">    a set of positive example strings, i.e. strings that</span>
+<span class="sd">    are in the target language and a set of negative</span>
+<span class="sd">    example strings, i.e. strings that do not belong in</span>
+<span class="sd">    the target language, or an Oracle that can answer</span>
+<span class="sd">    membership queries and equivalence queries.</span>
+
+<span class="sd">    One of the following algorithms can be used when attempting</span>
+<span class="sd">    to learn the target language:</span>
+
+<span class="sd">    GOLD: An implementation of E. Mark GOLD&#39;s algorithm, which</span>
+<span class="sd">          tries to find the minimum DFA consistent with the sample.</span>
+
+<span class="sd">    RPNI: The Regular Positive and Negative Inference (RPNI) algorithm</span>
+<span class="sd">          tries to make sure that some generalisation takes place and,</span>
+<span class="sd">          in the best case, returns the correct target automaton.</span>
+
+<span class="sd">    L*  : An implementation of Dana Angluin&#39;s L* algorithm, which</span>
+<span class="sd">          learns regular languages from queries and counterexamples.</span>
+
+<span class="sd">    NL* : An implementation of the NL* algorithm, which extends</span>
+<span class="sd">          Angluin-Style learning to the learning of an NFA.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alphabet</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+                 <span class="n">pos_examples</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">neg_examples</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">oracle</span><span class="p">:</span> <span class="n">Oracle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">algorithm</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;rpni&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param alphabet: Alphabet of the target language we are</span>
+<span class="sd">                         trying to learn.</span>
+<span class="sd">        :type alphabet: Set[str]</span>
+<span class="sd">        :param pos_examples: Set of positive example strings</span>
+<span class="sd">                             from the target language.</span>
+<span class="sd">        :type pos_examples: Set[str]</span>
+<span class="sd">        :param neg_examples: Set of negative example strings,</span>
+<span class="sd">                             i.e. strings that do not belong in</span>
+<span class="sd">                             the target language.</span>
+<span class="sd">        :type neg_examples: Set[str]</span>
+<span class="sd">        :param oracle: Minimally adequate teacher (MAT)</span>
+<span class="sd">        :type oracle: Oracle</span>
+<span class="sd">        :param algorithm: The algorithm to use when attempting to</span>
+<span class="sd">                          learn the grammar from the example strings.</span>
+<span class="sd">                          The options are:</span>
+<span class="sd">                          gold</span>
+<span class="sd">                          rpni</span>
+<span class="sd">                          lstar</span>
+<span class="sd">                          nlstar</span>
+<span class="sd">        :type algorithm: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">alphabet</span><span class="p">,</span> <span class="nb">set</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">alphabet</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The alphabet has to be a set with at least one element&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_alphabet</span> <span class="o">=</span> <span class="n">alphabet</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_learners</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;gold&#39;</span>  <span class="p">:</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">algorithms</span><span class="o">.</span><span class="n">Gold</span><span class="p">(</span><span class="n">pos_examples</span><span class="p">,</span> <span class="n">neg_examples</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alphabet</span><span class="p">)</span><span class="o">.</span><span class="n">learn</span><span class="p">(),</span>
+            <span class="s1">&#39;rpni&#39;</span>  <span class="p">:</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">algorithms</span><span class="o">.</span><span class="n">RPNI</span><span class="p">(</span><span class="n">pos_examples</span><span class="p">,</span> <span class="n">neg_examples</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_alphabet</span><span class="p">)</span><span class="o">.</span><span class="n">learn</span><span class="p">(),</span>
+            <span class="s1">&#39;lstar&#39;</span> <span class="p">:</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">algorithms</span><span class="o">.</span><span class="n">LSTAR</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphabet</span><span class="p">,</span> <span class="n">oracle</span><span class="p">)</span><span class="o">.</span><span class="n">learn</span><span class="p">(),</span>
+            <span class="s1">&#39;nlstar&#39;</span><span class="p">:</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">algorithms</span><span class="o">.</span><span class="n">NLSTAR</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_alphabet</span><span class="p">,</span> <span class="n">oracle</span><span class="p">)</span><span class="o">.</span><span class="n">learn</span><span class="p">()</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">algorithm</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_learners</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Algorithm </span><span class="se">\&#39;</span><span class="si">{}</span><span class="se">\&#39;</span><span class="s1"> unknown, the following &#39;</span>
+                             <span class="s1">&#39;algorithms are available:</span><span class="se">\n</span><span class="si">{}</span><span class="s1">&#39;</span>
+                             <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">algorithms</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_learners</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
+
+        <span class="k">if</span> <span class="n">algorithm</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;rpni&#39;</span><span class="p">,</span> <span class="s1">&#39;gold&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pos_examples</span><span class="p">,</span> <span class="nb">set</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;pos_examples should be a set&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">neg_examples</span><span class="p">,</span> <span class="nb">set</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;neg_examples should be a set&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pos_examples</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">neg_examples</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The sets of positive and negative example &#39;</span>
+                                 <span class="s1">&#39;strings should not contain the same string(s)&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">pos_examples</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">neg_examples</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;pos_examples and neg_examples can not be None &#39;</span>
+                                 <span class="s1">&#39;for algorithm </span><span class="se">\&#39;</span><span class="si">{}</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">algorithm</span><span class="p">))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_alphabet</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">determine_alphabet</span><span class="p">(</span><span class="n">pos_examples</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">neg_examples</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="n">algorithm</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;lstar&#39;</span><span class="p">,</span> <span class="s1">&#39;nlstar&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">oracle</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;oracle can not be None for algorithm </span><span class="se">\&#39;</span><span class="si">{}</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">algorithm</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_algorithm</span> <span class="o">=</span> <span class="n">algorithm</span>
+
+<div class="viewcode-block" id="Learner.learn_grammar"><a class="viewcode-back" href="../../inferrer.html#inferrer.inferrer.Learner.learn_grammar">[docs]</a>    <span class="k">def</span> <span class="nf">learn_grammar</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">automaton</span><span class="o">.</span><span class="n">DFA</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Learns the regular language using the positive and negative</span>
+<span class="sd">        example strings. The algorithm specified when instantiating</span>
+<span class="sd">        this instance will be used to attempt to learn the grammar.</span>
+
+<span class="sd">        :return: DFA consistent with the positive and negative</span>
+<span class="sd">        example strings.</span>
+<span class="sd">        :rtype: Automaton</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fsa</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_learners</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_algorithm</span><span class="p">]()</span>
+
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">fsa</span><span class="p">)</span> <span class="ow">is</span> <span class="n">automaton</span><span class="o">.</span><span class="n">NFA</span><span class="p">:</span>
+            <span class="n">fsa</span> <span class="o">=</span> <span class="n">fsa</span><span class="o">.</span><span class="n">to_dfa</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">fsa</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">inferrer</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../inferrer.html">inferrer package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Steyn van Litsenborgh.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.0+/8c3ef45</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

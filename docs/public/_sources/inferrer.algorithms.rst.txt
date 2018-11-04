@@ -6,9 +6,20 @@ Subpackages
 
 .. toctree::
 
-    inferrer.algorithms.gold
-    inferrer.algorithms.lstar
-    inferrer.algorithms.rpni
+    inferrer.algorithms.active
+    inferrer.algorithms.passive
+
+Submodules
+----------
+
+inferrer.algorithms.algorithm module
+------------------------------------
+
+.. automodule:: inferrer.algorithms.algorithm
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 Module contents
 ---------------

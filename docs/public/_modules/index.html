@@ -13,6 +13,7 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
    
@@ -27,25 +28,71 @@
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <h1>All modules for which code is available</h1>
-<ul><li><a href="inferrer/algorithms/gold/gold.html">inferrer.algorithms.gold.gold</a></li>
-<li><a href="inferrer/algorithms/lstar/lstar.html">inferrer.algorithms.lstar.lstar</a></li>
-<li><a href="inferrer/algorithms/lstar/oracle.html">inferrer.algorithms.lstar.oracle</a></li>
-<li><a href="inferrer/algorithms/rpni/rpni.html">inferrer.algorithms.rpni.rpni</a></li>
-<li><a href="inferrer/automaton/automaton.html">inferrer.automaton.automaton</a></li>
+<ul><li><a href="inferrer/algorithms/active/active_learner.html">inferrer.algorithms.active.active_learner</a></li>
+<li><a href="inferrer/algorithms/active/lstar/lstar.html">inferrer.algorithms.active.lstar.lstar</a></li>
+<li><a href="inferrer/algorithms/active/nlstar/nlstar.html">inferrer.algorithms.active.nlstar.nlstar</a></li>
+<li><a href="inferrer/algorithms/active/nlstar/observation_table.html">inferrer.algorithms.active.nlstar.observation_table</a></li>
+<li><a href="inferrer/algorithms/active/nlstar/row.html">inferrer.algorithms.active.nlstar.row</a></li>
+<li><a href="inferrer/algorithms/algorithm.html">inferrer.algorithms.algorithm</a></li>
+<li><a href="inferrer/algorithms/passive/gold/gold.html">inferrer.algorithms.passive.gold.gold</a></li>
+<li><a href="inferrer/algorithms/passive/passive_learner.html">inferrer.algorithms.passive.passive_learner</a></li>
+<li><a href="inferrer/algorithms/passive/rpni/rpni.html">inferrer.algorithms.passive.rpni.rpni</a></li>
+<li><a href="inferrer/automaton/dfa.html">inferrer.automaton.dfa</a></li>
+<li><a href="inferrer/automaton/fsa.html">inferrer.automaton.fsa</a></li>
+<li><a href="inferrer/automaton/nfa.html">inferrer.automaton.nfa</a></li>
 <li><a href="inferrer/automaton/state.html">inferrer.automaton.state</a></li>
-<li><a href="inferrer/tools/decorators.html">inferrer.tools.decorators</a></li>
+<li><a href="inferrer/inferrer.html">inferrer.inferrer</a></li>
+<li><a href="inferrer/logger/logger.html">inferrer.logger.logger</a></li>
+<li><a href="inferrer/logger/logger_manager.html">inferrer.logger.logger_manager</a></li>
+<li><a href="inferrer/logger/singleton.html">inferrer.logger.singleton</a></li>
+<li><a href="inferrer/oracle/active_oracle.html">inferrer.oracle.active_oracle</a></li>
+<li><a href="inferrer/oracle/oracle.html">inferrer.oracle.oracle</a></li>
+<li><a href="inferrer/oracle/passive_oracle.html">inferrer.oracle.passive_oracle</a></li>
 <li><a href="inferrer/utils/observation_table.html">inferrer.utils.observation_table</a></li>
 <li><a href="inferrer/utils/utils.html">inferrer.utils.utils</a></li>
+<li><a href="inferrer_cli.html">inferrer_cli</a></li>
+<li><a href="tests/algorithms/gold/test_gold.html">tests.algorithms.gold.test_gold</a></li>
+<li><a href="tests/algorithms/lstar/test_active_lstar.html">tests.algorithms.lstar.test_active_lstar</a></li>
+<li><a href="tests/algorithms/lstar/test_passive_lstar.html">tests.algorithms.lstar.test_passive_lstar</a></li>
+<li><a href="tests/algorithms/nlstar/test_active_nlstar.html">tests.algorithms.nlstar.test_active_nlstar</a></li>
+<li><a href="tests/algorithms/nlstar/test_observation_table.html">tests.algorithms.nlstar.test_observation_table</a></li>
+<li><a href="tests/algorithms/nlstar/test_passive_nlstar.html">tests.algorithms.nlstar.test_passive_nlstar</a></li>
+<li><a href="tests/algorithms/rpni/test_rpni.html">tests.algorithms.rpni.test_rpni</a></li>
+<li><a href="tests/automaton/test_dfa.html">tests.automaton.test_dfa</a></li>
+<li><a href="tests/automaton/test_nfa.html">tests.automaton.test_nfa</a></li>
+<li><a href="tests/automaton/test_state.html">tests.automaton.test_state</a></li>
+<li><a href="tests/utils/test_observation_table.html">tests.utils.test_observation_table</a></li>
+<li><a href="tests/utils/test_utils.html">tests.utils.test_utils</a></li>
+<li><a href="unittest/case.html">unittest.case</a></li>
 </ul>
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper"><div class="relations">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">inferrer</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../inferrer.html">inferrer package</a></li>
+</ul>
+
+<div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
@@ -58,12 +105,18 @@
     <form class="search" action="../search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
         </div>
       </div>
       <div class="clearer"></div>
@@ -72,8 +125,8 @@
       &copy;2018, Steyn van Litsenborgh.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.5</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.0+/8c3ef45</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
 
