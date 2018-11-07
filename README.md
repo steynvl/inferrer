@@ -1,6 +1,6 @@
-# inferrer: A grammatical inference library
+# Inferrer: A library for automata learning
 
-## About inferrer
+## About Inferrer
 Inferrer is an automata learning library written in Python. The library can be
 used to learn the grammar of a regular language from a given set of example strings
 or by systematically observing the behaviour of a target automaton and matching its behaviour. The
@@ -17,21 +17,24 @@ If you do not have pipenv installed on your system, then run the following:
 pip install --user pipenv 
 ```
 
-If you want inferrer to show you the DFA that was inferred by the different algorithms, then
+If you want Inferrer to show you the DFA that was inferred by the different algorithms, then
 you need to install [Graphviz](https://www.graphviz.org/) on your system. The following 
-will work on Ubuntu
-```bash
-sudo apt-get install graphviz
-```
+will work:
+
+* Ubuntu: ```sudo apt-get install graphviz```
+* Arch: ```sudo pacman -Syu graphviz```
+* OSX: ```brew cask install graphviz```
+
+
 
 Clone the repository, install the dependencies and then run the unit tests
 ```bash
-$ git clone https://git.cs.sun.ac.za/18965237/inferrer
+$ git clone https://gitlab.com/steynvl/inferrer
 $ cd inferrer
 $ pipenv install
 $ pipenv run python -m unittest discover
 ```
-Since inferrer is a library, you can import and use it in your own code, but the library
+Since Inferrer is a library, you can import and use it in your own code, but the library
 is also exposed via a CLI:
 ```bash
 $ pipenv run python cli.py --help
@@ -81,4 +84,5 @@ This DFA is then converted to the following regular expression:
 ## Resources
 
 * [Learning Regular Sets from Queries and Counterexamples](https://www.sciencedirect.com/science/article/pii/0890540187900526)
+* [Angluin-Style Learning of NFA](https://www.aaai.org/ocs/index.php/IJCAI/IJCAI-09/paper/viewFile/550/932)
 * [Grammatical Inference: Learning Automata and Grammars](http://www.cambridge.org/gb/academic/subjects/computer-science/pattern-recognition-and-machine-learning/grammatical-inference-learning-automata-and-grammars?format=HB#hUi22RWdy3vfxPdp.97)
