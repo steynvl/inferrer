@@ -1,13 +1,14 @@
-image: python:3.7
+sudo: true
+language: python
 
-stages:
-- test
+python:
+  - "3.6"
 
-test:
-  stage: test
-  script:
-  - apt-get update -qy
-  - apt-get install -y python-dev python-pip
+before_install:
+  - sudo apt-get update -qy
+  - sudo apt-get install -y python-dev python-pip
   - pip install pipenv
   - pipenv install
+
+script:
   - pipenv run python -m unittest discover
