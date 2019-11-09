@@ -7,6 +7,9 @@ on sets.
 import itertools
 from typing import Set, Generator, Tuple, Callable
 
+ALPHANUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+ALPHANUMERIC_SET = set(ALPHANUMERIC)
+
 
 def prefix_set(s: Set[str], alphabet: Set[str]=None) -> Generator:
     """

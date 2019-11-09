@@ -5,8 +5,9 @@ from inferrer import utils
 from inferrer.automaton.state import State
 from inferrer.automaton.fsa import FSA
 from collections import defaultdict, OrderedDict, deque
-from typing import Set, Tuple, List, Generator
+from typing import Set, Tuple, List, Generator, Dict, Optional
 
+from inferrer.utils.utils import ALPHANUMERIC_SET
 
 
 class DFA(FSA):
@@ -535,3 +536,130 @@ def build_pta(s_plus: Set[str], s_minus: Set[str]=set()) -> DFA:
     pta.states = states
 
     return pta
+
+
+class DFAWrapper(DFA):
+    """A wrapper of the DFA able to handle symbols rather than just characters."""
+
+    def __init__(self, dfa: DFA, sym2char: Optional[Dict] = None):
+        """
+        Initialize the wrapper
+        :param dfa: the dfa to wrap.
+        :param sym2char: the mapping from symbols to characters.
+        """
+        super().__init__(dfa.alphabet, start_state=dfa._start_state)
+        self._dfa = dfa
+
+        self.sym2char = sym2char if sym2char is not None else {}
+        self.char2sym = {v: k for k, v in self.sym2char.items()}
+
+    def _map_letter(self, sym: str):
+        return self.sym2char[sym]
+
+    def _map_word(self, word: List[str]):
+        return "".join(map(self._map_letter, word))
+
+    def parse_string(self, word: List[str]):
+        return self._dfa.parse_string(self._map_word(word))
+
+    def add_transition(self, q1: State, q2: State, letter: str):
+        return self._dfa.add_transition(q1, q2, self._map_letter(letter))
+
+    def transition_exists(self, q1: State, letter: str) -> bool:
+        return self._dfa.transition_exists(q1, self._map_letter(letter))
+
+    def transition(self, q1: State, letter: str) -> State:
+        return self._dfa.transition(q1, self._map_letter(letter))
+
+    def walk_path(self, q: State, word: List[str]) -> Generator:
+        yield self._dfa.walk_path(q, self._map_word(word))
+
+    def find_transition_to_q(self, q: State) -> Tuple:
+        qf, letter = self._dfa.find_transition_to_q(q)
+        if letter is not None:
+            letter = self.char2sym[letter]
+        return qf, letter
+
+    def find_transitions_to_q_with_letter(self, q: State, a: str) -> Set[State]:
+        return self._dfa.find_transitions_to_q_with_letter(q, self._map_letter(a))
+
+    def remove_dead_states(self):
+        new_dfa = self._dfa.remove_dead_states()
+        return DFAWrapper(new_dfa, self.sym2char)
+
+    def rename_states(self):
+        new_dfa = self._dfa.rename_states()
+        return DFAWrapper(new_dfa, self.sym2char)
+
+    def copy(self):
+        dfa_copy = self._dfa.copy()
+        return DFAWrapper(dfa_copy, self.sym2char)
+
+    def to_regex(self) -> str:
+        regex = self._dfa.to_regex()
+        result = ""
+        for character in regex:
+            # if in alphanumeric set, it is a symbol
+            if character in ALPHANUMERIC_SET:
+                result += self.char2sym[character]
+            # o/w, it is an operator
+            else:
+                result += character
+        return result
+
+    @staticmethod
+    def _parenthesize(expr: str, starring: bool=False) -> List[str]:
+        """
+        Returns a list of strings with or without parentheses. This method
+        is used to simplify the expression returned. By omitting parentheses
+        or other expression features when unnecessary.
+
+        :param expr: Expression
+        :type expr: str
+        :type starring: bool
+        :return: List of expressions
+        :rtype: List[str]
+        """
+        if len(expr) == 1 or (not starring and '|' not in expr):
+            return [expr]
+        elif starring and expr.endswith('|()'):
+            return ['(', expr[:-3], ')']
+        else:
+            return ['(', expr, ')']
+
+    def create_graphviz_object(self) -> graphviz.Digraph:
+        """
+        Creates a Graphviz object representing the
+        DFA of the current instance.
+        """
+        digraph = graphviz.Digraph('dfa')
+        digraph.graph_attr['rankdir'] = 'LR'
+
+        edges = defaultdict(lambda: defaultdict(list))
+
+        for state in self._dfa.states:
+            shape = 'doublecircle' if state in self._dfa.accept_states else 'circle'
+            digraph.node(name='q{}'.format(state.name), shape=shape, constraint='false')
+
+            if state in self._dfa._transitions:
+                for letter, to_state in self._dfa._transitions[state].items():
+                    edges[state][to_state].append(self.char2sym[letter])
+
+        for from_state in edges:
+            for to_state, letters in edges[from_state].items():
+                digraph.edge('q{}'.format(from_state.name),
+                             'q{}'.format(to_state.name),
+                             ', '.join(letters))
+
+        digraph.node('', shape='plaintext', constraint='true')
+        digraph.edge('', 'q{}'.format(self._dfa._start_state.name))
+
+        return digraph
+
+    def show(self):
+        """
+        Graphs the DFA using graphviz, the DFA will
+        immediately be shown in a PDF file when this
+        method is called.
+        """
+        self.create_graphviz_object().view(tempfile.mkstemp('gv')[1], cleanup=True)
