@@ -22,6 +22,13 @@ def _char_generator():
         yield i
 
 
+def _preprocess_symbol(symbol):
+    """Preprocess """
+    if symbol == "":
+        symbol = "''"
+    return symbol
+
+
 def _process_traces(pos_examples, neg_examples):
     if len(pos_examples) == 0 and len(neg_examples) == 0:
         return pos_examples, neg_examples, None
@@ -37,6 +44,7 @@ def _process_traces(pos_examples, neg_examples):
             for symbol in trace:
                 assert len(sym2char) < len(ALPHANUMERIC_SET)
                 if symbol not in sym2char:
+                    symbol = _preprocess_symbol(symbol)
                     sym2char[symbol] = next(gen)
                 new_trace += sym2char[symbol]
             return new_trace
