@@ -656,6 +656,10 @@ class DFAWrapper(DFA):
 
         return digraph
 
+    @property
+    def unwrapped(self) -> DFA:
+        return self._dfa
+
     def show(self):
         """
         Graphs the DFA using graphviz, the DFA will
