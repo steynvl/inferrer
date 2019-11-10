@@ -12,7 +12,7 @@ def read_examples(file: str, separator: str = "") -> Union[Set[str], Set[Tuple[s
             if separator == "":
                 return set(line.strip() for line in f)
             else:
-                return set(tuple(line.strip().split(separator)) for line in f)
+                return set(tuple(line.strip().split(separator)) if len(line.strip()) != 0 else tuple() for line in f)
     except IOError:
         raise Exception('\'{}\' does not exist'.format(file))
 
@@ -21,13 +21,11 @@ def _char_generator():
     for i in ALPHANUMERIC:
         yield i
 
-
 def _preprocess_symbol(symbol):
     """Preprocess """
     if symbol == "":
         symbol = "''"
     return symbol
-
 
 def _process_traces(pos_examples, neg_examples):
     if len(pos_examples) == 0 and len(neg_examples) == 0:
