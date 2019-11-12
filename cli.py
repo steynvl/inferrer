@@ -1,17 +1,39 @@
-import argparse
 import sys
+import argparse
+import inferrer
+from typing import Set
 
-from inferrer.learn import learn
+
+def read_examples(file: str) -> Set[str]:
+    try:
+        with open(file, 'r') as f:
+            return set(line.strip() for line in f)
+    except IOError:
+        raise Exception('\'{}\' does not exist'.format(file))
 
 
 def main(args):
+    pos_examples = read_examples(args.positive_examples)
+    neg_examples = read_examples(args.negative_examples)
+    alphabet = inferrer.utils.determine_alphabet(pos_examples.union(neg_examples))
+    algorithm = args.algorithm
 
-    dfa = learn(args.positive_examples, args.negative_examples, args.algorithm, separator=args.separator)
+    if algorithm in ['rpni', 'gold']:
+        learner = inferrer.Learner(alphabet=alphabet,
+                                   pos_examples=pos_examples,
+                                   neg_examples=neg_examples,
+                                   algorithm=algorithm)
+    elif algorithm in ['lstar', 'nlstar']:
+        learner = inferrer.Learner(alphabet=alphabet,
+                                   oracle=inferrer.oracle.PassiveOracle(pos_examples,
+                                                                        neg_examples),
+                                   algorithm=algorithm)
+
+    dfa = learner.learn_grammar()
     print(dfa.to_regex())
 
     if args.show_dfa:
         dfa.show()
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='This is the CLI tool for the '
@@ -30,9 +52,6 @@ if __name__ == '__main__':
                         help='Path to the file containing negative example strings, '
                              'i.e. strings that do not belong in the target language'
                              ' separated by newlines.')
-
-    parser.add_argument('--separator', type=str, default="", metavar='SEP',
-                        help='The separator between different symbols.')
 
     parser.add_argument('algorithm', type=str,
                         choices=['gold', 'rpni', 'lstar', 'nlstar'],
