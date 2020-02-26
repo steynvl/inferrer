@@ -21,6 +21,5 @@ setup(
         'Programming Language :: Python :: 3.7',
     ],
     install_requires=["graphviz"],
-    tests_require=["pytest"],
     python_requires='>=3.7',
 )

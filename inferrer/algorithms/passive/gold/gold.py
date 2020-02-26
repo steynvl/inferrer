@@ -98,7 +98,7 @@ class Gold(PassiveLearner):
 
         self._blue = self._alphabet.copy()
 
-        exp = set(utils.suffix_set(self._samples, self._alphabet))
+        exp = set(utils.suffix_set(self._samples))
 
         ot = utils.ObservationTable(self._blue, self._red, self._alphabet)
 

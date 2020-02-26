@@ -1,14 +1,13 @@
 """
 Module containing utility functions such as
-performing operations on strings and combinatorics
 on sets.
 """
 
 import itertools
-from typing import Set, Generator, Tuple, Callable
+from typing import Set, Generator, Tuple
 
 
-def prefix_set(s: Set[str], alphabet: Set[str]=None) -> Generator:
+def prefix_set(s: Set[str]) -> Generator:
     """
     Calculates the prefix set of the set s given the
     alphabet.
@@ -24,10 +23,12 @@ def prefix_set(s: Set[str], alphabet: Set[str]=None) -> Generator:
     :return: Generator with all the prefixes
     :rtype: Generator[str]
     """
-    return _generate_set(s, alphabet, str.startswith)
+    for w in s:
+        for i in range(len(w) + 1):
+            yield w[:i]
 
 
-def suffix_set(s: Set[str], alphabet: Set[str]=None) -> Generator:
+def suffix_set(s: Set[str]) -> Generator:
     """
     Calculates the suffix set of the set s given the
     alphabet.
@@ -43,7 +44,9 @@ def suffix_set(s: Set[str], alphabet: Set[str]=None) -> Generator:
     :return: Generator with all the suffixes
     :rtype: Generator[str]
     """
-    return _generate_set(s, alphabet, str.endswith)
+    for w in s:
+        for i in range(len(w), -1, -1):
+            yield w[i:]
 
 
 def determine_alphabet(s: Set[str]) -> Set[str]:
@@ -98,13 +101,3 @@ def _get_all_combinations(s: Set[str], repeat: int) -> Generator:
     for rep in range(repeat + 1):
         for p in itertools.product(s, repeat=rep):
             yield ''.join(p)
-
-
-def _generate_set(s: Set[str], alphabet: Set[str], func: Callable) -> Generator:
-    if alphabet is None:
-        alphabet = determine_alphabet(s)
-
-    longest = len(max(s, key=len))
-    for comb in _get_all_combinations(alphabet, longest):
-        if any([func(i, comb) for i in s]):
-            yield comb

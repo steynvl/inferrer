@@ -195,7 +195,7 @@ class LSTAR(ActiveLearner):
         :return: Updated ObservationTable
         :rtype: ObservationTable
         """
-        prefix_set = set(utils.prefix_set({answer}, self._alphabet))
+        prefix_set = set(utils.prefix_set({answer}))
         self._logger.info('Updating table by adding the following prefixes: {}'
                           .format(', '.join(prefix_set)))
 

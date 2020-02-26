@@ -512,7 +512,7 @@ def build_pta(s_plus: Set[str], s_minus: Set[str]=set()) -> DFA:
         pta.add_transition(State(''), State(letter), letter)
 
     states = {
-        State(u) for u in utils.prefix_set(samples, alphabet)
+        State(u) for u in utils.prefix_set(samples)
     }
 
     new_states = set()

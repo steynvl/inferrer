@@ -14,8 +14,12 @@ library implements
 ## Setup
 If you do not have pipenv installed on your system, then run the following:
 ```bash
-pip install --user pipenv 
+sudo pip install pipenv 
 ```
+
+The Pipfile specifies Python 3.7 as the development version, but the library should
+work for any Python 3 version, merely change the python\_version value in the
+Pipfile to the Python version on your system. 
 
 If you want Inferrer to show you the DFA that was inferred by the different algorithms, then
 you need to install [Graphviz](https://www.graphviz.org/) on your system. The following 

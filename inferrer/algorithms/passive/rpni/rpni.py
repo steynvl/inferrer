@@ -53,7 +53,7 @@ class RPNI(PassiveLearner):
         self._logger.info('Building PTA')
         dfa = automaton.build_pta(self._pos_examples)
 
-        pref_set = utils.prefix_set(self._pos_examples, self._alphabet)
+        pref_set = utils.prefix_set(self._pos_examples)
         self._blue = {automaton.State(i) for i in self._alphabet.intersection(pref_set)}
 
         while len(self._blue) != 0:
